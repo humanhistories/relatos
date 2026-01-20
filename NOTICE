@@ -1,0 +1,25 @@
+This software is developed and maintained by Human Histories,
+a non-profit organization.
+
+Human Histories is a non-profit organization focused on the visualization
+and multilingual dissemination of human history data, enabling global
+access and collaboration.
+
+Additional project information is available at:
+https://humanhistories.org/en/
+
+---
+
+CesiumJS
+
+This software includes or depends on CesiumJS.
+
+Copyright 2011–2025 Cesium Contributors
+
+CesiumJS is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+For more information about CesiumJS:
+https://cesium.com/

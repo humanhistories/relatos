@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+
+# Node / build
+node_modules/
+build/
+dist/**
+!dist/relatos.umd.js
+!dist/relatos.es.js
+!dist/index.d.ts
+dist/cesium/
+
+# Editors
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Temporary
+*.tmp
+*.swp
+*.bak
