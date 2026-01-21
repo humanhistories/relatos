@@ -63,11 +63,10 @@ export class Map2DView implements View {
   private nightShadeLayer: LeafletPolygon | null = null; // Night shade polygon layer
   private nightShadeDebugLayer: LeafletPolyline | null = null; // Debug polyline for terminator boundary
   private lightingEnabled: boolean = false; // Lighting mode flag
+  private timeISO: string | null = null; // Shared time for sun shading calculation
   private map2dOptions?: {
     center?: [number, number];
     zoom?: number;
-    time?: string;
-    enableLighting?: boolean;
     debugNightShading?: boolean;
     customTileUrl?: string;
     customTileUrls?: (string | TileServerConfig)[];
@@ -83,8 +82,6 @@ export class Map2DView implements View {
     map2dOptions?: {
       center?: [number, number];
       zoom?: number;
-      time?: string;
-      enableLighting?: boolean;
       debugNightShading?: boolean;
       customTileUrl?: string;
       customTileUrls?: (string | TileServerConfig)[];
@@ -257,26 +254,13 @@ export class Map2DView implements View {
 
   /**
    * Set time information and day/night shading
+   * Time and lighting are now controlled by ViewContainer's shared state
    */
   private setupTimeAndLighting(): void {
     if (!this.map || !this.Leaflet) {
       return;
     }
-
-    // Set time if specified
-    if (this.map2dOptions?.time) {
-      this.setTime(this.map2dOptions.time);
-    }
-
-    // Configure lighting and day/night shading
-    // ViewContainer shared state takes priority, so only explicitly disable if false is specified
-    // Otherwise controlled by ViewContainer's applySharedToggleStates
-    // Only disable on initialization if enableLighting is explicitly false
-    // If enableLighting is true or unspecified, controlled by ViewContainer's applySharedToggleStates
-    if (this.map2dOptions?.enableLighting === false) {
-      this.setLighting(false);
-    }
-    // If enableLighting is true or unspecified, wait for ViewContainer shared state (applied on registerView)
+    // Time and lighting are applied via ViewContainer's applySharedToggleStates
   }
 
   /**
@@ -284,12 +268,7 @@ export class Map2DView implements View {
    * @param timeISO ISO 8601 time string (e.g., "2025-06-21T12:00:00Z")
    */
   setTime(timeISO: string): void {
-    // Save time for sun shading calculation
-    // Only save time here, actual calculation is done in setLighting
-    if (!this.map2dOptions) {
-      this.map2dOptions = {};
-    }
-    this.map2dOptions.time = timeISO;
+    this.timeISO = timeISO;
     
     // Update if lighting is enabled
     if (this.lightingEnabled) {
@@ -308,9 +287,9 @@ export class Map2DView implements View {
     
     this.lightingEnabled = enabled;
     
-    // mapが初期化されていない場合は、フラグだけを設定して後で適用する
+    // If map is not initialized, only set the flag and apply later
     if (!this.map || !this.Leaflet) {
-      // ボタンの表示を更新（mapがなくてもボタンは更新可能）
+      // Update button appearance (button can be updated even without map)
       this.updateLightingButton();
       return;
     }
@@ -329,7 +308,7 @@ export class Map2DView implements View {
       }
     }
 
-    // ボタンの表示を更新
+    // Update button appearance
     this.updateLightingButton();
   }
 
@@ -354,7 +333,7 @@ export class Map2DView implements View {
     if (this.alwaysShowEdges !== enabled) {
       this.alwaysShowEdges = enabled;
       this.updateAlwaysShowEdgesButton();
-      // エッジの表示/非表示を反映するために再描画（ただしfitToNodesは呼ばない）
+      // Re-render to reflect edge visibility changes (without calling fitToNodes)
       this.renderWithoutFit();
     }
   }
@@ -368,13 +347,13 @@ export class Map2DView implements View {
 
   /**
    * Set lighting enabled state (for View interface)
-   * @param enabled trueで有効、falseで無効
-   * @param notifyContainer ViewContainerに通知するかどうか（デフォルト: true）
+   * @param enabled true to enable, false to disable
+   * @param notifyContainer Whether to notify ViewContainer (default: true)
    */
   setLightingEnabled(enabled: boolean, notifyContainer: boolean = true): void {
     const oldValue = this.lightingEnabled;
     this.setLighting(enabled);
-    // ViewContainerに通知（初期化時は通知しない）
+    // Notify ViewContainer (not during initialization)
     if (notifyContainer && this.onLightingChange && this.lightingEnabled !== oldValue) {
       this.onLightingChange(this.lightingEnabled);
     }
@@ -464,7 +443,7 @@ export class Map2DView implements View {
     }
 
     // Get time (default: current time)
-    const timeISO = this.map2dOptions?.time || new Date().toISOString();
+    const timeISO = this.timeISO || new Date().toISOString();
     
     // Calculate terminator boundary (inner ring for hole)
     const longitudeRange = 720; // -360 to +360 degrees
@@ -796,13 +775,11 @@ export class Map2DView implements View {
         // For dates before 1970, getTime() returns negative values
         date = new Date(timeISO);
         if (isNaN(date.getTime())) {
-          console.warn('Invalid date format:', timeISO);
           return null;
         }
       } else {
         date = new Date(timeISO);
         if (isNaN(date.getTime())) {
-          console.warn('Invalid date format:', timeISO);
           return null;
         }
       }
@@ -854,7 +831,6 @@ export class Map2DView implements View {
 
       return latLng.length > 0 ? latLng : null;
     } catch (error) {
-      console.warn('Failed to calculate night polygon:', error);
       return null;
     }
   }
@@ -872,32 +848,32 @@ export class Map2DView implements View {
   }
 
   /**
-   * 太陽の赤緯（declination）を計算（簡易版）
-   * @param dayOfYear 年内の日数（1-365/366）
-   * @returns 赤緯（度）
+   * Calculate solar declination (simplified version)
+   * @param dayOfYear Day of year (1-365/366)
+   * @returns Declination in degrees
    */
   private calculateSolarDeclination(dayOfYear: number): number {
-    // 簡易計算式（精度は低いが実装が簡単）
-    // より正確な計算には、より複雑な式が必要
+    // Simplified calculation formula (low precision but simple implementation)
+    // More accurate calculation requires more complex formulas
     const declinationRad = 23.45 * Math.PI / 180 * Math.sin(2 * Math.PI * (284 + dayOfYear) / 365);
     return declinationRad * 180 / Math.PI;
   }
 
   /**
-   * クリックハンドラーを設定
+   * Setup click handler
    */
   private setupClickHandler(): void {
     if (!this.map || !this.Leaflet) {
       return;
     }
 
-    // Leafletのクリックイベントを設定
+    // Set up Leaflet click event
     this.map.on('click', (e: any) => {
-      // マーカーやポリラインのクリックは、それぞれの要素で処理される
-      // ここでは地図自体のクリックのみを処理
+      // Marker and polyline clicks are handled by their respective elements
+      // Only map clicks are handled here
     });
 
-    // マーカーのクリックイベントは、render()で個別に設定
+    // Marker click events are set individually in render()
   }
 
   /**
@@ -929,10 +905,10 @@ export class Map2DView implements View {
       return;
     }
     
-    // 同じノードが再度選択された場合は、フィット動作に切り替える
-    // lastSelectedNodeIdが同じnodeIdの場合、トグルしてフィット
+    // If the same node is selected again, switch to fit action
+    // If lastSelectedNodeId is the same as nodeId, toggle to fit
     if (nodeId === this.lastSelectedNodeId) {
-      // フィット動作（全体を表示）
+      // Fit action (show all)
       this.selectedNodeId = null;
       this.lastSelectedNodeId = null;
       this.fitToNodes();
@@ -940,8 +916,8 @@ export class Map2DView implements View {
       return;
     }
     
-    // 異なるノードが選択された場合は、ノードにズームイン
-    // lastSelectedNodeIdを更新（次回のクリックでトグル判定に使用）
+    // If a different node is selected, zoom in to the node
+    // Update lastSelectedNodeId (used for toggle detection on next click)
     this.lastSelectedNodeId = nodeId;
     this.selectedNodeId = nodeId;
     
@@ -950,30 +926,30 @@ export class Map2DView implements View {
       return;
     }
     
-    // 座標があるノードの場合
+    // For nodes with coordinates
     if (node.coordinates && node.coordinates.length === 2) {
       const [lat, lon] = node.coordinates;
       if (Number.isFinite(lat) && Number.isFinite(lon)) {
         const [latitude, longitude] = node.coordinates;
         
-        // レンダリングを更新（先にマーカーを再作成）
+        // Update rendering (recreate markers first)
         this.renderWithoutFit();
         
-        // ズームレベルを上げてノードの位置に移動（ズームイン）
-        // flyToメソッドを使用してスムーズなアニメーションを実現
-        this.map.flyTo([latitude, longitude], 4, { // 最大ズームレベル8
-          duration: 1.0, // 1秒でアニメーション
-          easeLinearity: 0.25, // イージングの線形性（0.25が推奨値）
+        // Increase zoom level and move to node position (zoom in)
+        // Use flyTo method for smooth animation
+        this.map.flyTo([latitude, longitude], 4, { // Max zoom level 8
+          duration: 1.0, // 1 second animation
+          easeLinearity: 0.25, // Easing linearity (0.25 is recommended)
         });
         
-        // flyToのアニメーションが完了した後にポップアップを開く
-        // moveendイベントを使用して、アニメーション完了後にポップアップを表示
+        // Open popup after flyTo animation completes
+        // Use moveend event to show popup after animation completes
         const onMoveEnd = () => {
           const marker = this.markers.get(nodeId);
           if (marker) {
             marker.openPopup();
           }
-          // イベントリスナーを削除（一度だけ実行）
+          // Remove event listener (execute only once)
           this.map.off('moveend', onMoveEnd);
         };
         this.map.once('moveend', onMoveEnd);
@@ -981,7 +957,7 @@ export class Map2DView implements View {
       }
     }
     
-    // 座標がないノードの場合、矩形内の位置を計算してズーム
+    // For nodes without coordinates, calculate position within rectangle and zoom
     const nodesWithoutCoords = this.nodes.filter(n => {
       if (!n.coordinates) return true;
       if (!Array.isArray(n.coordinates) || n.coordinates.length !== 2) return true;
@@ -995,7 +971,7 @@ export class Map2DView implements View {
       const RECT_MIN_LON = -32;
       const RECT_MAX_LON = 0;
       
-      // ノードが矩形内のどの位置に配置されているかを計算
+      // Calculate which position within the rectangle the node is placed
       const cols = Math.ceil(Math.sqrt(nodesWithoutCoords.length));
       const rows = Math.ceil(nodesWithoutCoords.length / cols);
       const latStep = (RECT_MAX_LAT - RECT_MIN_LAT) / (rows + 1);
@@ -1008,16 +984,16 @@ export class Map2DView implements View {
         const latitude = RECT_MIN_LAT + (row + 1) * latStep;
         const longitude = RECT_MIN_LON + (col + 1) * lonStep;
         
-        // レンダリングを更新（先にマーカーを再作成）
+        // Update rendering (recreate markers first)
         this.renderWithoutFit();
         
-        // カメラを矩形内のノード位置に移動
+        // Move camera to node position within rectangle
         this.map.flyTo([latitude, longitude], 4, {
-          duration: 1.0, // 1秒でアニメーション
+          duration: 1.0, // 1 second animation
           easeLinearity: 0.25,
         });
         
-        // flyToのアニメーションが完了した後にポップアップを開く
+        // Open popup after flyTo animation completes
         const onMoveEnd = () => {
           const marker = this.markers.get(nodeId);
           if (marker) {
@@ -1028,7 +1004,7 @@ export class Map2DView implements View {
         this.map.once('moveend', onMoveEnd);
       }
     } else {
-      // レンダリングを更新（座標がない場合）
+      // Update rendering (when no coordinates)
       this.renderWithoutFit();
     }
   }
@@ -1041,7 +1017,7 @@ export class Map2DView implements View {
       return;
     }
 
-    // 既存のマーカーとポリラインを削除
+    // Remove existing markers and polylines
     this.markers.forEach(marker => {
       this.map!.removeLayer(marker);
     });
@@ -1052,7 +1028,7 @@ export class Map2DView implements View {
     });
     this.polylines.clear();
 
-    // 座標がないノードを収集（coordinatesがundefined、null、または有効な数値のペアでない場合）
+    // Collect nodes without coordinates (coordinates is undefined, null, or not a valid number pair)
     const nodesWithoutCoords = this.nodes.filter(n => {
       if (!n.coordinates) return true;
       if (!Array.isArray(n.coordinates) || n.coordinates.length !== 2) return true;
@@ -1066,7 +1042,7 @@ export class Map2DView implements View {
       return Number.isFinite(lat) && Number.isFinite(lon);
     });
 
-    // 座標がないノードを矩形内に配置（Map2D: 0,0から-50,-32が対角線）
+    // Place nodes without coordinates within rectangle (Map2D: diagonal from 0,0 to -50,-32)
     if (nodesWithoutCoords.length > 0) {
       const RECT_MIN_LAT = -50;
       const RECT_MAX_LAT = 0;
@@ -1143,16 +1119,16 @@ export class Map2DView implements View {
       });
     }
 
-    // 座標があるノードを描画
+    // Draw nodes with coordinates
     for (const node of nodesWithCoords) {
       const [latitude, longitude] = node.coordinates!;
       const isSelected = this.selectedNodeId === node.id;
 
-      // ノードの色を取得
+      // Get node color
       const nodeColor = node.style?.color || '#ffffff';
       const borderColor = isSelected ? '#2196f3' : (node.style?.borderColor || '#333333');
 
-      // カスタムアイコンを作成
+      // Create custom icon
       const iconHtml = `
         <div style="
           width: ${isSelected ? 15 : 10}px;
@@ -1171,7 +1147,7 @@ export class Map2DView implements View {
         iconAnchor: [isSelected ? 7.5 : 5, isSelected ? 7.5 : 5],
       });
 
-      // マーカーを作成
+      // Create marker
       const marker = this.Leaflet.marker([latitude, longitude], { icon });
 
       // ラベルを追加（ポップアップとして）
@@ -1197,14 +1173,14 @@ export class Map2DView implements View {
       this.markers.set(node.id, marker);
     }
 
-    // エッジを描画（alwaysShowEdgesがtrueの場合のみ）
+    // Draw edges (only when alwaysShowEdges is true)
     if (this.alwaysShowEdges) {
       for (const edge of this.edges) {
         const srcNode = this.nodes.find(n => n.id === edge.src);
         const dstNode = this.nodes.find(n => n.id === edge.dst);
 
         if (!srcNode?.coordinates || !dstNode?.coordinates) {
-          continue; // 座標がないノードはスキップ
+          continue; // Skip nodes without coordinates
         }
 
         const [srcLat, srcLon] = srcNode.coordinates;
@@ -1243,19 +1219,19 @@ export class Map2DView implements View {
       }
     }
 
-    // カメラを調整してすべてのノードが表示されるようにする（初期化時のみ）
+    // Adjust camera to show all nodes (only during initialization)
     this.fitToNodes();
   }
 
   /**
-   * ノードとエッジを描画（フィット動作なし）
+   * Render nodes and edges (without fit action)
    */
   private renderWithoutFit(): void {
     if (!this.map || !this.Leaflet) {
       return;
     }
 
-    // 既存のマーカーとポリラインを削除
+    // Remove existing markers and polylines
     this.markers.forEach(marker => {
       this.map!.removeLayer(marker);
     });
@@ -1266,13 +1242,13 @@ export class Map2DView implements View {
     });
     this.polylines.clear();
 
-    // 矩形レイヤーを削除
+    // Remove rectangle layer
     if (this.rectLayer) {
       this.map!.removeLayer(this.rectLayer);
       this.rectLayer = null;
     }
 
-    // 座標がないノードを収集（coordinatesがundefined、null、または有効な数値のペアでない場合）
+    // Collect nodes without coordinates (coordinates is undefined, null, or not a valid number pair)
     const nodesWithoutCoords = this.nodes.filter(n => {
       if (!n.coordinates) return true;
       if (!Array.isArray(n.coordinates) || n.coordinates.length !== 2) return true;
@@ -1286,7 +1262,7 @@ export class Map2DView implements View {
       return Number.isFinite(lat) && Number.isFinite(lon);
     });
 
-    // 座標がないノードを矩形内に配置（Map2D: 0,0から-50,-32が対角線）
+    // Place nodes without coordinates within rectangle (Map2D: diagonal from 0,0 to -50,-32)
     if (nodesWithoutCoords.length > 0) {
       const RECT_MIN_LAT = -50;
       const RECT_MAX_LAT = 0;
@@ -1364,7 +1340,7 @@ export class Map2DView implements View {
       });
     }
 
-    // 座標があるノードを描画
+    // Draw nodes with coordinates
     for (const node of nodesWithCoords) {
       const [latitude, longitude] = node.coordinates!;
       const isSelected = this.selectedNodeId === node.id;
@@ -1411,7 +1387,7 @@ export class Map2DView implements View {
       this.markers.set(node.id, marker);
     }
 
-    // エッジを描画（alwaysShowEdgesがtrueの場合のみ）
+    // Draw edges (only when alwaysShowEdges is true)
     if (this.alwaysShowEdges) {
       for (const edge of this.edges) {
         const srcNode = this.nodes.find(n => n.id === edge.src);
@@ -1463,7 +1439,7 @@ export class Map2DView implements View {
       return;
     }
 
-    // ボタンコンテナを作成（既存のものがあれば再利用）
+    // Create button container (reuse existing one if available)
     let buttonContainer = this.container.querySelector('.relatos-map2d-controls') as HTMLElement;
     if (!buttonContainer) {
       buttonContainer = document.createElement('div');
@@ -1478,7 +1454,7 @@ export class Map2DView implements View {
       this.container.appendChild(buttonContainer);
     }
 
-    // エッジ表示ON/OFFボタンを作成
+    // Create edge visibility toggle button
     this.alwaysShowEdgesButton = document.createElement('button');
     this.alwaysShowEdgesButton.innerHTML = createSvgIcon('icon-relations', 16);
     this.alwaysShowEdgesButton.setAttribute('aria-label', 'Toggle edges');
@@ -1507,11 +1483,11 @@ export class Map2DView implements View {
       if (this.onAlwaysShowEdgesChange) {
         this.onAlwaysShowEdgesChange(this.alwaysShowEdges);
       }
-      // エッジの表示/非表示を反映するために再描画（ただしfitToNodesは呼ばない）
+      // Re-render to reflect edge visibility changes (without calling fitToNodes)
       this.renderWithoutFit();
     });
 
-    // 昼夜陰影ON/OFFボタンを作成
+    // Create lighting toggle button
     this.lightingToggleButton = document.createElement('button');
     this.lightingToggleButton.innerHTML = createSvgIcon('icon-sun', 16);
     this.lightingToggleButton.setAttribute('aria-label', 'Toggle lighting');
@@ -1541,7 +1517,7 @@ export class Map2DView implements View {
       }
     });
 
-    // フィットボタンを作成
+    // Create fit button
     this.fitCenterButton = document.createElement('button');
     this.fitCenterButton.innerHTML = createSvgIcon('icon-home', 16);
     this.fitCenterButton.setAttribute('aria-label', 'Fit and center');
@@ -1566,7 +1542,7 @@ export class Map2DView implements View {
       this.fitToNodes();
     });
 
-    // タイルタイプ切り替えボタンを作成
+    // Create tile type switch button
     this.tileTypeButton = document.createElement('button');
     this.tileTypeButton.innerHTML = '🗺️';
     this.tileTypeButton.setAttribute('aria-label', 'Switch tile type');
@@ -1589,20 +1565,20 @@ export class Map2DView implements View {
       this.switchTileType();
     });
 
-    // ボタンを追加（左からエッジ表示ON/OFF、昼夜陰影ON/OFF、タイルタイプ、フィット）
+    // Add buttons (from left: edge visibility toggle, lighting toggle, tile type, fit)
     buttonContainer.appendChild(this.alwaysShowEdgesButton);
     buttonContainer.appendChild(this.lightingToggleButton);
     buttonContainer.appendChild(this.tileTypeButton);
     buttonContainer.appendChild(this.fitCenterButton);
 
-    // 初期状態のボタン表示を更新
+    // Update button appearance for initial state
     this.updateAlwaysShowEdgesButton();
     this.updateLightingButton();
     this.updateTileTypeButton();
   }
 
   /**
-   * customTileUrlsを順番に切り替え
+   * Switch between customTileUrls in order
    */
   private switchTileType(): void {
     // If customTileUrls are specified, switch between them
@@ -1712,7 +1688,7 @@ export class Map2DView implements View {
       return;
     }
 
-    // 座標があるノードと座標がないノードを分離
+    // Separate nodes with coordinates and nodes without coordinates
     const nodesWithCoords = this.nodes.filter(n => {
       if (!n.coordinates) return false;
       if (!Array.isArray(n.coordinates) || n.coordinates.length !== 2) return false;
@@ -1726,11 +1702,11 @@ export class Map2DView implements View {
       return !Number.isFinite(lat) || !Number.isFinite(lon);
     });
 
-    // すべての座標を収集（座標があるノード + 座標がないノードの代替座標）
+    // Collect all coordinates (nodes with coordinates + alternative coordinates for nodes without coordinates)
     const allLats: number[] = [];
     const allLons: number[] = [];
 
-    // 座標があるノードの座標を追加
+    // Add coordinates from nodes with coordinates
     nodesWithCoords.forEach(n => {
       if (n.coordinates && n.coordinates.length === 2) {
         const [lat, lon] = n.coordinates;
@@ -1741,7 +1717,7 @@ export class Map2DView implements View {
       }
     });
 
-    // 座標がないノードの代替座標を計算して追加
+    // Calculate and add alternative coordinates for nodes without coordinates
     if (nodesWithoutCoords.length > 0) {
       const RECT_MIN_LAT = -50;
       const RECT_MAX_LAT = 0;
@@ -1763,31 +1739,31 @@ export class Map2DView implements View {
       });
     }
 
-    // 座標が1つもない場合は処理しない
+    // Do not process if there are no coordinates
     if (allLats.length === 0) {
       return;
     }
 
-    // すべての座標から境界を計算
+    // Calculate bounds from all coordinates
     const minLat = Math.min(...allLats);
     const maxLat = Math.max(...allLats);
     const minLon = Math.min(...allLons);
     const maxLon = Math.max(...allLons);
 
-    // バウンディングボックスを作成
+    // Create bounding box
     const bounds = this.Leaflet.latLngBounds(
       [minLat, minLon],
       [maxLat, maxLon]
     );
 
-    // マップをフィット
-    // タイルサーバーへの負荷を防ぐため、最大ズームレベルを8に制限
-    // flyToBoundsメソッドを使用してスムーズなアニメーションを実現
+    // Fit map
+    // Limit max zoom level to 8 to prevent load on tile server
+    // Use flyToBounds method for smooth animation
     this.map.flyToBounds(bounds, {
       padding: [20, 20],
-      maxZoom: 5, // 最大ズームレベルを5に制限
-      duration: 1.0, // 1秒でアニメーション
-      easeLinearity: 0.25, // イージングの線形性（0.25が推奨値）
+      maxZoom: 5, // Limit max zoom level to 5
+      duration: 1.0, // 1 second animation
+      easeLinearity: 0.25, // Easing linearity (0.25 is recommended)
     });
   }
 
@@ -1800,8 +1776,8 @@ export class Map2DView implements View {
       this.map.invalidateSize();
     } else if (this.leafletLoader) {
       // Initialize Leaflet on first show
-      this.initializeLeaflet().catch((error) => {
-        console.error('Failed to initialize Leaflet:', error);
+      this.initializeLeaflet().catch(() => {
+        // Failed to initialize Leaflet
       });
     }
   }

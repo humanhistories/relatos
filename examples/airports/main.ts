@@ -381,15 +381,9 @@ if (timeInput) {
     const timeValue = timeInput.value.trim();
     if (timeValue && viewerInstance) {
       try {
-        // Set time for both Map2D and Globe3D
-        if ('setMap2dTime' in viewerInstance) {
-          (viewerInstance as any).setMap2dTime(timeValue);
-        }
-        if ('setGlobe3dTime' in viewerInstance) {
-          (viewerInstance as any).setGlobe3dTime(timeValue);
-        }
+        // Set shared time for both Map2D and Globe3D
+        viewerInstance.setTime(timeValue);
       } catch (error) {
-        console.error('Failed to set time:', error);
         alert('Invalid time format. Please use ISO 8601 format (e.g., 2025-01-17T12:00:00Z).');
       }
     }
@@ -412,15 +406,10 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
     mode: 'view',
     editable: true,
   },
-  map2d: {
-    time: timeInput.value,
-    enableLighting: true, // Enable day/night shading on initial load
-  },
-  globe3d: {
-    time: timeInput.value,
-    enableLighting: true, // Enable day/night shading on initial load
-  },
-  // 共有タイルサーバ設定（Map2D / Globe3D 共通）
+  // Shared settings for Map2D and Globe3D
+  time: timeInput.value,
+  enableLighting: true, // Enable day/night shading on initial load
+  // Shared tile server configuration (Map2D / Globe3D common)
   tileServers: [
     {
       // OpenStreetMap

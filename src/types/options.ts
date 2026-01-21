@@ -132,16 +132,6 @@ export interface Map2DOptions {
    */
   zoom?: number;
   /**
-   * Time information (ISO 8601 format, e.g., "2025-06-21T12:00:00Z")
-   * If specified, sun position and day/night shading are displayed
-   */
-  time?: string;
-  /**
-   * Whether to enable sun position and day/night shading
-   * @default true (when time is specified)
-   */
-  enableLighting?: boolean;
-  /**
    * Custom tile server URL template (single)
    * Specify when using your own tile server in on-premise environments, etc.
    * Example: "http://onprem-tile-server/{z}/{x}/{y}.png"
@@ -172,16 +162,6 @@ export interface Globe3DOptions {
     latitude: number;
     height: number;
   };
-  /**
-   * Time information (ISO 8601 format, e.g., "2025-06-21T12:00:00Z")
-   * If specified, sun position and day/night shading are displayed
-   */
-  time?: string;
-  /**
-   * Whether to enable sun position and day/night shading
-   * @default true (when time is specified)
-   */
-  enableLighting?: boolean;
   /**
    * Custom tile server URL template (single)
    * Specify when using your own tile server in on-premise environments, etc.
@@ -278,6 +258,19 @@ export interface RelatosViewerOptions {
     nodes: Node[];
     edges: Edge[];
   };
+
+  /**
+   * Shared time information (ISO 8601 format, e.g., "2025-06-21T12:00:00Z")
+   * Used by both Map2D and Globe3D
+   * If specified, sun position and day/night shading are displayed
+   */
+  time?: string;
+
+  /**
+   * Shared lighting setting
+   * Whether to enable sun position and day/night shading for Map2D and Globe3D
+   */
+  enableLighting?: boolean;
 
   /**
    * Shared tile server configuration

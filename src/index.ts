@@ -52,6 +52,14 @@ export function createRelatosViewer(
   // Create ViewContainer
   const viewContainer = new ViewContainer(container, enabledViews);
 
+  // Set shared time and lighting if specified
+  if (options.time) {
+    viewContainer.setTime(options.time);
+  }
+  if (typeof options.enableLighting === 'boolean') {
+    viewContainer.setLightingEnabled(options.enableLighting);
+  }
+
   // Initialize table display options
   if (options.tables) {
     viewContainer.setTableOptions(options.tables);
@@ -116,7 +124,7 @@ export function createRelatosViewer(
   // Create Map2D View
   if (enabledViews.includes('map2d')) {
     if (!options.loaders?.leaflet) {
-      console.warn('Map2D view requires leaflet loader. Please provide options.loaders.leaflet');
+      // Map2D view requires leaflet loader
     } else {
       const map2dViewContainer = document.createElement('div');
       map2dViewContainer.style.width = '100%';
@@ -138,10 +146,6 @@ export function createRelatosViewer(
       map2dView.setLightingChangeCallback((enabled: boolean) => {
         viewContainer.setLightingEnabled(enabled);
       });
-      // Apply initial states from options before registering view
-      if (options.map2d?.enableLighting === true) {
-        viewContainer.setLightingEnabled(true);
-      }
       if (options.data) {
         map2dView.setData(options.data.nodes, options.data.edges);
       }
@@ -152,8 +156,7 @@ export function createRelatosViewer(
   // Create Globe3D View
   if (enabledViews.includes('globe3d')) {
     if (!options.loaders?.cesium) {
-      console.warn('Globe3D view requires cesium loader. Please provide options.loaders.cesium');
-      console.warn('Globe3D tab button will be shown, but the view will not be available until cesium loader is provided.');
+      // Globe3D view requires cesium loader
     } else {
       try {
         const globe3dViewContainer = document.createElement('div');
@@ -165,10 +168,10 @@ export function createRelatosViewer(
           globe3dViewContainer,
           wrappedOnNodeClick || options.events?.onNodeClick,
           options.loaders.cesium,
-          {
-            time: options.globe3d?.time,
-            enableLighting: options.globe3d?.enableLighting,
-          },
+          options.globe3d ? {
+            customTileUrl: (options.globe3d as any).customTileUrl,
+            customTileUrls: (options.globe3d as any).customTileUrls,
+          } : undefined,
           sharedTileServers,
           wrappedOnEdgeClick
         );
@@ -179,18 +182,12 @@ export function createRelatosViewer(
         globe3dView.setLightingChangeCallback((enabled: boolean) => {
           viewContainer.setLightingEnabled(enabled);
         });
-        // Apply initial states from options
-        if (options.globe3d?.enableLighting === true) {
-          viewContainer.setLightingEnabled(true);
-        }
         if (options.data) {
           globe3dView.setData(options.data.nodes, options.data.edges);
         }
         viewContainer.registerView('globe3d', globe3dView);
-        console.log('Globe3D view created and registered successfully');
       } catch (error) {
-        console.error('Failed to create Globe3D view:', error);
-        console.warn('Globe3D tab button will be shown, but the view will not be available due to initialization error.');
+        // Failed to create Globe3D view
       }
     }
   }
@@ -272,34 +269,12 @@ export function createRelatosViewer(
       }
     },
 
-    // Map2D methods
-    setMap2dTime(timeISO: string): void {
-      const map2dView = viewContainer.getView('map2d') as Map2DView | undefined;
-      if (map2dView && map2dView.setTime) {
-        map2dView.setTime(timeISO);
-      }
+    setTime(timeISO: string): void {
+      viewContainer.setTime(timeISO);
     },
 
-    setMap2dLighting(enabled: boolean): void {
-      const map2dView = viewContainer.getView('map2d') as Map2DView | undefined;
-      if (map2dView && map2dView.setLighting) {
-        map2dView.setLighting(enabled);
-      }
-    },
-
-    // Globe3D methods
-    setGlobe3dTime(timeISO: string): void {
-      const globe3dView = viewContainer.getView('globe3d') as Globe3DView | undefined;
-      if (globe3dView && globe3dView.setTime) {
-        globe3dView.setTime(timeISO);
-      }
-    },
-
-    setGlobe3dLighting(enabled: boolean): void {
-      const globe3dView = viewContainer.getView('globe3d') as Globe3DView | undefined;
-      if (globe3dView && globe3dView.setLighting) {
-        globe3dView.setLighting(enabled);
-      }
+    setLighting(enabled: boolean): void {
+      viewContainer.setLightingEnabled(enabled);
     },
   };
 }

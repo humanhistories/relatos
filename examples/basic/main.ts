@@ -39,7 +39,6 @@ async function loadLeaflet(): Promise<any> {
     
     return Leaflet;
   } catch (error) {
-    console.error('Failed to load Leaflet:', error);
     throw new Error(`Leaflet is not installed or failed to load: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
@@ -74,7 +73,6 @@ async function loadCesium(): Promise<any> {
     
     return Cesium;
   } catch (error) {
-    console.error('Failed to load Cesium:', error);
     throw new Error(`Cesium is not installed or failed to load: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
@@ -289,7 +287,7 @@ const viewer = createRelatosViewer('#viewer-container', {
   },
   events: {
     onNodeClick: (event) => {
-      console.log('Node clicked:', event.node.id, event.node.label);
+      // Node clicked
     },
   },
 });

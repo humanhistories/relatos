@@ -61,4 +61,16 @@ export interface RelatosViewer {
    * Clean up resources
    */
   destroy(): void;
+
+  /**
+   * Set shared time for Map2D and Globe3D
+   * @param timeISO ISO 8601 time string (e.g., "2025-06-21T12:00:00Z")
+   */
+  setTime(timeISO: string): void;
+
+  /**
+   * Set shared lighting for Map2D and Globe3D
+   * @param enabled Whether to enable lighting
+   */
+  setLighting(enabled: boolean): void;
 }

@@ -55,9 +55,8 @@ export class Globe3DView implements View {
   private onLightingChange?: (enabled: boolean) => void; // Callback to notify lighting state change
   private tileTypeButton: HTMLButtonElement | null = null; // Toggle button for tile type (cycles through tile servers)
   private baseImageryLayer: any = null; // Reference to base imagery layer
+  private timeISO: string | null = null; // Shared time for sun shading calculation
   private globe3dOptions?: {
-    time?: string;
-    enableLighting?: boolean;
     customTileUrl?: string;
     customTileUrls?: (string | TileServerConfig)[];
   }; // Globe3D options
@@ -72,8 +71,6 @@ export class Globe3DView implements View {
     onNodeClick?: (event: NodeClickEvent) => void,
     cesiumLoader?: () => Promise<any>,
     globe3dOptions?: {
-      time?: string;
-      enableLighting?: boolean;
       customTileUrl?: string;
       customTileUrls?: (string | TileServerConfig)[];
     },
@@ -165,7 +162,6 @@ export class Globe3DView implements View {
       this.viewer.imageryLayers.removeAll();
     } catch (error) {
       // Continue even if error occurs (may already be removed)
-      console.warn('Failed to remove default imagery layers:', error);
     }
     
     // Error handling: ignore ion-related errors
@@ -221,27 +217,13 @@ export class Globe3DView implements View {
 
   /**
    * Set time information and day/night shading
+   * Time and lighting are now controlled by ViewContainer's shared state
    */
   private setupTimeAndLighting(): void {
     if (!this.viewer || !this.Cesium) {
       return;
     }
-
-    // Set time in Clock if specified
-    if (this.globe3dOptions?.time) {
-      this.setTime(this.globe3dOptions.time);
-    }
-
-    // Configure lighting and day/night shading
-    // ViewContainer shared state takes priority, so only explicitly disable if false is specified
-    // Otherwise controlled by ViewContainer's applySharedToggleStates
-    // Only enable on initialization if enableLighting is explicitly true (may be overridden by ViewContainer later)
-    if (this.globe3dOptions?.enableLighting === true) {
-      this.setLighting(true);
-    } else if (this.globe3dOptions?.enableLighting === false) {
-      this.setLighting(false);
-    }
-    // If enableLighting is not specified, wait for ViewContainer shared state
+    // Time and lighting are applied via ViewContainer's applySharedToggleStates
   }
 
   /**
@@ -250,6 +232,8 @@ export class Globe3DView implements View {
    *                For BC dates, add minus sign to year (e.g., "-500-01-01T12:00:00Z")
    */
   setTime(timeISO: string): void {
+    this.timeISO = timeISO;
+    
     if (!this.viewer || !this.Cesium) {
       return;
     }
@@ -273,7 +257,7 @@ export class Globe3DView implements View {
         this.viewer.clock.shouldAnimate = false; // Fix time (no animation)
       }
     } catch (error) {
-      console.warn('Invalid time format:', timeISO, error);
+      // Invalid time format
     }
   }
 
@@ -308,7 +292,6 @@ export class Globe3DView implements View {
       
       return julianDate;
     } catch (error) {
-      console.warn('Failed to parse BC date:', dateStr, error);
       return null;
     }
   }
@@ -1629,15 +1612,8 @@ export class Globe3DView implements View {
       this.viewer.resize();
     } else if (this.cesiumLoader) {
       // Initialize Cesium on first show
-      this.initializeCesium().then(() => {
-        // If enableLighting: true was set during initialization,
-        // update ViewContainer shared state (notify after initialization)
-        if (this.globe3dOptions?.enableLighting === true && this.onLightingChange) {
-          // Notify ViewContainer of current state (reflect state set during initialization)
-          this.onLightingChange(this.isLightingEnabled());
-        }
-      }).catch((error) => {
-        console.error('Failed to initialize Cesium:', error);
+      this.initializeCesium().catch(() => {
+        // Failed to initialize Cesium
       });
     }
   }

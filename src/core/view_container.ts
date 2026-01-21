@@ -83,6 +83,11 @@ export interface View {
   setLightingEnabled?(enabled: boolean): void;
 
   /**
+   * Set time (for Map2D/Globe3D)
+   */
+  setTime?(timeISO: string): void;
+
+  /**
    * Get number of available tile servers (for Map2D/Globe3D with custom tiles)
    */
   getTileServerCount?(): number;
@@ -160,6 +165,7 @@ export class ViewContainer {
   // We use true as the shared default to match Map2D/Globe3D
   private sharedAlwaysShowEdges: boolean = false; // Default: false (all toggles off)
   private sharedLightingEnabled: boolean = false; // Default: false
+  private sharedTime: string | null = null; // Shared time for Map2D/Globe3D
   // Shared tile server index for Map2D/Globe3D custom tile servers
   private sharedTileServerIndex: number = 0;
 
@@ -1153,6 +1159,11 @@ export class ViewContainer {
       view.setLightingEnabled(this.sharedLightingEnabled);
     }
     
+    // Apply shared time
+    if (view.setTime && this.sharedTime !== null) {
+      view.setTime(this.sharedTime);
+    }
+    
     // Apply shared tile server index for custom tile servers, if supported
     if (view.getTileServerCount && view.setTileServerIndex) {
       const count = view.getTileServerCount();
@@ -1205,6 +1216,26 @@ export class ViewContainer {
    */
   getLightingEnabled(): boolean {
     return this.sharedLightingEnabled;
+  }
+
+  /**
+   * Update shared time and apply to all views
+   */
+  setTime(timeISO: string): void {
+    this.sharedTime = timeISO;
+    // Apply to all views that support time
+    for (const view of this.views.values()) {
+      if (view.setTime) {
+        view.setTime(timeISO);
+      }
+    }
+  }
+
+  /**
+   * Get shared time
+   */
+  getTime(): string | null {
+    return this.sharedTime;
   }
 
   /**

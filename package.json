@@ -29,12 +29,21 @@
     "prepack": "npm run build",
     "clean": "rimraf dist"
   },
-  "keywords": ["relatos", "visualization", "graph", "map", "globe", "atlas", "cesium", "leaflet"],
+  "keywords": [
+    "relatos",
+    "visualization",
+    "graph",
+    "map",
+    "globe",
+    "atlas",
+    "cesium",
+    "leaflet"
+  ],
   "author": "Human Histories",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/humanhistories/relatos.git"
+    "url": "git+https://github.com/humanhistories/relatos.git"
   },
   "bugs": {
     "url": "https://github.com/humanhistories/relatos/issues"

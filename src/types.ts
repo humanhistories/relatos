@@ -114,25 +114,26 @@ export interface SavePayload {
 }
 
 /**
- * ビューアーオプション
+ * Viewer options
+ * @deprecated Use types from './types/options' instead
  */
 export interface RelatosViewerOptions {
   /**
-   * 有効なViewタイプのリスト
-   * 指定されたviewのみが利用可能になる
+   * List of enabled view types
+   * Only specified views are available
    * @default ['graph']
    */
   enabledViews?: ViewType[];
 
   /**
-   * 初期Viewタイプ
-   * enabledViewsに含まれている必要がある
+   * Initial view type
+   * Must be included in enabledViews
    * @default 'graph'
    */
   initialView?: ViewType;
 
   /**
-   * 初期データ
+   * Initial data
    */
   data?: {
     nodes: Node[];
@@ -140,10 +141,20 @@ export interface RelatosViewerOptions {
   };
 
   /**
-   * 共有タイルサーバ設定
-   * Map2D / Globe3D の両方で利用される
-   * - string で指定した場合: URLのみ
-   * - { url, attribution, credit } 形式で指定した場合: Leaflet/Cesium両方のクレジット情報を指定可能
+   * Shared time information (ISO 8601 format, e.g., "2025-06-21T12:00:00Z")
+   * Used by both Map2D and Globe3D
+   */
+  time?: string;
+
+  /**
+   * Shared lighting setting
+   * Whether to enable sun position and day/night shading for Map2D and Globe3D
+   */
+  enableLighting?: boolean;
+
+  /**
+   * Shared tile server configuration
+   * Used by both Map2D and Globe3D
    */
   tileServers?: Array<
     | string
@@ -160,16 +171,16 @@ export interface RelatosViewerOptions {
   >;
 
   /**
-   * Graph固有オプション
+   * Graph-specific options
    */
   graph?: {
-    mode?: GraphMode; // @default 'view'
-    editable?: boolean; // 編集可能かどうか @default false
+    mode?: GraphMode;
+    editable?: boolean;
   };
 
   /**
-   * Leaflet/Cesiumのローダー
-   * 未指定の場合、map2d/globe3dは無効化される
+   * Leaflet/Cesium loaders
+   * map2d/globe3d are disabled if not specified
    */
   loaders?: {
     leaflet?: () => Promise<any>;
@@ -177,17 +188,15 @@ export interface RelatosViewerOptions {
   };
 
   /**
-   * Map2D固有オプション
+   * Map2D-specific options
    */
   map2d?: {
     center?: [number, number];
     zoom?: number;
-    time?: string;
-    enableLighting?: boolean;
   };
 
   /**
-   * Globe3D固有オプション
+   * Globe3D-specific options
    */
   globe3d?: {
     camera?: {
@@ -195,12 +204,10 @@ export interface RelatosViewerOptions {
       latitude: number;
       height: number;
     };
-    time?: string;
-    enableLighting?: boolean;
   };
 
   /**
-   * 表表示設定
+   * Table display configuration
    */
   tables?: {
     nodes?: {
@@ -214,7 +221,7 @@ export interface RelatosViewerOptions {
   };
 
   /**
-   * イベントハンドラ
+   * Event handlers
    */
   events?: {
     onNodeClick?: (event: NodeClickEvent) => void;
@@ -269,14 +276,12 @@ export interface RelatosViewer {
   selectNode(nodeId: string | null): void;
 
   /**
-   * Map2D関連メソッド
+   * Set shared time for Map2D and Globe3D
    */
-  setMap2dTime(timeISO: string): void;
-  setMap2dLighting(enabled: boolean): void;
+  setTime(timeISO: string): void;
 
   /**
-   * Globe3D関連メソッド
+   * Set shared lighting for Map2D and Globe3D
    */
-  setGlobe3dTime(timeISO: string): void;
-  setGlobe3dLighting(enabled: boolean): void;
+  setLighting(enabled: boolean): void;
 }
