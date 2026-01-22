@@ -532,15 +532,9 @@ export class Map2DView implements View {
       // Original is CCW (encloses night side)
       // Reverse it to get CW (encloses day side) for use as a hole
       innerRing.reverse();
-      if (this.map2dOptions?.debugNightShading) {
-        console.debug('[night-shade] Original boundary is CCW, reversed to CW for hole');
-      }
     } else {
       // Original is already CW (might already enclose day side)
       // Use it directly
-      if (this.map2dOptions?.debugNightShading) {
-        console.debug('[night-shade] Original boundary is already CW, using as-is for hole');
-      }
     }
     
     // Final verification: inner ring should be CW for holes
@@ -559,19 +553,10 @@ export class Map2DView implements View {
         // Both directions are CCW, which shouldn't happen with a proper ring
         // This might indicate an issue with the boundary calculation
         // For now, use the original order and let Leaflet handle it
-        if (this.map2dOptions?.debugNightShading) {
-          console.debug('[night-shade] Warning: Inner ring direction check inconclusive, using current order');
-        }
       } else {
         // Reversed is now CW, use it
-        if (this.map2dOptions?.debugNightShading) {
-          console.debug('[night-shade] Inner ring is CW after second reverse');
-        }
       }
     } else {
-      if (this.map2dOptions?.debugNightShading) {
-        console.debug('[night-shade] Inner ring is CW, ready for use as hole');
-      }
     }
     
     // Create polygon with outer ring + hole (inner ring)
@@ -659,15 +644,9 @@ export class Map2DView implements View {
       // Adjust longitude if jump is more than 180 degrees
       while (lng - prevLng > 180) {
         lng -= 360;
-        if (this.map2dOptions?.debugNightShading) {
-          console.debug('[night-shade] unwrap: adjusted longitude', { index: i, from: points[i].lng, to: lng, prevLng });
-        }
       }
       while (lng - prevLng < -180) {
         lng += 360;
-        if (this.map2dOptions?.debugNightShading) {
-          console.debug('[night-shade] unwrap: adjusted longitude', { index: i, from: points[i].lng, to: lng, prevLng });
-        }
       }
       
       result.push({ lat, lng });

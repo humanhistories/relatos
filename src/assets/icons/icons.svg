@@ -504,4 +504,61 @@
     />
   </symbol>
 
+  <!-- =========================================
+       Trash (delete bend point / remove)
+       - Universal: trash can with lid
+       ========================================= -->
+  <symbol id="icon-trash" viewBox="0 0 24 24">
+    <!-- Lid -->
+    <path
+      d="M4 7h16"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <!-- Handle -->
+    <path
+      d="M10 4h4"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <!-- Top cap -->
+    <path
+      d="M9 6h6"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <!-- Can body -->
+    <path
+      d="M7 7l1 14h8l1-14"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linejoin="round"
+    />
+    <!-- Inner lines -->
+    <path
+      d="M10 11v7"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+    />
+    <path
+      d="M14 11v7"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+    />
+  </symbol>
+
 </svg>

@@ -112,10 +112,6 @@ export interface View {
    */
   fitAndCenter?(): void;
 
-  /**
-   * Clear selection (Graph only)
-   */
-  clearSelection?(): void;
 
   /**
    * Delete nearest bend point (Graph only)
@@ -148,7 +144,6 @@ export class ViewContainer {
   private tileTypeButton: HTMLButtonElement | null = null;
   private moonToggleButton: HTMLButtonElement | null = null; // Moon toggle button (Map2D only)
   private fitCenterButton: HTMLButtonElement | null = null; // Fit and center button (all views)
-  private clearSelectionButton: HTMLButtonElement | null = null; // Clear selection button (Graph only)
   private deleteBendButton: HTMLButtonElement | null = null; // Delete bend point button (Graph only)
   private cancelEditButton: HTMLButtonElement | null = null; // Cancel edit button (Graph only)
   private tableContainer: HTMLElement | null = null;
@@ -571,7 +566,6 @@ export class ViewContainer {
     this.createCancelEditButton();
     this.createEditToggleButton();
     this.createAlwaysShowEdgesButton();
-    this.createClearSelectionButton();
     this.createDeleteBendButton();
     this.createLightingToggleButton();
     this.createTileTypeButton();
@@ -863,49 +857,13 @@ export class ViewContainer {
     this.commonControlsContainer.appendChild(this.fitCenterButton);
   }
 
-  /**
-   * Create clear selection button (in common controls, Graph only)
-   */
-  private createClearSelectionButton(): void {
-    this.clearSelectionButton = document.createElement('button');
-    this.clearSelectionButton.innerHTML = '✕';
-    this.clearSelectionButton.setAttribute('aria-label', 'Clear selection');
-    this.clearSelectionButton.setAttribute('title', 'Clear selection');
-    this.clearSelectionButton.style.padding = '6px';
-    this.clearSelectionButton.style.border = '1px solid #ccc';
-    this.clearSelectionButton.style.borderRadius = '4px';
-    this.clearSelectionButton.style.backgroundColor = '#fff';
-    this.clearSelectionButton.style.cursor = 'pointer';
-    this.clearSelectionButton.style.fontSize = '16px';
-    this.clearSelectionButton.style.width = '32px';
-    this.clearSelectionButton.style.height = '32px';
-    this.clearSelectionButton.style.display = 'none'; // Hidden by default
-    this.clearSelectionButton.style.alignItems = 'center';
-    this.clearSelectionButton.style.justifyContent = 'center';
-    this.clearSelectionButton.style.pointerEvents = 'auto';
-    this.clearSelectionButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.clearSelectionButton.style.transition = '0.2s';
-    
-    // Click event: only process current view
-    this.clearSelectionButton.addEventListener('click', () => {
-      if (!this.currentView) {
-        return;
-      }
-      const currentView = this.views.get(this.currentView);
-      if (currentView?.clearSelection) {
-        currentView.clearSelection();
-      }
-    });
-    
-    this.commonControlsContainer.appendChild(this.clearSelectionButton);
-  }
 
   /**
    * Create delete bend button (in common controls, Graph only)
    */
   private createDeleteBendButton(): void {
     this.deleteBendButton = document.createElement('button');
-    this.deleteBendButton.innerHTML = '🗑';
+    this.deleteBendButton.innerHTML = createSvgIcon('icon-trash', 16);
     this.deleteBendButton.setAttribute('aria-label', 'Delete bend point');
     this.deleteBendButton.setAttribute('title', 'Delete bend point');
     this.deleteBendButton.style.padding = '6px';
@@ -934,7 +892,8 @@ export class ViewContainer {
       }
     });
     
-    this.commonControlsContainer.appendChild(this.deleteBendButton);
+    // Button will be added to DOM in reorderButtons()
+    // Don't append here to avoid duplicate DOM nodes
   }
 
   /**
@@ -1072,13 +1031,7 @@ export class ViewContainer {
 
       this.tabButtons.set(viewType, button);
       this.tabContainer.appendChild(button);
-      
-      // Debug: Log button creation
-      console.log(`Created tab button for view: ${viewType}`);
     }
-
-    // Disabled views are not shown (only enabledViews are displayed)
-    console.log(`Created ${this.tabButtons.size} tab buttons for enabled views: ${this.enabledViews.join(', ')}`);
   }
 
   /**
@@ -1101,7 +1054,6 @@ export class ViewContainer {
    */
   switchView(viewType: ViewType): void {
     if (!this.enabledViews.includes(viewType)) {
-      console.warn(`View "${viewType}" is not enabled`);
       return;
     }
 
@@ -1146,8 +1098,6 @@ export class ViewContainer {
         }
       }, timeout);
       newView.resize();
-    } else {
-      console.warn(`View "${viewType}" is enabled but not registered. Make sure the view is created and registered.`);
     }
 
     // Update tab button style (unified yellow background highlight effect)
@@ -1172,7 +1122,6 @@ export class ViewContainer {
     this.updateLightingButton();
     this.updateTileTypeButton();
     this.updateCancelEditButton();
-    this.updateClearSelectionButton();
     this.updateDeleteBendButton();
   }
 
@@ -1181,7 +1130,6 @@ export class ViewContainer {
    */
   setInitialView(viewType: ViewType): void {
     if (!this.enabledViews.includes(viewType)) {
-      console.warn(`View "${viewType}" is not enabled, using first enabled view`);
       this.switchView(this.enabledViews[0]);
       return;
     }
@@ -1348,14 +1296,14 @@ export class ViewContainer {
       this.editToggleButton.style.display = 'none';
     }
     
-    // Clear selection button: visible in Graph only (shown conditionally)
-    if (this.clearSelectionButton) {
-      this.clearSelectionButton.style.display = isGraph ? 'flex' : 'none';
-    }
-    
-    // Delete bend button: visible in Graph only (shown conditionally)
+    // Delete bend button: visible in Graph only (shown conditionally based on bend points)
     if (this.deleteBendButton) {
-      this.deleteBendButton.style.display = isGraph ? 'flex' : 'none';
+      if (!isGraph) {
+        this.deleteBendButton.style.display = 'none';
+      } else {
+        // For graph view, let updateDeleteBendButton() determine visibility based on actual state
+        this.updateDeleteBendButton();
+      }
     }
     
     // Lighting toggle button: hidden in Graph, visible in Map2D/Globe3D
@@ -1389,8 +1337,8 @@ export class ViewContainer {
 
   /**
    * Reorder buttons based on current view
-   * Graph: Cancel, Edit toggle, Always show edges, Fit/Center
-   * Map2D/Globe3D: Lighting toggle, Tile type, Always show edges, Fit/Center
+   * Graph: Delete bend, Cancel, Edit toggle, Always show edges, Fit/Center
+   * Map2D/Globe3D: Moon toggle (Map2D only), Lighting toggle, Tile type, Always show edges, Fit/Center
    */
   private reorderButtons(): void {
     const isGraph = this.currentView === 'graph';
@@ -1404,7 +1352,6 @@ export class ViewContainer {
     const buttons: HTMLElement[] = [];
     if (this.cancelEditButton) buttons.push(this.cancelEditButton);
     if (this.editToggleButton) buttons.push(this.editToggleButton);
-    if (this.clearSelectionButton) buttons.push(this.clearSelectionButton);
     if (this.deleteBendButton) buttons.push(this.deleteBendButton);
     if (this.lightingToggleButton) buttons.push(this.lightingToggleButton);
     if (this.moonToggleButton) buttons.push(this.moonToggleButton);
@@ -1420,7 +1367,8 @@ export class ViewContainer {
     
     // Add buttons in correct order based on view
     if (isGraph) {
-      // Graph order: Cancel, Edit toggle, Always show edges (if edges exist), Fit/Center
+      // Graph order: Delete bend, Cancel, Edit toggle, Always show edges (if edges exist), Fit/Center
+      if (this.deleteBendButton) this.commonControlsContainer.appendChild(this.deleteBendButton);
       if (this.cancelEditButton) this.commonControlsContainer.appendChild(this.cancelEditButton);
       if (this.editToggleButton) this.commonControlsContainer.appendChild(this.editToggleButton);
       if (this.alwaysShowEdgesButton && this.hasEdges) this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton);
@@ -1578,28 +1526,6 @@ export class ViewContainer {
     this.cancelEditButton.style.display = isEditMode ? 'flex' : 'none';
   }
 
-  /**
-   * Update clear selection button visibility (Graph only, shown when edge is selected)
-   */
-  private updateClearSelectionButton(): void {
-    if (!this.clearSelectionButton) {
-      return;
-    }
-    
-    if (!this.currentView || this.currentView !== 'graph') {
-      this.clearSelectionButton.style.display = 'none';
-      return;
-    }
-    const currentView = this.views.get(this.currentView);
-    if (!currentView) {
-      this.clearSelectionButton.style.display = 'none';
-      return;
-    }
-    // Check if edge is selected
-    const graphView = currentView as any;
-    const selectedEdgeId = graphView.getSelectedEdgeId?.();
-    this.clearSelectionButton.style.display = selectedEdgeId ? 'flex' : 'none';
-  }
 
   /**
    * Update delete bend button visibility (Graph only, shown when bend points exist)
@@ -1621,10 +1547,8 @@ export class ViewContainer {
     // Check if selected edge has bend points
     const graphView = currentView as any;
     const selectedEdgeId = graphView.getSelectedEdgeId?.();
-    if (selectedEdgeId) {
-      const edges = graphView.getEdges?.() || [];
-      const selectedEdge = edges.find((e: any) => e.id === selectedEdgeId);
-      const hasBends = selectedEdge?.bends && selectedEdge.bends.length > 0;
+    if (selectedEdgeId && graphView.hasBendPoints) {
+      const hasBends = graphView.hasBendPoints(selectedEdgeId);
       this.deleteBendButton.style.display = hasBends ? 'flex' : 'none';
     } else {
       this.deleteBendButton.style.display = 'none';
@@ -1636,7 +1560,6 @@ export class ViewContainer {
    */
   updateGraphButtons(): void {
     this.updateCancelEditButton();
-    this.updateClearSelectionButton();
     this.updateDeleteBendButton();
   }
 

@@ -1211,7 +1211,6 @@ export class Globe3DView implements View {
         this.viewer.imageryLayers.remove(this.baseImageryLayer);
       } catch (e) {
         // Layer may already be removed, ignore error
-        console.debug('[Globe3D] Failed to remove baseImageryLayer:', e);
       }
     }
 
