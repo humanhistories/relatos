@@ -154,6 +154,18 @@ export class Globe3DView implements View {
       requestRenderMode: false, // Rendering mode (keep false, handle errors separately)
     });
     
+    // Enable moon display (always show)
+    // Create Moon object if it doesn't exist, or enable if it exists
+    if (this.Cesium.Moon) {
+      if (!this.viewer.scene.moon) {
+        this.viewer.scene.moon = new this.Cesium.Moon();
+      }
+      this.viewer.scene.moon.show = true;
+    } else if (this.viewer.scene.moon) {
+      // Fallback: if Moon class doesn't exist but moon property exists
+      this.viewer.scene.moon.show = true;
+    }
+    
     // Remove default imageryProvider and use OpenStreetMap tiles
     // Remove as early as possible to prevent ion-related requests
     // Note: Viewer automatically tries to load World Imagery on creation,
@@ -212,6 +224,15 @@ export class Globe3DView implements View {
     // Display existing data
     if (this.nodes.length > 0 || this.edges.length > 0) {
       this.render();
+    }
+    
+    // Notify that initialization is complete so ViewContainer can apply shared state
+    // This ensures lighting state is applied even if initialization happens asynchronously
+    if (this.onLightingChange) {
+      // Trigger a state sync by reading current state
+      // This will ensure ViewContainer applies the correct shared state
+      const currentState = this.isLightingEnabled();
+      // The ViewContainer will apply shared state via applySharedToggleStates
     }
   }
 
@@ -386,7 +407,7 @@ export class Globe3DView implements View {
   setLightingEnabled(enabled: boolean, notifyContainer: boolean = true): void {
     const oldValue = this.isLightingEnabled();
     this.setLighting(enabled);
-    // Notify ViewContainer (don't notify during initialization)
+    // Notify ViewContainer only if state actually changed and notifyContainer is true
     if (notifyContainer && this.onLightingChange && this.isLightingEnabled() !== oldValue) {
       this.onLightingChange(this.isLightingEnabled());
     }
@@ -1143,151 +1164,7 @@ export class Globe3DView implements View {
     }
   }
 
-  /**
-   * Create fit button and lighting toggle button
-   */
-  private createControlButtons(): void {
-    if (!this.container) {
-      return;
-    }
-
-    // Create (or reuse) button container
-    let buttonContainer = this.container.querySelector('.relatos-globe3d-controls') as HTMLElement;
-    if (!buttonContainer) {
-      buttonContainer = document.createElement('div');
-      buttonContainer.className = 'relatos-globe3d-controls';
-      buttonContainer.style.position = 'absolute';
-      buttonContainer.style.top = '8px';
-      buttonContainer.style.right = '8px';
-      buttonContainer.style.display = 'flex';
-      buttonContainer.style.gap = '4px';
-      buttonContainer.style.zIndex = '1000';
-      buttonContainer.style.pointerEvents = 'none';
-      this.container.appendChild(buttonContainer);
-    }
-
-    // Create toggle button for showing/hiding edges
-    this.alwaysShowEdgesButton = document.createElement('button');
-    this.alwaysShowEdgesButton.innerHTML = createSvgIcon('icon-relations', 16);
-    this.alwaysShowEdgesButton.setAttribute('aria-label', 'Toggle edges');
-    this.alwaysShowEdgesButton.setAttribute('title', 'Toggle edges');
-    this.alwaysShowEdgesButton.style.padding = '6px';
-    this.alwaysShowEdgesButton.style.border = '1px solid #ccc';
-    this.alwaysShowEdgesButton.style.borderRadius = '4px';
-    this.alwaysShowEdgesButton.style.backgroundColor = '#fff';
-    this.alwaysShowEdgesButton.style.cursor = 'pointer';
-    this.alwaysShowEdgesButton.style.fontSize = '16px';
-    this.alwaysShowEdgesButton.style.width = '32px';
-    this.alwaysShowEdgesButton.style.height = '32px';
-    this.alwaysShowEdgesButton.style.display = 'flex';
-    this.alwaysShowEdgesButton.style.alignItems = 'center';
-    this.alwaysShowEdgesButton.style.justifyContent = 'center';
-    this.alwaysShowEdgesButton.style.pointerEvents = 'auto';
-    this.alwaysShowEdgesButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.alwaysShowEdgesButton.style.transition = '0.2s';
-    this.alwaysShowEdgesButton.style.color = '#000000';
-
-    // Click handler: toggle edges (no fit)
-    this.alwaysShowEdgesButton.addEventListener('click', () => {
-      this.alwaysShowEdges = !this.alwaysShowEdges;
-      this.updateAlwaysShowEdgesButton();
-      // Notify ViewContainer of state change
-      if (this.onAlwaysShowEdgesChange) {
-        this.onAlwaysShowEdgesChange(this.alwaysShowEdges);
-      }
-      // Re-render to apply edge visibility (without calling fitToNodes)
-      this.renderWithoutFit();
-    });
-
-    // Create lighting toggle button
-    this.lightingToggleButton = document.createElement('button');
-    this.lightingToggleButton.innerHTML = createSvgIcon('icon-sun', 16);
-    this.lightingToggleButton.setAttribute('aria-label', 'Toggle lighting');
-    this.lightingToggleButton.setAttribute('title', 'Toggle lighting');
-    this.lightingToggleButton.style.padding = '6px';
-    this.lightingToggleButton.style.border = '1px solid #ccc';
-    this.lightingToggleButton.style.borderRadius = '4px';
-    this.lightingToggleButton.style.backgroundColor = '#fff';
-    this.lightingToggleButton.style.cursor = 'pointer';
-    this.lightingToggleButton.style.fontSize = '16px';
-    this.lightingToggleButton.style.width = '32px';
-    this.lightingToggleButton.style.height = '32px';
-    this.lightingToggleButton.style.display = 'flex';
-    this.lightingToggleButton.style.alignItems = 'center';
-    this.lightingToggleButton.style.justifyContent = 'center';
-    this.lightingToggleButton.style.pointerEvents = 'auto';
-    this.lightingToggleButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.lightingToggleButton.style.transition = '0.2s';
-
-    // Click handler: toggle lighting
-    this.lightingToggleButton.addEventListener('click', () => {
-      const currentEnabled = this.isLightingEnabled();
-      this.setLighting(!currentEnabled);
-      // Notify ViewContainer of state change
-      if (this.onLightingChange) {
-        this.onLightingChange(!currentEnabled);
-      }
-    });
-
-    // Create fit button
-    this.fitCenterButton = document.createElement('button');
-    this.fitCenterButton.innerHTML = createSvgIcon('icon-home', 16);
-    this.fitCenterButton.setAttribute('aria-label', 'Fit and center');
-    this.fitCenterButton.setAttribute('title', 'Fit and center');
-    this.fitCenterButton.style.padding = '6px';
-    this.fitCenterButton.style.border = '1px solid #ccc';
-    this.fitCenterButton.style.borderRadius = '4px';
-    this.fitCenterButton.style.backgroundColor = '#fff';
-    this.fitCenterButton.style.cursor = 'pointer';
-    this.fitCenterButton.style.fontSize = '16px';
-    this.fitCenterButton.style.width = '32px';
-    this.fitCenterButton.style.height = '32px';
-    this.fitCenterButton.style.display = 'flex';
-    this.fitCenterButton.style.alignItems = 'center';
-    this.fitCenterButton.style.justifyContent = 'center';
-    this.fitCenterButton.style.pointerEvents = 'auto';
-    this.fitCenterButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.fitCenterButton.style.transition = '0.2s';
-
-    // Click handler: fit all nodes into view
-    this.fitCenterButton.addEventListener('click', () => {
-      this.fitToNodes();
-    });
-
-    // Create tile-server switch button (cycles through provided custom tile servers)
-    this.tileTypeButton = document.createElement('button');
-    this.tileTypeButton.innerHTML = '🗺️';
-    this.tileTypeButton.setAttribute('aria-label', 'Switch tile type');
-    this.tileTypeButton.style.padding = '6px';
-    this.tileTypeButton.style.border = '1px solid #ccc';
-    this.tileTypeButton.style.borderRadius = '4px';
-    this.tileTypeButton.style.backgroundColor = '#fff';
-    this.tileTypeButton.style.cursor = 'pointer';
-    this.tileTypeButton.style.fontSize = '16px';
-    this.tileTypeButton.style.width = '32px';
-    this.tileTypeButton.style.height = '32px';
-    this.tileTypeButton.style.display = 'flex';
-    this.tileTypeButton.style.alignItems = 'center';
-    this.tileTypeButton.style.justifyContent = 'center';
-    this.tileTypeButton.style.pointerEvents = 'auto';
-    this.tileTypeButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.tileTypeButton.style.transition = '0.2s';
-
-    this.tileTypeButton.addEventListener('click', () => {
-      this.switchTileType();
-    });
-
-    // Add buttons left-to-right: edges toggle, lighting toggle, tile switch, fit
-    buttonContainer.appendChild(this.alwaysShowEdgesButton);
-    buttonContainer.appendChild(this.lightingToggleButton);
-    buttonContainer.appendChild(this.tileTypeButton);
-    buttonContainer.appendChild(this.fitCenterButton);
-
-    // Initialize button appearance
-    this.updateAlwaysShowEdgesButton();
-    this.updateLightingButton();
-    this.updateTileTypeButton();
-  }
+  // Control buttons are now managed by ViewContainer - no need to create individual buttons
 
   /**
    * Switch to next tile server when multiple customTileUrls are provided

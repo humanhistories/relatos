@@ -146,6 +146,7 @@ export class ViewContainer {
   private alwaysShowEdgesButton: HTMLButtonElement | null = null;
   private lightingToggleButton: HTMLButtonElement | null = null;
   private tileTypeButton: HTMLButtonElement | null = null;
+  private moonToggleButton: HTMLButtonElement | null = null; // Moon toggle button (Map2D only)
   private fitCenterButton: HTMLButtonElement | null = null; // Fit and center button (all views)
   private clearSelectionButton: HTMLButtonElement | null = null; // Clear selection button (Graph only)
   private deleteBendButton: HTMLButtonElement | null = null; // Delete bend point button (Graph only)
@@ -574,6 +575,7 @@ export class ViewContainer {
     this.createDeleteBendButton();
     this.createLightingToggleButton();
     this.createTileTypeButton();
+    this.createMoonToggleButton();
     this.createFitCenterButton();
     
     this.tabContainer.appendChild(this.commonControlsContainer);
@@ -751,6 +753,77 @@ export class ViewContainer {
     this.commonControlsContainer.appendChild(this.tileTypeButton);
     // Initial state will be updated later when views are registered
     // this.updateTileTypeButton();
+  }
+
+  /**
+   * Create moon toggle button (in common controls, Map2D only)
+   */
+  private createMoonToggleButton(): void {
+    this.moonToggleButton = document.createElement('button');
+    this.moonToggleButton.setAttribute('aria-label', 'Toggle moon');
+    this.moonToggleButton.setAttribute('title', 'Toggle moon');
+    this.moonToggleButton.style.padding = '6px';
+    this.moonToggleButton.style.border = '1px solid #ccc';
+    this.moonToggleButton.style.borderRadius = '4px';
+    this.moonToggleButton.style.backgroundColor = '#fff';
+    this.moonToggleButton.style.cursor = 'pointer';
+    this.moonToggleButton.style.fontSize = '16px';
+    this.moonToggleButton.style.width = '32px';
+    this.moonToggleButton.style.height = '32px';
+    this.moonToggleButton.style.display = 'none'; // Hidden by default (Map2D only)
+    this.moonToggleButton.style.alignItems = 'center';
+    this.moonToggleButton.style.justifyContent = 'center';
+    this.moonToggleButton.style.pointerEvents = 'auto';
+    this.moonToggleButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+    this.moonToggleButton.style.transition = '0.2s';
+    
+    // Click event: toggle moon display in Map2D view
+    this.moonToggleButton.addEventListener('click', () => {
+      if (this.currentView === 'map2d') {
+        const map2dView = this.views.get('map2d');
+        if (map2dView && (map2dView as any).toggleMoon) {
+          (map2dView as any).toggleMoon();
+          this.updateMoonButton();
+        }
+      }
+    });
+    
+    this.commonControlsContainer.appendChild(this.moonToggleButton);
+  }
+
+  /**
+   * Update moon button appearance
+   */
+  private updateMoonButton(): void {
+    if (!this.moonToggleButton || this.currentView !== 'map2d') {
+      return;
+    }
+    
+    const map2dView = this.views.get('map2d');
+    if (!map2dView) {
+      return;
+    }
+    
+    // Get moon state and phase from Map2DView
+    const moonEnabled = (map2dView as any).isMoonEnabled?.() || false;
+    const timeISO = (map2dView as any).getTime?.() || null;
+    const date = timeISO ? new Date(timeISO) : new Date();
+    const phase = (map2dView as any).getMoonPhase?.(date) || 0;
+    const iconHtml = (map2dView as any).getMoonPhaseIcon?.(phase, 16) || '🌑';
+    
+    this.moonToggleButton.innerHTML = iconHtml;
+    
+    if (moonEnabled) {
+      this.moonToggleButton.style.backgroundColor = '#fff9c4';
+      this.moonToggleButton.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.2)';
+      this.moonToggleButton.style.transform = 'translateY(1px)';
+      this.moonToggleButton.setAttribute('title', 'Hide moon');
+    } else {
+      this.moonToggleButton.style.backgroundColor = '#fff';
+      this.moonToggleButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+      this.moonToggleButton.style.transform = 'translateY(0)';
+      this.moonToggleButton.setAttribute('title', 'Show moon');
+    }
   }
 
   /**
@@ -1061,14 +1134,17 @@ export class ViewContainer {
       newView.show();
       // After show(), wait a bit for async initialization (Globe3D/Map2D), then apply state again
       // This ensures that shared state is applied even if initialization happens asynchronously
+      // Use longer timeout for Globe3D as it may take more time to initialize
+      const timeout = viewType === 'globe3d' ? 500 : 100;
       setTimeout(() => {
         if (this.currentView === viewType) {
           this.applySharedToggleStates(newView);
           // Update button appearance after state is applied
           this.updateLightingButton();
           this.updateTileTypeButton();
+          this.updateMoonButton();
         }
-      }, 100);
+      }, timeout);
       newView.resize();
     } else {
       console.warn(`View "${viewType}" is enabled but not registered. Make sure the view is created and registered.`);
@@ -1155,8 +1231,15 @@ export class ViewContainer {
     }
     
     // Apply lighting state
+    // Use notifyContainer=false to prevent circular updates when applying shared state
     if (view.setLightingEnabled) {
-      view.setLightingEnabled(this.sharedLightingEnabled);
+      // Type assertion to allow optional notifyContainer parameter
+      // Use .call() to preserve 'this' context
+      const setLighting = view.setLightingEnabled as ((enabled: boolean, notifyContainer?: boolean) => void) | undefined;
+      if (setLighting) {
+        // Call with 'this' context preserved by binding to the view object
+        setLighting.call(view, this.sharedLightingEnabled, false);
+      }
     }
     
     // Apply shared time
@@ -1281,6 +1364,11 @@ export class ViewContainer {
       this.tileTypeButton.style.display = isMap2DOrGlobe3D ? 'flex' : 'none';
     }
     
+    // Moon toggle button: visible in Map2D only
+    if (this.moonToggleButton) {
+      this.moonToggleButton.style.display = this.currentView === 'map2d' ? 'flex' : 'none';
+    }
+    
     // Always show edges button: visible only when edges exist
     if (this.alwaysShowEdgesButton) {
       this.alwaysShowEdgesButton.style.display = this.hasEdges ? 'flex' : 'none';
@@ -1315,6 +1403,7 @@ export class ViewContainer {
     if (this.clearSelectionButton) buttons.push(this.clearSelectionButton);
     if (this.deleteBendButton) buttons.push(this.deleteBendButton);
     if (this.lightingToggleButton) buttons.push(this.lightingToggleButton);
+    if (this.moonToggleButton) buttons.push(this.moonToggleButton);
     if (this.tileTypeButton) buttons.push(this.tileTypeButton);
     // Only include always show edges button if edges exist
     if (this.alwaysShowEdgesButton && this.hasEdges) buttons.push(this.alwaysShowEdgesButton);
@@ -1333,7 +1422,8 @@ export class ViewContainer {
       if (this.alwaysShowEdgesButton && this.hasEdges) this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton);
       if (this.fitCenterButton) this.commonControlsContainer.appendChild(this.fitCenterButton);
     } else if (isMap2DOrGlobe3D) {
-      // Map2D/Globe3D order: Lighting toggle, Tile type, Always show edges (if edges exist), Fit/Center
+      // Map2D/Globe3D order: Moon toggle (Map2D only), Lighting toggle, Tile type, Always show edges (if edges exist), Fit/Center
+      if (this.moonToggleButton && this.currentView === 'map2d') this.commonControlsContainer.appendChild(this.moonToggleButton);
       if (this.lightingToggleButton) this.commonControlsContainer.appendChild(this.lightingToggleButton);
       if (this.tileTypeButton) this.commonControlsContainer.appendChild(this.tileTypeButton);
       if (this.alwaysShowEdgesButton && this.hasEdges) this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton);

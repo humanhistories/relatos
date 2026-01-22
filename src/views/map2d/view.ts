@@ -64,6 +64,9 @@ export class Map2DView implements View {
   private nightShadeDebugLayer: LeafletPolyline | null = null; // Debug polyline for terminator boundary
   private lightingEnabled: boolean = false; // Lighting mode flag
   private timeISO: string | null = null; // Shared time for sun shading calculation
+  private moonToggleButton: HTMLButtonElement | null = null; // Moon toggle button
+  private moonEnabled: boolean = false; // Moon display flag
+  private moonMarker: LeafletMarker | null = null; // Moon marker on map
   private map2dOptions?: {
     center?: [number, number];
     zoom?: number;
@@ -179,10 +182,18 @@ export class Map2DView implements View {
       this.updateNightShade();
     }
 
+    // Update moon marker if enabled
+    if (this.moonEnabled) {
+      this.updateMoonMarker();
+    }
+
     // Control buttons are now managed by ViewContainer - skip creating individual buttons
 
     // Set node click event
     this.setupClickHandler();
+    
+    // Moon marker position is calculated from time only, not from map position
+    // No need to update on map move/zoom
 
     // Display existing data
     if (this.nodes.length > 0 || this.edges.length > 0) {
@@ -273,6 +284,12 @@ export class Map2DView implements View {
     // Update if lighting is enabled
     if (this.lightingEnabled) {
       this.updateNightShade();
+    }
+    
+    // Update moon marker and button if moon is enabled
+    if (this.moonEnabled) {
+      this.updateMoonMarker();
+      this.updateMoonButton();
     }
   }
 
@@ -1431,151 +1448,7 @@ export class Map2DView implements View {
     }
   }
 
-  /**
-   * フィットボタンと昼夜陰影ON/OFFボタンを作成
-   */
-  private createControlButtons(): void {
-    if (!this.container) {
-      return;
-    }
-
-    // Create button container (reuse existing one if available)
-    let buttonContainer = this.container.querySelector('.relatos-map2d-controls') as HTMLElement;
-    if (!buttonContainer) {
-      buttonContainer = document.createElement('div');
-      buttonContainer.className = 'relatos-map2d-controls';
-      buttonContainer.style.position = 'absolute';
-      buttonContainer.style.top = '8px';
-      buttonContainer.style.right = '8px';
-      buttonContainer.style.display = 'flex';
-      buttonContainer.style.gap = '4px';
-      buttonContainer.style.zIndex = '1000';
-      buttonContainer.style.pointerEvents = 'none';
-      this.container.appendChild(buttonContainer);
-    }
-
-    // Create edge visibility toggle button
-    this.alwaysShowEdgesButton = document.createElement('button');
-    this.alwaysShowEdgesButton.innerHTML = createSvgIcon('icon-relations', 16);
-    this.alwaysShowEdgesButton.setAttribute('aria-label', 'Toggle edges');
-    this.alwaysShowEdgesButton.setAttribute('title', 'Toggle edges');
-    this.alwaysShowEdgesButton.style.padding = '6px';
-    this.alwaysShowEdgesButton.style.border = '1px solid #ccc';
-    this.alwaysShowEdgesButton.style.borderRadius = '4px';
-    this.alwaysShowEdgesButton.style.backgroundColor = '#fff';
-    this.alwaysShowEdgesButton.style.cursor = 'pointer';
-    this.alwaysShowEdgesButton.style.fontSize = '16px';
-    this.alwaysShowEdgesButton.style.width = '32px';
-    this.alwaysShowEdgesButton.style.height = '32px';
-    this.alwaysShowEdgesButton.style.display = 'flex';
-    this.alwaysShowEdgesButton.style.alignItems = 'center';
-    this.alwaysShowEdgesButton.style.justifyContent = 'center';
-    this.alwaysShowEdgesButton.style.pointerEvents = 'auto';
-    this.alwaysShowEdgesButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.alwaysShowEdgesButton.style.transition = '0.2s';
-    this.alwaysShowEdgesButton.style.color = '#000000';
-
-    // クリックイベントを設定
-    this.alwaysShowEdgesButton.addEventListener('click', () => {
-      this.alwaysShowEdges = !this.alwaysShowEdges;
-      this.updateAlwaysShowEdgesButton();
-      // Notify ViewContainer of state change
-      if (this.onAlwaysShowEdgesChange) {
-        this.onAlwaysShowEdgesChange(this.alwaysShowEdges);
-      }
-      // Re-render to reflect edge visibility changes (without calling fitToNodes)
-      this.renderWithoutFit();
-    });
-
-    // Create lighting toggle button
-    this.lightingToggleButton = document.createElement('button');
-    this.lightingToggleButton.innerHTML = createSvgIcon('icon-sun', 16);
-    this.lightingToggleButton.setAttribute('aria-label', 'Toggle lighting');
-    this.lightingToggleButton.setAttribute('title', 'Toggle lighting');
-    this.lightingToggleButton.style.padding = '6px';
-    this.lightingToggleButton.style.border = '1px solid #ccc';
-    this.lightingToggleButton.style.borderRadius = '4px';
-    this.lightingToggleButton.style.backgroundColor = '#fff';
-    this.lightingToggleButton.style.cursor = 'pointer';
-    this.lightingToggleButton.style.fontSize = '16px';
-    this.lightingToggleButton.style.width = '32px';
-    this.lightingToggleButton.style.height = '32px';
-    this.lightingToggleButton.style.display = 'flex';
-    this.lightingToggleButton.style.alignItems = 'center';
-    this.lightingToggleButton.style.justifyContent = 'center';
-    this.lightingToggleButton.style.pointerEvents = 'auto';
-    this.lightingToggleButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.lightingToggleButton.style.transition = '0.2s';
-
-    // クリックイベントを設定
-    this.lightingToggleButton.addEventListener('click', () => {
-      const currentEnabled = this.isLightingEnabled();
-      this.setLighting(!currentEnabled);
-      // Notify ViewContainer of state change
-      if (this.onLightingChange) {
-        this.onLightingChange(!currentEnabled);
-      }
-    });
-
-    // Create fit button
-    this.fitCenterButton = document.createElement('button');
-    this.fitCenterButton.innerHTML = createSvgIcon('icon-home', 16);
-    this.fitCenterButton.setAttribute('aria-label', 'Fit and center');
-    this.fitCenterButton.setAttribute('title', 'Fit and center');
-    this.fitCenterButton.style.padding = '6px';
-    this.fitCenterButton.style.border = '1px solid #ccc';
-    this.fitCenterButton.style.borderRadius = '4px';
-    this.fitCenterButton.style.backgroundColor = '#fff';
-    this.fitCenterButton.style.cursor = 'pointer';
-    this.fitCenterButton.style.fontSize = '16px';
-    this.fitCenterButton.style.width = '32px';
-    this.fitCenterButton.style.height = '32px';
-    this.fitCenterButton.style.display = 'flex';
-    this.fitCenterButton.style.alignItems = 'center';
-    this.fitCenterButton.style.justifyContent = 'center';
-    this.fitCenterButton.style.pointerEvents = 'auto';
-    this.fitCenterButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.fitCenterButton.style.transition = '0.2s';
-
-    // クリックイベントを設定
-    this.fitCenterButton.addEventListener('click', () => {
-      this.fitToNodes();
-    });
-
-    // Create tile type switch button
-    this.tileTypeButton = document.createElement('button');
-    this.tileTypeButton.innerHTML = '🗺️';
-    this.tileTypeButton.setAttribute('aria-label', 'Switch tile type');
-    this.tileTypeButton.style.padding = '6px';
-    this.tileTypeButton.style.border = '1px solid #ccc';
-    this.tileTypeButton.style.borderRadius = '4px';
-    this.tileTypeButton.style.backgroundColor = '#fff';
-    this.tileTypeButton.style.cursor = 'pointer';
-    this.tileTypeButton.style.fontSize = '16px';
-    this.tileTypeButton.style.width = '32px';
-    this.tileTypeButton.style.height = '32px';
-    this.tileTypeButton.style.display = 'flex';
-    this.tileTypeButton.style.alignItems = 'center';
-    this.tileTypeButton.style.justifyContent = 'center';
-    this.tileTypeButton.style.pointerEvents = 'auto';
-    this.tileTypeButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    this.tileTypeButton.style.transition = '0.2s';
-
-    this.tileTypeButton.addEventListener('click', () => {
-      this.switchTileType();
-    });
-
-    // Add buttons (from left: edge visibility toggle, lighting toggle, tile type, fit)
-    buttonContainer.appendChild(this.alwaysShowEdgesButton);
-    buttonContainer.appendChild(this.lightingToggleButton);
-    buttonContainer.appendChild(this.tileTypeButton);
-    buttonContainer.appendChild(this.fitCenterButton);
-
-    // Update button appearance for initial state
-    this.updateAlwaysShowEdgesButton();
-    this.updateLightingButton();
-    this.updateTileTypeButton();
-  }
+  // Control buttons are now managed by ViewContainer - no need to create individual buttons
 
   /**
    * Switch between customTileUrls in order
@@ -1652,7 +1525,306 @@ export class Map2DView implements View {
   }
 
   /**
-   * 昼夜陰影ボタンの表示を更新
+   * Get moon phase (0-7)
+   * 0: New moon, 4: Full moon
+   */
+  /**
+   * Calculate moon phase (0 to 1, where 0 = new moon, 0.5 = full moon)
+   * Based on SunCalc's getMoonIllumination function
+   */
+  private getMoonIllumination(date: Date): { fraction: number; phase: number; angle: number } {
+    const julianDay = this.julian(date);
+    const d = julianDay - 2451545.0; // Days since J2000.0
+    
+    // Calculate sun coordinates (RA, DEC)
+    const M_sun = (357.5291 + 0.98560028 * d) * Math.PI / 180; // Solar mean anomaly
+    const C = (1.9148 * Math.sin(M_sun) + 0.02 * Math.sin(2 * M_sun) + 0.0003 * Math.sin(3 * M_sun)) * Math.PI / 180;
+    const P = (102.9372 * Math.PI / 180); // Perihelion of the Earth
+    const L_sun = M_sun + C + P + Math.PI; // Ecliptic longitude
+    const e = (23.4397 * Math.PI / 180); // Obliquity of the Earth
+    const sunRa = Math.atan2(
+      Math.sin(L_sun) * Math.cos(e) - Math.tan(0) * Math.sin(e),
+      Math.cos(L_sun)
+    );
+    const sunDec = Math.asin(
+      Math.sin(0) * Math.cos(e) + Math.cos(0) * Math.sin(e) * Math.sin(L_sun)
+    );
+    
+    // Calculate moon coordinates (RA, DEC, distance)
+    const L_moon = (218.316 + 13.176396 * d) * Math.PI / 180; // Ecliptic longitude
+    const M_moon = (134.963 + 13.064993 * d) * Math.PI / 180; // Mean anomaly
+    const F_moon = (93.272 + 13.229350 * d) * Math.PI / 180;  // Mean distance
+    const l_moon = L_moon + (6.289 * Math.sin(M_moon)) * Math.PI / 180; // Longitude
+    const b_moon = (5.128 * Math.sin(F_moon)) * Math.PI / 180; // Latitude
+    const moonRa = Math.atan2(
+      Math.sin(l_moon) * Math.cos(e) - Math.tan(b_moon) * Math.sin(e),
+      Math.cos(l_moon)
+    );
+    const moonDec = Math.asin(
+      Math.sin(b_moon) * Math.cos(e) + Math.cos(b_moon) * Math.sin(e) * Math.sin(l_moon)
+    );
+    const moonDist = 385001 - 20905 * Math.cos(M_moon); // Distance to the moon in km
+    
+    // Calculate angle between sun and moon
+    const sdist = 149598000; // Distance from Earth to Sun in km
+    const phi = Math.acos(
+      Math.sin(sunDec) * Math.sin(moonDec) +
+      Math.cos(sunDec) * Math.cos(moonDec) * Math.cos(sunRa - moonRa)
+    );
+    const inc = Math.atan2(
+      sdist * Math.sin(phi),
+      moonDist - sdist * Math.cos(phi)
+    );
+    const angle = Math.atan2(
+      Math.cos(sunDec) * Math.sin(sunRa - moonRa),
+      Math.sin(sunDec) * Math.cos(moonDec) -
+      Math.cos(sunDec) * Math.sin(moonDec) * Math.cos(sunRa - moonRa)
+    );
+    
+    return {
+      fraction: (1 + Math.cos(inc)) / 2,
+      phase: 0.5 + 0.5 * inc * (angle < 0 ? -1 : 1) / Math.PI,
+      angle: angle
+    };
+  }
+
+  getMoonPhase(date: Date): number {
+    const illumination = this.getMoonIllumination(date);
+    const phase = illumination.phase; // 0 to 1
+    // Convert to 8 stages (0-7)
+    return Math.floor(phase * 8) % 8;
+  }
+
+  /**
+   * Get moon phase emoji or SVG
+   */
+  getMoonPhaseIcon(phase: number, size: number = 16): string {
+    const moonPhases = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+    const emoji = moonPhases[phase] || '🌑';
+    
+    // Return as text (emoji) or create SVG if needed
+    return `<span style="font-size: ${size}px; line-height: 1;">${emoji}</span>`;
+  }
+
+  /**
+   * Calculate moon sub-lunar point (latitude and longitude where moon is directly overhead)
+   * Returns latitude and longitude of the point on Earth directly below the moon
+   * 
+   * Calculation method:
+   * 1. Calculate moon's right ascension (RA) and declination (DEC) from date
+   * 2. Calculate Greenwich Mean Sidereal Time (GMST)
+   * 3. Sub-lunar point:
+   *    - Latitude = DEC (moon's declination)
+   *    - Longitude = RA - GMST (moon's right ascension minus Greenwich sidereal time)
+   * 
+   * This method is based on SunCalc's internal moonCoords function.
+   */
+  private calculateMoonPosition(date: Date, unusedLat: number, unusedLon: number): [number, number] | null {
+    try {
+      // Calculate Julian Day
+      const julianDay = this.julian(date);
+      const d = julianDay - 2451545.0; // Days since J2000.0
+      
+      // Calculate moon's ecliptic coordinates (based on SunCalc's moonCoords)
+      const L = (218.316 + 13.176396 * d) * Math.PI / 180; // Ecliptic longitude
+      const M = (134.963 + 13.064993 * d) * Math.PI / 180; // Mean anomaly
+      const F = (93.272 + 13.229350 * d) * Math.PI / 180;  // Mean distance
+      
+      const l = L + (6.289 * Math.sin(M)) * Math.PI / 180; // Longitude
+      const b = (5.128 * Math.sin(F)) * Math.PI / 180;     // Latitude
+      
+      // Convert ecliptic coordinates to equatorial coordinates (RA, DEC)
+      // Based on SunCalc's rightAscension and declination functions
+      const e = (23.4397 * Math.PI / 180); // Obliquity of the Earth
+      const ra = Math.atan2(
+        Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e),
+        Math.cos(l)
+      ); // Right ascension
+      const dec = Math.asin(
+        Math.sin(b) * Math.cos(e) + Math.cos(b) * Math.sin(e) * Math.sin(l)
+      ); // Declination
+      
+      // Calculate Greenwich Mean Sidereal Time (in hours)
+      const gstHours = this.GMST(julianDay);
+      
+      // Convert GST from hours to radians (1 hour = 15 degrees = π/12 radians)
+      const gstRadians = gstHours * Math.PI / 12;
+      
+      // Sub-lunar point calculation:
+      // Latitude = DEC (moon's declination)
+      // Longitude = RA - GMST (moon's right ascension minus Greenwich sidereal time)
+      const lat = dec;
+      let lon = ra - gstRadians;
+      
+      // Normalize longitude to -π to π
+      lon = ((lon + Math.PI) % (2 * Math.PI)) - Math.PI;
+      
+      // Convert to degrees
+      const latDegrees = lat * 180 / Math.PI;
+      const lonDegrees = lon * 180 / Math.PI;
+      
+      return [latDegrees, lonDegrees];
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Update moon marker on map
+   */
+  private updateMoonMarker(): void {
+    if (!this.map || !this.Leaflet) {
+      return;
+    }
+    
+    // Remove existing moon marker if disabled or if we need to update it
+    if (this.moonMarker) {
+      this.map.removeLayer(this.moonMarker);
+      this.moonMarker = null;
+    }
+    
+    // If moon is disabled, we're done (marker already removed above)
+    if (!this.moonEnabled) {
+      return;
+    }
+    
+    if (!this.timeISO) {
+      return;
+    }
+    
+    // Calculate moon sub-lunar point (where moon is directly overhead)
+    // The sub-lunar point is independent of observation point
+    // We calculate it from time only, then Leaflet will display it at the correct position
+    const date = new Date(this.timeISO);
+    let moonPos = this.calculateMoonPosition(date, 0, 0);
+    
+    if (!moonPos) {
+      return;
+    }
+    
+    // Adjust moon longitude to match the map's display range
+    // Leaflet maps can wrap, so we need to ensure the moon position
+    // is in the same longitude range as the visible nodes
+    const mapCenter = this.map.getCenter();
+    const centerLng = mapCenter.lng;
+    
+    // Get the longitude range of visible nodes to determine the correct wrapping
+    let minNodeLng = Infinity;
+    let maxNodeLng = -Infinity;
+    let hasNodes = false;
+    
+    for (const [nodeId, marker] of this.markers.entries()) {
+      const latlng = marker.getLatLng();
+      const lng = latlng.lng;
+      minNodeLng = Math.min(minNodeLng, lng);
+      maxNodeLng = Math.max(maxNodeLng, lng);
+      hasNodes = true;
+    }
+    
+    // If we have nodes, adjust moon longitude to be in the same range
+    if (hasNodes) {
+      const moonLng = moonPos[1];
+      
+      // Calculate the distance from moon to center in both directions
+      const distNormal = Math.abs(moonLng - centerLng);
+      const distWrapped = Math.abs((moonLng + 360) - centerLng);
+      const distWrappedNeg = Math.abs((moonLng - 360) - centerLng);
+      
+      // Choose the closest position to the map center
+      if (distWrapped < distNormal && distWrapped < distWrappedNeg) {
+        moonPos[1] = moonLng + 360;
+      } else if (distWrappedNeg < distNormal && distWrappedNeg < distWrapped) {
+        moonPos[1] = moonLng - 360;
+      }
+      
+      // If nodes span across the -180/180 boundary, ensure moon is in the same range
+      if (maxNodeLng - minNodeLng > 180) {
+        // Nodes are wrapped, check if moon should be wrapped too
+        if (moonPos[1] < 0 && centerLng > 0) {
+          moonPos[1] = moonPos[1] + 360;
+        } else if (moonPos[1] > 0 && centerLng < 0) {
+          moonPos[1] = moonPos[1] - 360;
+        }
+      }
+    }
+    
+    const phase = this.getMoonPhase(date);
+    const iconHtml = this.getMoonPhaseIcon(phase, 24);
+    
+    const icon = this.Leaflet.divIcon({
+      html: iconHtml,
+      className: 'relatos-moon-marker',
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+    });
+    
+    this.moonMarker = this.Leaflet.marker([moonPos[0], moonPos[1]], { icon });
+    this.moonMarker.addTo(this.map);
+  }
+
+  /**
+   * Create moon toggle button
+   */
+  private createMoonToggleButton(): void {
+    this.moonToggleButton = document.createElement('button');
+    this.moonToggleButton.setAttribute('aria-label', 'Toggle moon');
+    this.moonToggleButton.setAttribute('title', 'Toggle moon');
+    this.moonToggleButton.style.padding = '6px';
+    this.moonToggleButton.style.border = '1px solid #ccc';
+    this.moonToggleButton.style.borderRadius = '4px';
+    this.moonToggleButton.style.backgroundColor = '#fff';
+    this.moonToggleButton.style.cursor = 'pointer';
+    this.moonToggleButton.style.fontSize = '16px';
+    this.moonToggleButton.style.width = '32px';
+    this.moonToggleButton.style.height = '32px';
+    this.moonToggleButton.style.display = 'flex';
+    this.moonToggleButton.style.alignItems = 'center';
+    this.moonToggleButton.style.justifyContent = 'center';
+    this.moonToggleButton.style.pointerEvents = 'auto';
+    this.moonToggleButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+    this.moonToggleButton.style.transition = '0.2s';
+    
+    // Click event
+    this.moonToggleButton.addEventListener('click', () => {
+      this.moonEnabled = !this.moonEnabled;
+      this.updateMoonButton();
+      this.updateMoonMarker();
+    });
+  }
+
+  /**
+   * Get moon enabled state (for ViewContainer)
+   */
+  isMoonEnabled(): boolean {
+    return this.moonEnabled;
+  }
+
+  /**
+   * Toggle moon display (for ViewContainer)
+   */
+  toggleMoon(): void {
+    this.moonEnabled = !this.moonEnabled;
+    this.updateMoonMarker();
+  }
+
+  /**
+   * Get time ISO string (for ViewContainer)
+   */
+  getTime(): string | null {
+    return this.timeISO;
+  }
+
+  /**
+   * Update moon button appearance (for ViewContainer)
+   * This method is kept for internal use but ViewContainer will call getMoonPhase/getMoonPhaseIcon directly
+   */
+  private updateMoonButton(): void {
+    // This method is no longer used as ViewContainer manages the button
+    // Kept for backward compatibility
+  }
+
+  /**
+   * Update lighting button appearance
    */
   private updateLightingButton(): void {
     if (!this.lightingToggleButton) {
