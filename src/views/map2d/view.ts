@@ -1658,12 +1658,18 @@ export class Map2DView implements View {
       const lat = dec;
       let lon = ra - gstRadians;
       
-      // Normalize longitude to -π to π
-      lon = ((lon + Math.PI) % (2 * Math.PI)) - Math.PI;
-      
-      // Convert to degrees
+      // Convert to degrees first
       const latDegrees = lat * 180 / Math.PI;
-      const lonDegrees = lon * 180 / Math.PI;
+      let lonDegrees = lon * 180 / Math.PI;
+      
+      // Normalize longitude to -180 to 180 range
+      // Use proper modulo operation that handles negative numbers correctly
+      lonDegrees = lonDegrees % 360;
+      if (lonDegrees > 180) {
+        lonDegrees -= 360;
+      } else if (lonDegrees < -180) {
+        lonDegrees += 360;
+      }
       
       return [latDegrees, lonDegrees];
     } catch (error) {
@@ -1690,65 +1696,21 @@ export class Map2DView implements View {
       return;
     }
     
-    if (!this.timeISO) {
-      return;
-    }
+    // Use current time if timeISO is not set
+    const date = this.timeISO ? new Date(this.timeISO) : new Date();
     
     // Calculate moon sub-lunar point (where moon is directly overhead)
     // The sub-lunar point is independent of observation point
     // We calculate it from time only, then Leaflet will display it at the correct position
-    const date = new Date(this.timeISO);
     let moonPos = this.calculateMoonPosition(date, 0, 0);
     
     if (!moonPos) {
       return;
     }
     
-    // Adjust moon longitude to match the map's display range
-    // Leaflet maps can wrap, so we need to ensure the moon position
-    // is in the same longitude range as the visible nodes
-    const mapCenter = this.map.getCenter();
-    const centerLng = mapCenter.lng;
-    
-    // Get the longitude range of visible nodes to determine the correct wrapping
-    let minNodeLng = Infinity;
-    let maxNodeLng = -Infinity;
-    let hasNodes = false;
-    
-    for (const [nodeId, marker] of this.markers.entries()) {
-      const latlng = marker.getLatLng();
-      const lng = latlng.lng;
-      minNodeLng = Math.min(minNodeLng, lng);
-      maxNodeLng = Math.max(maxNodeLng, lng);
-      hasNodes = true;
-    }
-    
-    // If we have nodes, adjust moon longitude to be in the same range
-    if (hasNodes) {
-      const moonLng = moonPos[1];
-      
-      // Calculate the distance from moon to center in both directions
-      const distNormal = Math.abs(moonLng - centerLng);
-      const distWrapped = Math.abs((moonLng + 360) - centerLng);
-      const distWrappedNeg = Math.abs((moonLng - 360) - centerLng);
-      
-      // Choose the closest position to the map center
-      if (distWrapped < distNormal && distWrapped < distWrappedNeg) {
-        moonPos[1] = moonLng + 360;
-      } else if (distWrappedNeg < distNormal && distWrappedNeg < distWrapped) {
-        moonPos[1] = moonLng - 360;
-      }
-      
-      // If nodes span across the -180/180 boundary, ensure moon is in the same range
-      if (maxNodeLng - minNodeLng > 180) {
-        // Nodes are wrapped, check if moon should be wrapped too
-        if (moonPos[1] < 0 && centerLng > 0) {
-          moonPos[1] = moonPos[1] + 360;
-        } else if (moonPos[1] > 0 && centerLng < 0) {
-          moonPos[1] = moonPos[1] - 360;
-        }
-      }
-    }
+    // Use the calculated moon position directly, just like node markers
+    // Leaflet will handle the display correctly based on the latitude and longitude
+    // No adjustment needed - use the same approach as node markers
     
     const phase = this.getMoonPhase(date);
     const iconHtml = this.getMoonPhaseIcon(phase, 24);

@@ -60,10 +60,10 @@ export class GraphView implements View {
   private zoomedNodeId: string | null = null; // Node ID that is currently zoomed in (for toggle behavior)
   private anchorHandlesGroup: SVGGElement;
   private anchorHandles: Map<string, SVGCircleElement> = new Map(); // 'src' | 'dst' -> handle element
-  private draggingAnchor: { edgeId: string; type: 'src' | 'dst' } | null = null;
+  private draggingAnchor: { edgeId: string; type: 'src' | 'dst'; offsetX: number; offsetY: number } | null = null;
   private bendHandlesGroup: SVGGElement;
   private bendHandles: Map<number, SVGCircleElement> = new Map(); // bend index -> handle element
-  private draggingBend: { edgeId: string; bendIndex: number } | null = null;
+  private draggingBend: { edgeId: string; bendIndex: number; offsetX: number; offsetY: number } | null = null;
   private draggingNode: { nodeId: string; offsetX: number; offsetY: number } | null = null;
   private panning: { startX: number; startY: number; startOffsetX: number; startOffsetY: number } | null = null; // Pan state
   private lastPanEndTime: number = 0; // パン操作が終了した時刻（ミリ秒）
@@ -933,19 +933,68 @@ export class GraphView implements View {
           // Start bend handle drag
           const edgeIdFromHandle = target.getAttribute('data-edge-id');
           if (edgeIdFromHandle) {
-            this.draggingBend = { edgeId: edgeIdFromHandle, bendIndex: parseInt(bendIndex, 10) };
-            e.preventDefault();
-            e.stopPropagation();
-            return;
+            // Calculate offset between mouse position and bend handle position
+            const svgCoords = this.screenToSvg(e.clientX, e.clientY);
+            const edge = this.edges.find(e => e.id === edgeIdFromHandle);
+            if (edge) {
+              const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
+              const pairKey = `${a}||${b}`;
+              const pair = this.groupEdgesByPair(this.edges).find(p => p.key === pairKey);
+              if (pair && pair.bends) {
+                const bendIndexNum = parseInt(bendIndex, 10);
+                if (bendIndexNum >= 0 && bendIndexNum < pair.bends.length) {
+                  const bendPos = pair.bends[bendIndexNum];
+                  this.draggingBend = {
+                    edgeId: edgeIdFromHandle,
+                    bendIndex: bendIndexNum,
+                    offsetX: svgCoords.x - bendPos.x,
+                    offsetY: svgCoords.y - bendPos.y,
+                  };
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return;
+                }
+              }
+            }
           }
         } else if (handleType) {
           // Start anchor handle drag
           const edgeIdFromHandle = target.getAttribute('data-edge-id');
           if (edgeIdFromHandle) {
-            this.draggingAnchor = { edgeId: edgeIdFromHandle, type: handleType };
-            e.preventDefault();
-            e.stopPropagation();
-            return;
+            // Calculate offset between mouse position and anchor handle position
+            const svgCoords = this.screenToSvg(e.clientX, e.clientY);
+            const edge = this.edges.find(e => e.id === edgeIdFromHandle);
+            if (edge) {
+              const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
+              const pairKey = `${a}||${b}`;
+              const pair = this.groupEdgesByPair(this.edges).find(p => p.key === pairKey);
+              if (pair) {
+                const nodeId = handleType === 'src' ? pair.a : pair.b;
+                const node = this.nodes.find(n => n.id === nodeId);
+                if (node) {
+                  const otherNodeId = handleType === 'src' ? pair.b : pair.a;
+                  const otherNode = this.nodes.find(n => n.id === otherNodeId);
+                  if (otherNode) {
+                    const anchor = handleType === 'src' 
+                      ? (pair.srcAnchor || this.estimateAnchor(node, otherNode))
+                      : (pair.dstAnchor || this.estimateAnchor(node, otherNode));
+                    const nodeStyle = node.style || {};
+                    const w = nodeStyle.width || this.DEFAULT_NODE_WIDTH;
+                    const h = nodeStyle.height || this.DEFAULT_NODE_HEIGHT;
+                    const anchorPos = this.calculateAnchorPosition(node, anchor, w, h);
+                    this.draggingAnchor = {
+                      edgeId: edgeIdFromHandle,
+                      type: handleType,
+                      offsetX: svgCoords.x - anchorPos.x,
+                      offsetY: svgCoords.y - anchorPos.y,
+                    };
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
+                }
+              }
+            }
           }
         } else if (edgePairKey) {
           // Don't select or do anything on pointerdown for edges
@@ -2848,8 +2897,9 @@ export class GraphView implements View {
 
     // Convert screen coordinates to SVG coordinates
     const svgCoords = this.screenToSvg(e.clientX, e.clientY);
-    const mouseX = svgCoords.x;
-    const mouseY = svgCoords.y;
+    // Apply offset to maintain relative position between mouse and handle
+    const mouseX = svgCoords.x - this.draggingAnchor.offsetX;
+    const mouseY = svgCoords.y - this.draggingAnchor.offsetY;
 
     // Calculate distances to each edge of the node
     const cx = node.position.x;
@@ -2943,8 +2993,9 @@ export class GraphView implements View {
 
     // Convert screen coordinates to SVG coordinates
     const svgCoords = this.screenToSvg(e.clientX, e.clientY);
-    const mouseX = svgCoords.x;
-    const mouseY = svgCoords.y;
+    // Apply offset to maintain relative position between mouse and handle
+    const mouseX = svgCoords.x - this.draggingBend.offsetX;
+    const mouseY = svgCoords.y - this.draggingBend.offsetY;
 
     // 折れ点位置を更新（ペアに保存）
     pair.bends[bendIndex] = { x: mouseX, y: mouseY };
@@ -3045,6 +3096,11 @@ export class GraphView implements View {
     // ペアに属する全てのエッジに折れ点情報を同期
     for (const e of pair.edges) {
       e.bends = [...pair.bends];
+    }
+
+    // Ensure the edge is selected so that handles are displayed
+    if (this.selectedEdgeId !== edgeId) {
+      this.selectEdge(edgeId, false);
     }
 
     // 再描画
