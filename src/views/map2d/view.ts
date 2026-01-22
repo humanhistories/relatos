@@ -286,10 +286,12 @@ export class Map2DView implements View {
       this.updateNightShade();
     }
     
-    // Update moon marker and button if moon is enabled
+    // Always update moon button icon (to reflect current moon phase)
+    this.updateMoonButton();
+    
+    // Update moon marker if moon is enabled
     if (this.moonEnabled) {
       this.updateMoonMarker();
-      this.updateMoonButton();
     }
   }
 

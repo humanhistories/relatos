@@ -1312,6 +1312,10 @@ export class ViewContainer {
         view.setTime(timeISO);
       }
     }
+    // Update moon button icon to reflect new time (moon phase changes with time)
+    if (this.currentView === 'map2d') {
+      this.updateMoonButton();
+    }
   }
 
   /**

@@ -977,6 +977,7 @@ class G {
     this.sharedTime = t;
     for (const e of this.views.values())
       e.setTime && e.setTime(t);
+    this.currentView === "map2d" && this.updateMoonButton();
   }
   /**
    * Get shared time
@@ -3542,7 +3543,7 @@ class q {
    * @param timeISO ISO 8601 time string (e.g., "2025-06-21T12:00:00Z")
    */
   setTime(t) {
-    this.timeISO = t, this.lightingEnabled && this.updateNightShade(), this.moonEnabled && (this.updateMoonMarker(), this.updateMoonButton());
+    this.timeISO = t, this.lightingEnabled && this.updateNightShade(), this.updateMoonButton(), this.moonEnabled && this.updateMoonMarker();
   }
   /**
    * Set day/night shading on/off
