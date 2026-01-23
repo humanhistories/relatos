@@ -887,11 +887,9 @@ export class Map2DView implements View {
   }
 
   /**
-   * Select node (highlight)
-   * If same node is selected again, switch to fit action showing entire view
+   * Select node (highlight), toggle to fit if same node selected again
    */
   selectNode(nodeId: string | null): void {
-    // Deselect if nodeId is null
     if (!nodeId) {
       this.selectedNodeId = null;
       this.lastSelectedNodeId = null;
@@ -899,44 +897,30 @@ export class Map2DView implements View {
       return;
     }
     
-    if (!this.map || !this.Leaflet) {
-      return;
-    }
+    if (!this.map || !this.Leaflet) return;
     
-    // If the same node is selected again, switch to fit action
-    // If lastSelectedNodeId is the same as nodeId, toggle to fit
+    // Toggle to fit if same node selected again
     if (nodeId === this.lastSelectedNodeId) {
-      // Fit action (show all)
-      // Keep selectedNodeId to maintain popup display (like Graph view behavior)
       this.lastSelectedNodeId = null;
-      // Fit to show all nodes, popup remains visible
       this.fitToNodes();
       return;
     }
     
-    // If a different node is selected, zoom in to the node
-    // Update lastSelectedNodeId (used for toggle detection on next click)
     this.lastSelectedNodeId = nodeId;
     this.selectedNodeId = nodeId;
     
     const node = this.nodes.find(n => n.id === nodeId);
-    if (!node) {
-      return;
-    }
+    if (!node) return;
     
-    // For nodes with coordinates
     if (node.coordinates && node.coordinates.length === 2) {
       const [lat, lon] = node.coordinates;
       if (Number.isFinite(lat) && Number.isFinite(lon)) {
         const [latitude, longitude] = node.coordinates;
         
-        // Update rendering (recreate markers first)
         this.renderWithoutFit();
         
-        // Increase zoom level and move to node position (zoom in)
-        // Use flyTo method for smooth animation
-        this.map.flyTo([latitude, longitude], 4, { // Max zoom level 8
-          duration: 1.0, // 1 second animation
+        this.map.flyTo([latitude, longitude], 4, {
+          duration: 1.0,
           easeLinearity: 0.25, // Easing linearity (0.25 is recommended)
         });
         

@@ -107,37 +107,23 @@ export class Globe3DView implements View {
     this.container.style.height = '100%';
   }
 
-  /**
-   * Initialize Cesium
-   */
   private async initializeCesium(): Promise<void> {
-    if (this.viewer) {
-      return; // Already initialized
-    }
+    if (this.viewer) return;
 
     if (!this.cesiumLoader) {
       throw new Error('Cesium loader is not provided. Please provide options.loaders.cesium.');
     }
 
-    // Load Cesium
     const cesiumModule = await this.cesiumLoader();
-    
-    // Get Cesium object (support default export or named export)
     this.Cesium = cesiumModule.default || cesiumModule;
 
-    // Configure to not use Cesium ion
-    // Use EllipsoidTerrainProvider and OpenStreetMap tiles
     const terrainProvider = new this.Cesium.EllipsoidTerrainProvider();
     
-    // Hide ion warnings (explicitly not using ion)
-    // Disable default ion access token (set before creating Viewer)
+    // Disable Cesium ion
     if (this.Cesium.Ion) {
       this.Cesium.Ion.defaultAccessToken = '';
     }
 
-    // Create Cesium Viewer (not using ion)
-    // Note: Even if imageryProvider is specified, default Bing Maps may be used,
-    // so set imageryProvider after creating Viewer
     this.viewer = new this.Cesium.Viewer(this.container, {
       terrainProvider: terrainProvider,
       baseLayerPicker: false,
@@ -148,101 +134,49 @@ export class Globe3DView implements View {
       geocoder: false,
       homeButton: false,
       infoBox: false,
-      sceneModePicker: false, // Hide 3D/2D/Columbus View toggle (2D handled by Leaflet)
+      sceneModePicker: false,
       selectionIndicator: false,
-      navigationHelpButton: false, // Hide navigation help (? icon) (overlaps with fit button)
-      requestRenderMode: false, // Rendering mode (keep false, handle errors separately)
+      navigationHelpButton: false,
+      requestRenderMode: false,
     });
     
-    // Enable moon display (always show in Globe3D, not affected by moon toggle button)
-    // Create Moon object if it doesn't exist, or enable if it exists
+    // Enable moon (always visible in Globe3D, lighting controlled by setLighting)
     if (this.Cesium.Moon) {
       if (!this.viewer.scene.moon) {
         this.viewer.scene.moon = new this.Cesium.Moon();
       }
       this.viewer.scene.moon.show = true;
-      // Initial state: moon sun lighting is OFF (uniformly lit)
-      // This will be set to true when lighting is enabled via setLighting()
       if (this.viewer.scene.moon.onlySunLighting !== undefined) {
         this.viewer.scene.moon.onlySunLighting = false;
       }
     } else if (this.viewer.scene.moon) {
-      // Fallback: if Moon class doesn't exist but moon property exists
       this.viewer.scene.moon.show = true;
     }
     
-    // Enable sun display (always show, required for moon lighting when enabled)
+    // Enable sun
     if (this.viewer.scene.sun) {
       this.viewer.scene.sun.show = true;
     }
     
-    // Remove default imageryProvider and use OpenStreetMap tiles
-    // Remove as early as possible to prevent ion-related requests
-    // Note: Viewer automatically tries to load World Imagery on creation,
-    // which will result in 401 error due to missing ion token, but this can be ignored
+    // Remove default imagery layers
     try {
       this.viewer.imageryLayers.removeAll();
     } catch (error) {
-      // Continue even if error occurs (may already be removed)
+      // Ignore
     }
     
-    // Error handling: ignore ion-related errors
-    // Viewer automatically tries to load World Imagery on creation, which causes error without ion token
-    // Ignore this error and set OpenStreetMap later
-    // Note: Cesium error handling is processed in Resource error events
-    // Here, we confirm that errors shown in console don't affect application behavior
-    
-    // Helper to create safe Credit with HTML link
-    const linkCredit = (Cesium: any, label: string, href: string, showOnScreen: boolean = false): any => {
-      const safe = (s: string) => String(s)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-
-      const html = `<a href="${safe(href)}" target="_blank" rel="noopener noreferrer">${safe(
-        label
-      )}</a>`;
-      return new Cesium.Credit(html, showOnScreen);
-    };
-
-    // URL constants
-    const OSM_COPYRIGHT = "https://www.openstreetmap.org/copyright";
-    const CARTO_URL = "https://carto.com/";
-    const NASA_EARTHDATA_URL = "https://earthdata.nasa.gov/";
-
-    // Base tile layer is set based on ViewContainer shared state
-    // Don't add tiles directly here, set via setTileTypeInternal
-    // This ensures ViewContainer's sharedTileType (default: 'osm') is correctly applied
-
-    // Limit camera altitude (reduce load on tile servers)
-    // Min altitude: 500,000m, Max altitude: 40,000,000m
     this.setupCameraLimits();
-    
-    // Set base tile layer based on current tile server configuration
-    // Use force=true to ensure tile layer is set even on first initialization
     this.setTileTypeInternal(true);
-
-    // Set time information and day/night shading
     this.setupTimeAndLighting();
-
-    // Control buttons are now managed by ViewContainer - skip creating individual buttons
-
-    // Set node click event
     this.setupClickHandler();
 
-    // Display existing data
     if (this.nodes.length > 0 || this.edges.length > 0) {
       this.render();
     }
     
-    // Notify that initialization is complete so ViewContainer can apply shared state
-    // This ensures lighting state is applied even if initialization happens asynchronously
+    // Trigger state sync for ViewContainer
     if (this.onLightingChange) {
-      // Trigger a state sync by reading current state
-      // This will ensure ViewContainer applies the correct shared state
       const currentState = this.isLightingEnabled();
-      // The ViewContainer will apply shared state via applySharedToggleStates
     }
   }
 
@@ -293,35 +227,18 @@ export class Globe3DView implements View {
   }
 
   /**
-   * Convert BC date string to JulianDate
-   * @param dateStr BC date string (e.g., "-500-01-01T12:00:00Z", "-99999-01-01T12:00:00Z")
-   * @returns JulianDate, or null on error
+   * Convert BC date string to JulianDate (approximation using year 2000)
    */
   private parseBCDate(dateStr: string): any | null {
-    if (!this.Cesium) {
-      return null;
-    }
+    if (!this.Cesium) return null;
 
     try {
-      // Parse "-YYYY...-MM-DDTHH:mm:ssZ" format
-      // Year part supports any number of digits (\d+)
       const match = dateStr.match(/^-(\d+)-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(Z|[+-]\d{2}:\d{2})?/);
-      if (!match) {
-        throw new Error('Invalid BC date format');
-      }
+      if (!match) throw new Error('Invalid BC date format');
 
-      // Use only time portion (month, day, time) regardless of year digits
-      // Solar position calculation has small variation by year, so use same month/day/time from year 2000 as approximation
-      
-      // Create ISO 8601 string with same month/day/time from year 2000
+      // Use year 2000 with same month/day/time as approximation
       const approximateDate = `2000-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}${match[7] || 'Z'}`;
-      const julianDate = this.Cesium.JulianDate.fromIso8601(approximateDate);
-      
-      // Note: This is an approximation and not fully accurate for BC solar position
-      // Year part is ignored, only time portion (month, day, time) is used
-      // For more accurate calculation, consider using an astronomical calculation library
-      
-      return julianDate;
+      return this.Cesium.JulianDate.fromIso8601(approximateDate);
     } catch (error) {
       return null;
     }
@@ -329,61 +246,42 @@ export class Globe3DView implements View {
 
   /**
    * Set day/night shading on/off
-   * @param enabled true to enable, false to disable
    */
   setLighting(enabled: boolean): void {
-    if (!this.viewer || !this.Cesium) {
-      return;
-    }
-
-    // Check if state is actually changing
-    const currentEnabled = this.isLightingEnabled();
-    if (currentEnabled === enabled) {
-      return; // No change
-    }
+    if (!this.viewer || !this.Cesium) return;
+    if (this.isLightingEnabled() === enabled) return;
 
     const globe = this.viewer.scene.globe;
-
-    // Enable/disable day/night shading based on sun position
     globe.enableLighting = enabled;
-    // Dynamically change atmosphere lighting
     globe.dynamicAtmosphereLighting = enabled;
-    // Atmosphere lighting based on sun position
     globe.dynamicAtmosphereLightingFromSun = enabled;
-    // Show ground atmosphere (always shown)
     globe.showGroundAtmosphere = true;
 
     if (enabled) {
-      // Disable lighting fade to keep shading visible even when zoomed in
       globe.lightingFadeOutDistance = 0.0;
       globe.lightingFadeInDistance = 0.0;
       globe.nightFadeInDistance = 0.0;
       globe.nightFadeOutDistance = 0.0;
 
-      // Set nightAlpha so tiles are faintly visible on night side even when zoomed out
-      const layers = this.viewer.imageryLayers;
-      if (layers.length > 0 && this.baseImageryLayer) {
-        // Set nightAlpha for base layer (OpenStreetMap or GSI English)
-        this.baseImageryLayer.nightAlpha = 0.9; // Faintly visible on night side
+      if (this.baseImageryLayer) {
+        this.baseImageryLayer.nightAlpha = 0.9;
       }
 
-      // Enable sun display for lighting
       if (this.viewer.scene.sun) {
         this.viewer.scene.sun.show = true;
       }
       
-      // Enable moon sun lighting (moon is illuminated by sun, shows phases)
-      if (this.viewer.scene.moon && this.viewer.scene.moon.onlySunLighting !== undefined) {
+      // Moon sun lighting (shows phases)
+      if (this.viewer.scene.moon?.onlySunLighting !== undefined) {
         this.viewer.scene.moon.onlySunLighting = true;
       }
     } else {
-      // Lighting disabled - disable moon sun lighting (moon shows uniformly lit)
-      if (this.viewer.scene.moon && this.viewer.scene.moon.onlySunLighting !== undefined) {
+      // Moon uniformly lit when lighting disabled
+      if (this.viewer.scene.moon?.onlySunLighting !== undefined) {
         this.viewer.scene.moon.onlySunLighting = false;
       }
     }
 
-    // Update button display
     this.updateLightingButton();
   }
 
@@ -681,84 +579,60 @@ export class Globe3DView implements View {
    * If same node is selected again, switch to fit action showing entire view
    */
   selectNode(nodeId: string | null): void {
-    // Deselect if nodeId is null
     if (!nodeId) {
       this.selectedNodeId = null;
       this.lastSelectedNodeId = null;
-      this.hidePopup(); // Close popup
+      this.hidePopup();
       this.render();
       return;
     }
     
-    if (!this.viewer || !this.Cesium) {
-      return;
-    }
+    if (!this.viewer || !this.Cesium) return;
     
-    // If same node is selected again, switch to fit action
-    // If lastSelectedNodeId matches nodeId, toggle to fit
+    // Toggle to fit if same node selected again
     if (nodeId === this.lastSelectedNodeId) {
-      // Fit action (show entire view) - same as fitAndCenter button
-      // Keep selectedNodeId to maintain popup display (like Graph view behavior)
       this.lastSelectedNodeId = null;
-      // Update node selection state without re-rendering edges (preserves edge visibility)
       if (this.nodeEntities.size > 0) {
         this.updateNodeSelection();
       }
-      // Use same logic as fitAndCenter button (only calls fitToNodes, no render)
-      // Popup remains visible during fit animation
       this.fitToNodes();
       return;
     }
     
-    // If different node is selected, zoom in to node
-    // Update lastSelectedNodeId (used for toggle detection on next click)
     this.lastSelectedNodeId = nodeId;
     this.selectedNodeId = nodeId;
     
-    // Update node selection state without re-rendering edges
-    // Only update if nodes are already rendered, otherwise render everything
     if (this.nodeEntities.size > 0) {
       this.updateNodeSelection();
     } else {
-      // If nodes are not rendered yet, render everything
-    this.render();
+      this.render();
     }
     
     const node = this.nodes.find(n => n.id === nodeId);
-    if (!node) {
-      return;
-    }
+    if (!node) return;
     
-    // If node has coordinates
     if (node.coordinates && node.coordinates.length === 2) {
       const [lat, lon] = node.coordinates;
       if (Number.isFinite(lat) && Number.isFinite(lon)) {
         const [latitude, longitude] = node.coordinates;
+        const height = 3000000;
         
-        // Move camera to node position (altitude 3000000m)
-        const height = 3000000; // 3000000m
-        
-        // Show popup before moving camera (position is automatically updated)
         const entity = this.nodeEntities.get(nodeId);
         if (entity && node) {
           this.showPopup(entity, node);
         }
         
-        // Set flying flag to prevent camera limit interference
-        // Set flag before flyTo to ensure it's active when camera.changed fires
         const setIsFlying = (this as any)._setIsFlying;
         if (setIsFlying) {
           setIsFlying(true);
         }
 
-        // Use setTimeout to ensure isFlying flag is set before flyTo triggers camera.changed
         setTimeout(() => {
-        // Zoom in to node position (with animation)
         this.viewer.camera.flyTo({
           destination: this.Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
           orientation: {
-            heading: this.Cesium.Math.toRadians(0), // Face north
-            pitch: this.Cesium.Math.toRadians(-90), // Look down from directly above (-90 degrees)
+            heading: this.Cesium.Math.toRadians(0),
+            pitch: this.Cesium.Math.toRadians(-90),
             roll: 0.0,
           },
           duration: 1.0, // Move in 1 second
@@ -1825,48 +1699,30 @@ export class Globe3DView implements View {
   }
 
   /**
-   * Update popup position (follow entity position)
-   * Handles CSS transform scale on container or its ancestors
+   * Update popup position (handles CSS transform scale)
    */
   private updatePopupPosition(): void {
-    if (!this.viewer || !this.Cesium || !this.popupEntity || !this.popupElement) {
-      return;
-    }
+    if (!this.viewer || !this.Cesium || !this.popupEntity || !this.popupElement) return;
 
     const position = this.popupEntity.position?.getValue(this.viewer.clock.currentTime);
-    if (!position) {
-      return;
-    }
+    if (!position) return;
 
-    // Convert world coordinates to screen coordinates
-    // Use worldToWindowCoordinates instead of wgs84ToWindowCoordinates
-    // (wgs84ToWindowCoordinates may not be available in all Cesium versions)
+    // Convert world to screen coordinates
     let screenPosition: any = null;
-    if (this.Cesium.SceneTransforms && this.Cesium.SceneTransforms.worldToWindowCoordinates) {
-      screenPosition = this.Cesium.SceneTransforms.worldToWindowCoordinates(
-        this.viewer.scene,
-        position
-      );
-    } else if (this.Cesium.SceneTransforms && this.Cesium.SceneTransforms.wgs84ToWindowCoordinates) {
-      // Fallback to wgs84ToWindowCoordinates if available
-      screenPosition = this.Cesium.SceneTransforms.wgs84ToWindowCoordinates(
-        this.viewer.scene,
-        position
-      );
+    if (this.Cesium.SceneTransforms?.worldToWindowCoordinates) {
+      screenPosition = this.Cesium.SceneTransforms.worldToWindowCoordinates(this.viewer.scene, position);
+    } else if (this.Cesium.SceneTransforms?.wgs84ToWindowCoordinates) {
+      screenPosition = this.Cesium.SceneTransforms.wgs84ToWindowCoordinates(this.viewer.scene, position);
     } else {
-      // Fallback to camera.project if SceneTransforms is not available
       screenPosition = this.viewer.camera.project(position);
     }
 
     if (!screenPosition) {
-      // Hide if behind camera
       this.popupElement.style.display = 'none';
       return;
     }
 
-    // Detect cumulative scale from container and all ancestors
-    // Compare getBoundingClientRect (displayed size) with offsetWidth (logical size)
-    // This captures scale transforms from any ancestor element
+    // Detect cumulative scale from container and ancestors
     let scale = 1;
     const rect = this.container.getBoundingClientRect();
     const logicalWidth = this.container.offsetWidth;
@@ -1874,14 +1730,10 @@ export class Globe3DView implements View {
       scale = rect.width / logicalWidth;
     }
 
-    // Convert screen coordinates to logical coordinates for CSS positioning
-    // screenPosition is in canvas coordinates (affected by scale)
-    // CSS left/top are in logical coordinates (before scale transform)
+    // Convert to logical coordinates for CSS positioning
     const logicalX = screenPosition.x / scale;
     const logicalY = screenPosition.y / scale;
 
-    // Set popup display position
-    // offsetWidth/offsetHeight are already in logical (unscaled) units
     this.popupElement.style.display = 'block';
     const offsetX = logicalX - this.popupElement.offsetWidth / 2;
     const offsetY = logicalY - this.popupElement.offsetHeight - 15; // Display above marker
