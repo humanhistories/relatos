@@ -154,16 +154,26 @@ export class Globe3DView implements View {
       requestRenderMode: false, // Rendering mode (keep false, handle errors separately)
     });
     
-    // Enable moon display (always show)
+    // Enable moon display (always show in Globe3D, not affected by moon toggle button)
     // Create Moon object if it doesn't exist, or enable if it exists
     if (this.Cesium.Moon) {
       if (!this.viewer.scene.moon) {
         this.viewer.scene.moon = new this.Cesium.Moon();
       }
       this.viewer.scene.moon.show = true;
+      // Initial state: moon sun lighting is OFF (uniformly lit)
+      // This will be set to true when lighting is enabled via setLighting()
+      if (this.viewer.scene.moon.onlySunLighting !== undefined) {
+        this.viewer.scene.moon.onlySunLighting = false;
+      }
     } else if (this.viewer.scene.moon) {
       // Fallback: if Moon class doesn't exist but moon property exists
       this.viewer.scene.moon.show = true;
+    }
+    
+    // Enable sun display (always show, required for moon lighting when enabled)
+    if (this.viewer.scene.sun) {
+      this.viewer.scene.sun.show = true;
     }
     
     // Remove default imageryProvider and use OpenStreetMap tiles
@@ -357,6 +367,20 @@ export class Globe3DView implements View {
         this.baseImageryLayer.nightAlpha = 0.9; // Faintly visible on night side
       }
 
+      // Enable sun display for lighting
+      if (this.viewer.scene.sun) {
+        this.viewer.scene.sun.show = true;
+      }
+      
+      // Enable moon sun lighting (moon is illuminated by sun, shows phases)
+      if (this.viewer.scene.moon && this.viewer.scene.moon.onlySunLighting !== undefined) {
+        this.viewer.scene.moon.onlySunLighting = true;
+      }
+    } else {
+      // Lighting disabled - disable moon sun lighting (moon shows uniformly lit)
+      if (this.viewer.scene.moon && this.viewer.scene.moon.onlySunLighting !== undefined) {
+        this.viewer.scene.moon.onlySunLighting = false;
+      }
     }
 
     // Update button display
@@ -674,14 +698,14 @@ export class Globe3DView implements View {
     // If lastSelectedNodeId matches nodeId, toggle to fit
     if (nodeId === this.lastSelectedNodeId) {
       // Fit action (show entire view) - same as fitAndCenter button
-      this.selectedNodeId = null;
+      // Keep selectedNodeId to maintain popup display (like Graph view behavior)
       this.lastSelectedNodeId = null;
-      this.hidePopup(); // Close popup
       // Update node selection state without re-rendering edges (preserves edge visibility)
       if (this.nodeEntities.size > 0) {
         this.updateNodeSelection();
       }
       // Use same logic as fitAndCenter button (only calls fitToNodes, no render)
+      // Popup remains visible during fit animation
       this.fitToNodes();
       return;
     }
@@ -1802,6 +1826,7 @@ export class Globe3DView implements View {
 
   /**
    * Update popup position (follow entity position)
+   * Handles CSS transform scale on container or its ancestors
    */
   private updatePopupPosition(): void {
     if (!this.viewer || !this.Cesium || !this.popupEntity || !this.popupElement) {
@@ -1839,10 +1864,27 @@ export class Globe3DView implements View {
       return;
     }
 
+    // Detect cumulative scale from container and all ancestors
+    // Compare getBoundingClientRect (displayed size) with offsetWidth (logical size)
+    // This captures scale transforms from any ancestor element
+    let scale = 1;
+    const rect = this.container.getBoundingClientRect();
+    const logicalWidth = this.container.offsetWidth;
+    if (logicalWidth > 0 && rect.width > 0) {
+      scale = rect.width / logicalWidth;
+    }
+
+    // Convert screen coordinates to logical coordinates for CSS positioning
+    // screenPosition is in canvas coordinates (affected by scale)
+    // CSS left/top are in logical coordinates (before scale transform)
+    const logicalX = screenPosition.x / scale;
+    const logicalY = screenPosition.y / scale;
+
     // Set popup display position
+    // offsetWidth/offsetHeight are already in logical (unscaled) units
     this.popupElement.style.display = 'block';
-    const offsetX = screenPosition.x - this.popupElement.offsetWidth / 2;
-    const offsetY = screenPosition.y - this.popupElement.offsetHeight - 15; // Display above marker
+    const offsetX = logicalX - this.popupElement.offsetWidth / 2;
+    const offsetY = logicalY - this.popupElement.offsetHeight - 15; // Display above marker
     
     this.popupElement.style.left = `${offsetX}px`;
     this.popupElement.style.top = `${offsetY}px`;

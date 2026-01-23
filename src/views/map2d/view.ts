@@ -907,10 +907,10 @@ export class Map2DView implements View {
     // If lastSelectedNodeId is the same as nodeId, toggle to fit
     if (nodeId === this.lastSelectedNodeId) {
       // Fit action (show all)
-      this.selectedNodeId = null;
+      // Keep selectedNodeId to maintain popup display (like Graph view behavior)
       this.lastSelectedNodeId = null;
+      // Fit to show all nodes, popup remains visible
       this.fitToNodes();
-      this.renderWithoutFit();
       return;
     }
     

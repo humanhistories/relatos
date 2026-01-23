@@ -1423,7 +1423,7 @@ class U {
                 if (f) {
                   const b = a === "src" ? p.b : p.a, C = this.nodes.find((E) => E.id === b);
                   if (C) {
-                    const E = a === "src" ? p.srcAnchor || this.estimateAnchor(f, C) : p.dstAnchor || this.estimateAnchor(f, C), x = f.style || {}, B = x.width || this.DEFAULT_NODE_WIDTH, T = x.height || this.DEFAULT_NODE_HEIGHT, A = this.calculateAnchorPosition(f, E, B, T);
+                    const E = a === "src" ? p.srcAnchor || this.estimateAnchor(f, C) : p.dstAnchor || this.estimateAnchor(f, C), v = f.style || {}, B = v.width || this.DEFAULT_NODE_WIDTH, T = v.height || this.DEFAULT_NODE_HEIGHT, A = this.calculateAnchorPosition(f, E, B, T);
                     this.draggingAnchor = {
                       edgeId: l,
                       type: a,
@@ -1618,8 +1618,8 @@ class U {
    */
   animateZoomToPoint(t, e, s, i, o) {
     const n = this.zoom, r = this.offsetX, a = this.offsetY, c = this.container.getBoundingClientRect(), h = c.width / (2 * t), l = c.height / (2 * t), d = i - h, g = o - l, u = 500, w = performance.now(), y = (p) => {
-      const m = p - w, f = Math.min(m / u, 1), b = 1 - Math.pow(1 - f, 3), C = n + (t - n) * b, E = r + (d - r) * b, x = a + (g - a) * b;
-      if (this.zoom = C, this.offsetX = E, this.offsetY = x, this.updateTransform(), this.render(), f >= 1) {
+      const m = p - w, f = Math.min(m / u, 1), b = 1 - Math.pow(1 - f, 3), C = n + (t - n) * b, E = r + (d - r) * b, v = a + (g - a) * b;
+      if (this.zoom = C, this.offsetX = E, this.offsetY = v, this.updateTransform(), this.render(), f >= 1) {
         const B = this.container.getBoundingClientRect(), T = B.width / 2, A = B.height / 2;
         T / this.zoom - this.offsetX, A / this.zoom - this.offsetY;
       }
@@ -1650,14 +1650,14 @@ class U {
         }
       }
     if (t.length > 0) {
-      const y = t.map((M) => M.coordinates[0]), p = t.map((M) => M.coordinates[1]), m = Math.min(...y), f = Math.max(...y), b = Math.min(...p), C = Math.max(...p), E = f - m, x = C - b, B = Math.max(E, x) * 0.1 || 0.01, T = {
+      const y = t.map((M) => M.coordinates[0]), p = t.map((M) => M.coordinates[1]), m = Math.min(...y), f = Math.max(...y), b = Math.min(...p), C = Math.max(...p), E = f - m, v = C - b, B = Math.max(E, v) * 0.1 || 0.01, T = {
         minLat: m - B,
         maxLat: f + B,
         minLon: b - B,
         maxLon: C + B
       }, A = /* @__PURE__ */ new Map(), L = /* @__PURE__ */ new Map();
       for (const M of t) {
-        const [v, S] = M.coordinates, k = (S - T.minLon) / (T.maxLon - T.minLon), N = 1 - (v - T.minLat) / (T.maxLat - T.minLat), _ = {
+        const [x, S] = M.coordinates, k = (S - T.minLon) / (T.maxLon - T.minLon), N = 1 - (x - T.minLat) / (T.maxLat - T.minLat), _ = {
           x: l + k * c,
           y: N * h
         }, H = M.style || {}, R = H.width || this.DEFAULT_NODE_WIDTH, F = H.height || this.DEFAULT_NODE_HEIGHT, O = _.x, Y = _.y;
@@ -1674,9 +1674,9 @@ class U {
     const w = e.filter((y) => !y.position);
     if (w.length > 0) {
       const p = Math.ceil(Math.sqrt(w.length)), m = Math.ceil(w.length / p), f = a - 40, b = d - 40, C = f / p, E = b / m;
-      w.forEach((x, B) => {
-        const T = x.style || {}, A = T.width || this.DEFAULT_NODE_WIDTH, L = T.height || this.DEFAULT_NODE_HEIGHT, M = Math.floor(B / p), v = B % p, S = g + 20 + (v + 0.5) * C, k = 20 + (M + 0.5) * E;
-        x.position = { x: S, y: k }, u.push({
+      w.forEach((v, B) => {
+        const T = v.style || {}, A = T.width || this.DEFAULT_NODE_WIDTH, L = T.height || this.DEFAULT_NODE_HEIGHT, M = Math.floor(B / p), x = B % p, S = g + 20 + (x + 0.5) * C, k = 20 + (M + 0.5) * E;
+        v.position = { x: S, y: k }, u.push({
           x: S - A / 2,
           y: k - L / 2,
           width: A,
@@ -1788,26 +1788,26 @@ class U {
       for (const f of g)
         if (r < f.x + f.width + 20 && r + c + 20 > f.x && a < f.y + f.height + 20 && a + h + 20 > f.y) {
           w = !0;
-          const b = r + c / 2, C = a + h / 2, E = f.centerX - b, x = f.centerY - C, B = Math.sqrt(E * E + x * x);
+          const b = r + c / 2, C = a + h / 2, E = f.centerX - b, v = f.centerY - C, B = Math.sqrt(E * E + v * v);
           if (B > 0) {
             const T = (c + f.width) / 2 + 20;
-            let A = E, L = x;
+            let A = E, L = v;
             if (Math.abs(f.relativeDx) > 0.1 || Math.abs(f.relativeDy) > 0.1)
               if (Math.abs(f.relativeDx) > Math.abs(f.relativeDy))
-                A = (f.relativeDx > 0 ? -1 : 1) * Math.abs(E) / B * T, L = x / B * T * 0.5;
+                A = (f.relativeDx > 0 ? -1 : 1) * Math.abs(E) / B * T, L = v / B * T * 0.5;
               else {
                 const O = f.relativeDy > 0 ? -1 : 1;
-                A = E / B * T * 0.5, L = O * Math.abs(x) / B * T;
+                A = E / B * T * 0.5, L = O * Math.abs(v) / B * T;
               }
             else
-              A = E / B * T, L = x / B * T;
-            const M = r + A, v = a + L, S = Math.sqrt(
-              Math.pow(M - l, 2) + Math.pow(v - d, 2)
-            ), k = M + c / 2, N = v + h / 2, _ = k - l, H = N - d;
+              A = E / B * T, L = v / B * T;
+            const M = r + A, x = a + L, S = Math.sqrt(
+              Math.pow(M - l, 2) + Math.pow(x - d, 2)
+            ), k = M + c / 2, N = x + h / 2, _ = k - l, H = N - d;
             let R = 0;
             (f.relativeDx > 0 && _ < f.relativeDx || f.relativeDx < 0 && _ > f.relativeDx) && (R += 1e3), (f.relativeDy > 0 && H < f.relativeDy || f.relativeDy < 0 && H > f.relativeDy) && (R += 1e3);
             const F = S + R;
-            F < m && (m = F, y = M, p = v);
+            F < m && (m = F, y = M, p = x);
           } else {
             const T = (c + f.width) / 2 + 20;
             let A = 0, L = 0;
@@ -1818,10 +1818,10 @@ class U {
               const k = Math.random() * Math.PI * 2;
               A = Math.cos(k) * T, L = Math.sin(k) * T;
             }
-            const M = r + A, v = a + L, S = Math.sqrt(
-              Math.pow(M - l, 2) + Math.pow(v - d, 2)
+            const M = r + A, x = a + L, S = Math.sqrt(
+              Math.pow(M - l, 2) + Math.pow(x - d, 2)
             );
-            S < m && (m = S, y = M, p = v);
+            S < m && (m = S, y = M, p = x);
           }
         }
       if (!w)
@@ -2203,29 +2203,29 @@ class U {
    * Insert bend point (on double click/tap)
    */
   insertBendPoint(t, e) {
-    const s = this.edges.find((v) => v.id === t);
+    const s = this.edges.find((x) => x.id === t);
     if (!s)
       return;
-    const [i, o] = s.src < s.dst ? [s.src, s.dst] : [s.dst, s.src], n = `${i}||${o}`, r = this.groupEdgesByPair(this.edges).find((v) => v.key === n);
+    const [i, o] = s.src < s.dst ? [s.src, s.dst] : [s.dst, s.src], n = `${i}||${o}`, r = this.groupEdgesByPair(this.edges).find((x) => x.key === n);
     if (!r)
       return;
-    const a = this.svg.getBoundingClientRect(), c = e.clientX - a.left, h = e.clientY - a.top, l = [], d = this.nodes.find((v) => v.id === r.a), g = this.nodes.find((v) => v.id === r.b);
+    const a = this.svg.getBoundingClientRect(), c = e.clientX - a.left, h = e.clientY - a.top, l = [], d = this.nodes.find((x) => x.id === r.a), g = this.nodes.find((x) => x.id === r.b);
     if (!d?.position || !g?.position)
       return;
-    const u = r.srcAnchor || this.estimateAnchor(d, g), w = r.dstAnchor || this.estimateAnchor(g, d), y = d.style || {}, p = g.style || {}, m = y.width || this.DEFAULT_NODE_WIDTH, f = y.height || this.DEFAULT_NODE_HEIGHT, b = p.width || this.DEFAULT_NODE_WIDTH, C = p.height || this.DEFAULT_NODE_HEIGHT, E = this.calculateAnchorPosition(d, u, m, f), x = this.calculateAnchorPosition(g, w, b, C);
-    l.push(E), r.bends && l.push(...r.bends), l.push(x);
+    const u = r.srcAnchor || this.estimateAnchor(d, g), w = r.dstAnchor || this.estimateAnchor(g, d), y = d.style || {}, p = g.style || {}, m = y.width || this.DEFAULT_NODE_WIDTH, f = y.height || this.DEFAULT_NODE_HEIGHT, b = p.width || this.DEFAULT_NODE_WIDTH, C = p.height || this.DEFAULT_NODE_HEIGHT, E = this.calculateAnchorPosition(d, u, m, f), v = this.calculateAnchorPosition(g, w, b, C);
+    l.push(E), r.bends && l.push(...r.bends), l.push(v);
     let B = 0, T = 1 / 0;
-    for (let v = 0; v < l.length - 1; v++) {
-      const S = l[v], k = l[v + 1], N = this.pointToLineSegmentDistance(c, h, S.x, S.y, k.x, k.y);
-      N < T && (T = N, B = v);
+    for (let x = 0; x < l.length - 1; x++) {
+      const S = l[x], k = l[x + 1], N = this.pointToLineSegmentDistance(c, h, S.x, S.y, k.x, k.y);
+      N < T && (T = N, B = x);
     }
     const A = l[B], L = l[B + 1], M = {
       x: (A.x + L.x) / 2,
       y: (A.y + L.y) / 2
     };
     r.bends || (r.bends = []), r.bends.splice(B, 0, M);
-    for (const v of r.edges)
-      v.bends = [...r.bends];
+    for (const x of r.edges)
+      x.bends = [...r.bends];
     this.selectedEdgeId !== t && this.selectEdge(t, !1), this.render(), this.updateBendHandles(), this.debouncedSave();
   }
   /**
@@ -2288,9 +2288,9 @@ class U {
         this.setupEdgeInteractionForEdit(p, e);
         const C = e.key;
         p.addEventListener("click", (E) => {
-          const x = this.edgeClickTimers.get(p);
-          if (x != null) {
-            clearTimeout(x), this.edgeClickTimers.set(p, null);
+          const v = this.edgeClickTimers.get(p);
+          if (v != null) {
+            clearTimeout(v), this.edgeClickTimers.set(p, null);
             return;
           }
           const B = window.setTimeout(() => {
@@ -2308,8 +2308,8 @@ class U {
           return;
         const E = this.edgeClickTimers.get(p);
         E != null && (clearTimeout(E), this.edgeClickTimers.set(p, null));
-        const x = this.groupEdgesByPair(this.edges).find((B) => B.key === b);
-        x && x.edges.length > 0 && (this.insertBendPoint(x.edges[0].id, C), C.preventDefault(), C.stopPropagation());
+        const v = this.groupEdgesByPair(this.edges).find((B) => B.key === b);
+        v && v.edges.length > 0 && (this.insertBendPoint(v.edges[0].id, C), C.preventDefault(), C.stopPropagation());
       }), n && this.renderEdgeLabels(e, a);
     }
     for (const e of this.nodes) {
@@ -2448,29 +2448,29 @@ class U {
       return;
     const o = s.style || {}, n = i.style || {}, r = o.width || this.DEFAULT_NODE_WIDTH, a = o.height || this.DEFAULT_NODE_HEIGHT, c = n.width || this.DEFAULT_NODE_WIDTH, h = n.height || this.DEFAULT_NODE_HEIGHT, l = t.srcAnchor || this.estimateAnchor(s, i), d = t.dstAnchor || this.estimateAnchor(i, s), g = this.calculateAnchorPosition(s, l, r, a), u = this.calculateAnchorPosition(i, d, c, h), w = this.calculateEdgePairPath(t), y = t.edges.find((E) => E.src === t.a && E.dst === t.b), p = t.edges.find((E) => E.src === t.b && E.dst === t.a), m = y?.style?.label || y?.relType || "", f = p?.style?.label || p?.relType || "", b = m !== f && m && f, C = m === f && m;
     if (b) {
-      const x = this.getPointOnPath(w, 0.75), B = this.getPointOnPath(w, 0.25), T = x ? x.x : g.x + (u.x - g.x) * (1 - 0.25), A = x ? x.y : g.y + (u.y - g.y) * (1 - 0.25), L = B ? B.x : g.x + (u.x - g.x) * 0.25, M = B ? B.y : g.y + (u.y - g.y) * 0.25;
+      const v = this.getPointOnPath(w, 0.75), B = this.getPointOnPath(w, 0.25), T = v ? v.x : g.x + (u.x - g.x) * (1 - 0.25), A = v ? v.y : g.y + (u.y - g.y) * (1 - 0.25), L = B ? B.x : g.x + (u.x - g.x) * 0.25, M = B ? B.y : g.y + (u.y - g.y) * 0.25;
       if (m) {
-        const v = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        v.setAttribute("x", String(T)), v.setAttribute("y", String(A - 8)), v.setAttribute("text-anchor", "middle"), v.setAttribute("dominant-baseline", "middle"), v.setAttribute("font-size", "12"), v.setAttribute("fill", "#333"), v.setAttribute("font-weight", "bold"), v.setAttribute("pointer-events", "none"), v.setAttribute("data-edge-pair-key", t.key);
+        const x = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        x.setAttribute("x", String(T)), x.setAttribute("y", String(A - 8)), x.setAttribute("text-anchor", "middle"), x.setAttribute("dominant-baseline", "middle"), x.setAttribute("font-size", "12"), x.setAttribute("fill", "#333"), x.setAttribute("font-weight", "bold"), x.setAttribute("pointer-events", "none"), x.setAttribute("data-edge-pair-key", t.key);
         const S = document.createElementNS("http://www.w3.org/2000/svg", "rect"), k = m.length * 7;
-        S.setAttribute("x", String(T - k / 2 - 4)), S.setAttribute("y", String(A - 16)), S.setAttribute("width", String(k + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), v.textContent = m, this.edgeLabelsGroup.appendChild(v);
+        S.setAttribute("x", String(T - k / 2 - 4)), S.setAttribute("y", String(A - 16)), S.setAttribute("width", String(k + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), x.textContent = m, this.edgeLabelsGroup.appendChild(x);
       }
       if (f) {
-        const v = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        v.setAttribute("x", String(L)), v.setAttribute("y", String(M - 8)), v.setAttribute("text-anchor", "middle"), v.setAttribute("dominant-baseline", "middle"), v.setAttribute("font-size", "12"), v.setAttribute("fill", "#333"), v.setAttribute("font-weight", "bold"), v.setAttribute("pointer-events", "none"), v.setAttribute("data-edge-pair-key", t.key);
+        const x = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        x.setAttribute("x", String(L)), x.setAttribute("y", String(M - 8)), x.setAttribute("text-anchor", "middle"), x.setAttribute("dominant-baseline", "middle"), x.setAttribute("font-size", "12"), x.setAttribute("fill", "#333"), x.setAttribute("font-weight", "bold"), x.setAttribute("pointer-events", "none"), x.setAttribute("data-edge-pair-key", t.key);
         const S = document.createElementNS("http://www.w3.org/2000/svg", "rect"), k = f.length * 7;
-        S.setAttribute("x", String(L - k / 2 - 4)), S.setAttribute("y", String(M - 16)), S.setAttribute("width", String(k + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), v.textContent = f, this.edgeLabelsGroup.appendChild(v);
+        S.setAttribute("x", String(L - k / 2 - 4)), S.setAttribute("y", String(M - 16)), S.setAttribute("width", String(k + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), x.textContent = f, this.edgeLabelsGroup.appendChild(x);
       }
     } else if (C) {
-      const E = this.getPointOnPath(w, 0.5), x = E ? E.x : (g.x + u.x) / 2, B = E ? E.y : (g.y + u.y) / 2, T = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      T.setAttribute("x", String(x)), T.setAttribute("y", String(B)), T.setAttribute("text-anchor", "middle"), T.setAttribute("dominant-baseline", "middle"), T.setAttribute("data-edge-pair-key", t.key), T.setAttribute("font-size", "12"), T.setAttribute("fill", "#333"), T.setAttribute("font-weight", "bold"), T.setAttribute("pointer-events", "none");
+      const E = this.getPointOnPath(w, 0.5), v = E ? E.x : (g.x + u.x) / 2, B = E ? E.y : (g.y + u.y) / 2, T = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      T.setAttribute("x", String(v)), T.setAttribute("y", String(B)), T.setAttribute("text-anchor", "middle"), T.setAttribute("dominant-baseline", "middle"), T.setAttribute("data-edge-pair-key", t.key), T.setAttribute("font-size", "12"), T.setAttribute("fill", "#333"), T.setAttribute("font-weight", "bold"), T.setAttribute("pointer-events", "none");
       const A = document.createElementNS("http://www.w3.org/2000/svg", "rect"), L = m.length * 7;
-      A.setAttribute("x", String(x - L / 2 - 4)), A.setAttribute("y", String(B - 8)), A.setAttribute("width", String(L + 8)), A.setAttribute("height", "16"), A.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), A.setAttribute("rx", "2"), A.setAttribute("pointer-events", "none"), A.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(A), T.textContent = m, this.edgeLabelsGroup.appendChild(T);
+      A.setAttribute("x", String(v - L / 2 - 4)), A.setAttribute("y", String(B - 8)), A.setAttribute("width", String(L + 8)), A.setAttribute("height", "16"), A.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), A.setAttribute("rx", "2"), A.setAttribute("pointer-events", "none"), A.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(A), T.textContent = m, this.edgeLabelsGroup.appendChild(T);
     } else if (e.label) {
-      const E = this.getPointOnPath(w, 0.5), x = E ? E.x : (g.x + u.x) / 2, B = E ? E.y : (g.y + u.y) / 2, T = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      T.setAttribute("x", String(x)), T.setAttribute("y", String(B)), T.setAttribute("text-anchor", "middle"), T.setAttribute("dominant-baseline", "middle"), T.setAttribute("font-size", "12"), T.setAttribute("fill", "#333"), T.setAttribute("font-weight", "bold"), T.setAttribute("pointer-events", "none"), T.setAttribute("data-edge-pair-key", t.key);
+      const E = this.getPointOnPath(w, 0.5), v = E ? E.x : (g.x + u.x) / 2, B = E ? E.y : (g.y + u.y) / 2, T = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      T.setAttribute("x", String(v)), T.setAttribute("y", String(B)), T.setAttribute("text-anchor", "middle"), T.setAttribute("dominant-baseline", "middle"), T.setAttribute("font-size", "12"), T.setAttribute("fill", "#333"), T.setAttribute("font-weight", "bold"), T.setAttribute("pointer-events", "none"), T.setAttribute("data-edge-pair-key", t.key);
       const A = document.createElementNS("http://www.w3.org/2000/svg", "rect"), L = e.label.length * 7;
-      A.setAttribute("x", String(x - L / 2 - 4)), A.setAttribute("y", String(B - 8)), A.setAttribute("width", String(L + 8)), A.setAttribute("height", "16"), A.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), A.setAttribute("rx", "2"), A.setAttribute("pointer-events", "none"), A.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(A), T.textContent = e.label, this.edgeLabelsGroup.appendChild(T);
+      A.setAttribute("x", String(v - L / 2 - 4)), A.setAttribute("y", String(B - 8)), A.setAttribute("width", String(L + 8)), A.setAttribute("height", "16"), A.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), A.setAttribute("rx", "2"), A.setAttribute("pointer-events", "none"), A.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(A), T.textContent = e.label, this.edgeLabelsGroup.appendChild(T);
     }
   }
   /**
@@ -2625,15 +2625,15 @@ class U {
     const s = e.height || this.DEFAULT_NODE_HEIGHT, i = this.nodeElements.get(t.id);
     if (!i) {
       this.container.getBoundingClientRect(), this.svg.getBoundingClientRect();
-      const u = isFinite(this.zoom) && this.zoom > 0 ? this.zoom : 1, w = isFinite(this.offsetX) ? this.offsetX : 0, y = isFinite(this.offsetY) ? this.offsetY : 0, p = (t.position.x + w) * u, m = (t.position.y + y) * u, f = this.popupElement.getBoundingClientRect(), b = f.width || 200, C = f.height || 50, E = p - b / 2, x = m - s * u / 2 - C - 10;
-      this.popupElement.style.left = `${E}px`, this.popupElement.style.top = `${x}px`;
+      const u = isFinite(this.zoom) && this.zoom > 0 ? this.zoom : 1, w = isFinite(this.offsetX) ? this.offsetX : 0, y = isFinite(this.offsetY) ? this.offsetY : 0, p = (t.position.x + w) * u, m = (t.position.y + y) * u, f = this.popupElement.getBoundingClientRect(), b = f.width || 200, C = f.height || 50, E = p - b / 2, v = m - s * u / 2 - C - 10;
+      this.popupElement.style.left = `${E}px`, this.popupElement.style.top = `${v}px`;
       return;
     }
     const o = i.getBoundingClientRect(), n = this.container.getBoundingClientRect(), r = o.left + o.width / 2 - n.left, a = o.top + o.height / 2 - n.top, c = this.popupElement.getBoundingClientRect(), h = c.width || 200, l = c.height || 50, d = r - h / 2, g = a - o.height / 2 - l - 10;
     this.popupElement.style.left = `${d}px`, this.popupElement.style.top = `${g}px`;
   }
   /**
-   * ポップアップを閉じる
+   * Hide popup
    */
   hidePopup() {
     this.popupElement && (this.popupElement.style.opacity = "0", setTimeout(() => {
@@ -2705,7 +2705,7 @@ class j {
       // Hide navigation help (? icon) (overlaps with fit button)
       requestRenderMode: !1
       // Rendering mode (keep false, handle errors separately)
-    }), this.Cesium.Moon ? (this.viewer.scene.moon || (this.viewer.scene.moon = new this.Cesium.Moon()), this.viewer.scene.moon.show = !0) : this.viewer.scene.moon && (this.viewer.scene.moon.show = !0);
+    }), this.Cesium.Moon ? (this.viewer.scene.moon || (this.viewer.scene.moon = new this.Cesium.Moon()), this.viewer.scene.moon.show = !0, this.viewer.scene.moon.onlySunLighting !== void 0 && (this.viewer.scene.moon.onlySunLighting = !1)) : this.viewer.scene.moon && (this.viewer.scene.moon.show = !0), this.viewer.scene.sun && (this.viewer.scene.sun.show = !0);
     try {
       this.viewer.imageryLayers.removeAll();
     } catch {
@@ -2758,7 +2758,7 @@ class j {
     if (!this.viewer || !this.Cesium || this.isLightingEnabled() === t)
       return;
     const s = this.viewer.scene.globe;
-    s.enableLighting = t, s.dynamicAtmosphereLighting = t, s.dynamicAtmosphereLightingFromSun = t, s.showGroundAtmosphere = !0, t && (s.lightingFadeOutDistance = 0, s.lightingFadeInDistance = 0, s.nightFadeInDistance = 0, s.nightFadeOutDistance = 0, this.viewer.imageryLayers.length > 0 && this.baseImageryLayer && (this.baseImageryLayer.nightAlpha = 0.9)), this.updateLightingButton();
+    s.enableLighting = t, s.dynamicAtmosphereLighting = t, s.dynamicAtmosphereLightingFromSun = t, s.showGroundAtmosphere = !0, t ? (s.lightingFadeOutDistance = 0, s.lightingFadeInDistance = 0, s.nightFadeInDistance = 0, s.nightFadeOutDistance = 0, this.viewer.imageryLayers.length > 0 && this.baseImageryLayer && (this.baseImageryLayer.nightAlpha = 0.9), this.viewer.scene.sun && (this.viewer.scene.sun.show = !0), this.viewer.scene.moon && this.viewer.scene.moon.onlySunLighting !== void 0 && (this.viewer.scene.moon.onlySunLighting = !0)) : this.viewer.scene.moon && this.viewer.scene.moon.onlySunLighting !== void 0 && (this.viewer.scene.moon.onlySunLighting = !1), this.updateLightingButton();
   }
   /**
    * Check if day/night shading is enabled
@@ -2942,7 +2942,7 @@ class j {
     if (!this.viewer || !this.Cesium)
       return;
     if (t === this.lastSelectedNodeId) {
-      this.selectedNodeId = null, this.lastSelectedNodeId = null, this.hidePopup(), this.nodeEntities.size > 0 && this.updateNodeSelection(), this.fitToNodes();
+      this.lastSelectedNodeId = null, this.nodeEntities.size > 0 && this.updateNodeSelection(), this.fitToNodes();
       return;
     }
     this.lastSelectedNodeId = t, this.selectedNodeId = t, this.nodeEntities.size > 0 ? this.updateNodeSelection() : this.render();
@@ -3048,12 +3048,12 @@ class j {
           C = new this.Cesium.Color(T, A, L, 1);
         } else
           C = this.Cesium.Color.fromCssColorString(f), C = C.withAlpha(1);
-        const x = this.Cesium.Color.fromCssColorString(b), B = this.viewer.entities.add({
+        const v = this.Cesium.Color.fromCssColorString(b), B = this.viewer.entities.add({
           position: this.Cesium.Cartesian3.fromDegrees(p, y, 0),
           point: {
             pixelSize: m ? 15 : 10,
             color: C,
-            outlineColor: x,
+            outlineColor: v,
             outlineWidth: 2,
             heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND
           },
@@ -3200,12 +3200,12 @@ class j {
           C = new this.Cesium.Color(T, A, L, 1);
         } else
           C = this.Cesium.Color.fromCssColorString(f), C = C.withAlpha(1);
-        const x = this.Cesium.Color.fromCssColorString(b), B = this.viewer.entities.add({
+        const v = this.Cesium.Color.fromCssColorString(b), B = this.viewer.entities.add({
           position: this.Cesium.Cartesian3.fromDegrees(p, y, 0),
           point: {
             pixelSize: m ? 15 : 10,
             color: C,
-            outlineColor: x,
+            outlineColor: v,
             outlineWidth: 2,
             heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND
           },
@@ -3410,8 +3410,8 @@ class j {
       }
     }), e.length > 0) {
       const B = Math.ceil(Math.sqrt(e.length)), A = 50 / (Math.ceil(e.length / B) + 1), L = 32 / (B + 1);
-      e.forEach((M, v) => {
-        const S = Math.floor(v / B), k = v % B, N = -50 + (S + 1) * A, _ = -32 + (k + 1) * L;
+      e.forEach((M, x) => {
+        const S = Math.floor(x / B), k = x % B, N = -50 + (S + 1) * A, _ = -32 + (k + 1) * L;
         s.push(N), i.push(_);
       });
     }
@@ -3447,9 +3447,9 @@ class j {
         // Animate in 1 second
         complete: () => {
           f && f(!1);
-          const b = this.viewer.scene.camera, C = this.Cesium.Cartographic.fromCartesian(b.position), E = C.height, x = 5e5, B = 4e7;
-          if (E < x || E > B) {
-            const T = Math.max(x, Math.min(B, E)), A = this.Cesium.Cartesian3.fromRadians(
+          const b = this.viewer.scene.camera, C = this.Cesium.Cartographic.fromCartesian(b.position), E = C.height, v = 5e5, B = 4e7;
+          if (E < v || E > B) {
+            const T = Math.max(v, Math.min(B, E)), A = this.Cesium.Cartesian3.fromRadians(
               C.longitude,
               C.latitude,
               T
@@ -3547,6 +3547,7 @@ class j {
   }
   /**
    * Update popup position (follow entity position)
+   * Handles CSS transform scale on container or its ancestors
    */
   updatePopupPosition() {
     if (!this.viewer || !this.Cesium || !this.popupEntity || !this.popupElement)
@@ -3565,9 +3566,13 @@ class j {
       this.popupElement.style.display = "none";
       return;
     }
+    let s = 1;
+    const i = this.container.getBoundingClientRect(), o = this.container.offsetWidth;
+    o > 0 && i.width > 0 && (s = i.width / o);
+    const n = e.x / s, r = e.y / s;
     this.popupElement.style.display = "block";
-    const s = e.x - this.popupElement.offsetWidth / 2, i = e.y - this.popupElement.offsetHeight - 15;
-    this.popupElement.style.left = `${s}px`, this.popupElement.style.top = `${i}px`;
+    const a = n - this.popupElement.offsetWidth / 2, c = r - this.popupElement.offsetHeight - 15;
+    this.popupElement.style.left = `${a}px`, this.popupElement.style.top = `${c}px`;
   }
   /**
    * Check if editable (Globe3D is not editable)
@@ -3957,7 +3962,7 @@ class q {
     if (!this.map || !this.Leaflet)
       return;
     if (t === this.lastSelectedNodeId) {
-      this.selectedNodeId = null, this.lastSelectedNodeId = null, this.fitToNodes(), this.renderWithoutFit();
+      this.lastSelectedNodeId = null, this.fitToNodes();
       return;
     }
     this.lastSelectedNodeId = t, this.selectedNodeId = t;
@@ -4055,12 +4060,12 @@ class q {
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
           "></div>
-        `, x = this.Leaflet.divIcon({
+        `, v = this.Leaflet.divIcon({
           html: E,
           className: "relatos-node-marker",
           iconSize: [f ? 15 : 10, f ? 15 : 10],
           iconAnchor: [f ? 7.5 : 5, f ? 7.5 : 5]
-        }), B = this.Leaflet.marker([p, m], { icon: x });
+        }), B = this.Leaflet.marker([p, m], { icon: v });
         B.bindPopup(g.label, {
           closeButton: !1,
           offset: [0, -10]
@@ -4190,12 +4195,12 @@ class q {
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
           "></div>
-        `, x = this.Leaflet.divIcon({
+        `, v = this.Leaflet.divIcon({
           html: E,
           className: "relatos-node-marker",
           iconSize: [f ? 15 : 10, f ? 15 : 10],
           iconAnchor: [f ? 7.5 : 5, f ? 7.5 : 5]
-        }), B = this.Leaflet.marker([p, m], { icon: x });
+        }), B = this.Leaflet.marker([p, m], { icon: v });
         B.bindPopup(g.label, {
           closeButton: !1,
           offset: [0, -10]
@@ -4469,8 +4474,8 @@ class q {
     }), e.length > 0) {
       const u = Math.ceil(Math.sqrt(e.length)), y = 50 / (Math.ceil(e.length / u) + 1), p = 32 / (u + 1);
       e.forEach((m, f) => {
-        const b = Math.floor(f / u), C = f % u, E = -50 + (b + 1) * y, x = -32 + (C + 1) * p;
-        s.push(E), i.push(x);
+        const b = Math.floor(f / u), C = f % u, E = -50 + (b + 1) * y, v = -32 + (C + 1) * p;
+        s.push(E), i.push(v);
       });
     }
     if (s.length === 0)
