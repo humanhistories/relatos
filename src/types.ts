@@ -1,19 +1,19 @@
 /**
- * Histoverse Viewer - 型定義
+ * Relatos Viewer - Type Definitions
  */
 
 /**
- * 利用可能なViewタイプ
+ * Available view types
  */
 export type ViewType = 'graph' | 'map2d' | 'globe3d';
 
 /**
- * Graphモード
+ * Graph mode
  */
 export type GraphMode = 'view' | 'edit';
 
 /**
- * ノードの位置情報（Graph用）
+ * Node position information (for Graph view)
  */
 export interface NodePosition {
   x: number;
@@ -21,15 +21,15 @@ export interface NodePosition {
 }
 
 /**
- * ノードの辺
+ * Node side
  */
 export type NodeSide = 'top' | 'right' | 'bottom' | 'left';
 
 /**
- * エッジのアンカー位置（Graph用）
- * ノードの境界上の接続点
- * side: ノードの辺（top/right/bottom/left）
- * t: 辺上の相対位置（0..1、0が始点、1が終点）
+ * Edge anchor position (for Graph view)
+ * Connection point on node boundary
+ * side: Node side (top/right/bottom/left)
+ * t: Relative position on side (0..1, 0 is start, 1 is end)
  */
 export interface EdgeAnchor {
   side: NodeSide;
@@ -37,8 +37,8 @@ export interface EdgeAnchor {
 }
 
 /**
- * エッジの折れ点（Graph用）
- * 編集モードで追加された中間点
+ * Edge bend point (for Graph view)
+ * Intermediate point added in edit mode
  */
 export interface EdgeBend {
   x: number;
@@ -56,14 +56,14 @@ export interface NodeStyle {
 }
 
 /**
- * ノード
+ * Node
  */
 export interface Node {
   id: string;
   label: string;
   type?: string;
-  position?: NodePosition; // Graph用の位置情報
-  coordinates?: [number, number]; // Map2D/Globe3D用の地理座標 [latitude, longitude]
+  position?: NodePosition; // Position information for Graph view
+  coordinates?: [number, number]; // Geographic coordinates for Map2D/Globe3D [latitude, longitude]
   style?: NodeStyle; // Styling options
   meta?: Record<string, unknown>;
 }
@@ -80,33 +80,33 @@ export interface EdgeStyle {
 }
 
 /**
- * エッジ（関係）
+ * Edge (relationship)
  */
 export interface Edge {
   id: string;
-  src: string; // ソースノードID
-  dst: string; // ターゲットノードID
-  relType: string; // 関係タイプ
-  srcAnchor?: EdgeAnchor; // ソース側アンカー（未設定なら自動推定）
-  dstAnchor?: EdgeAnchor; // ターゲット側アンカー（未設定なら自動推定）
-  bends?: EdgeBend[]; // 空配列の場合は直線、要素がある場合は折れ線
+  src: string; // Source node ID
+  dst: string; // Target node ID
+  relType: string; // Relationship type
+  srcAnchor?: EdgeAnchor; // Source anchor (auto-estimated if not set)
+  dstAnchor?: EdgeAnchor; // Target anchor (auto-estimated if not set)
+  bends?: EdgeBend[]; // Empty array for straight line, elements for polyline
   style?: EdgeStyle; // Styling and relationship information
   meta?: Record<string, unknown>;
 }
 
 /**
- * ノードクリックイベント
+ * Node click event
  */
 export interface NodeClickEvent {
   node: Node;
   position: { x: number; y: number };
   originalEvent: MouseEvent | TouchEvent;
-  view?: ViewType; // どのviewから発火したか
+  view?: ViewType; // View that triggered the event
 }
 
 /**
- * 保存ペイロード
- * onSaveコールバックに渡される編集後のデータ
+ * Save payload
+ * Edited data passed to onSave callback
  */
 export interface SavePayload {
   nodes: Node[];
@@ -231,47 +231,47 @@ export interface RelatosViewerOptions {
 }
 
 /**
- * ビューアーインスタンス
+ * Viewer instance
  */
 export interface RelatosViewer {
   /**
-   * データを設定
+   * Set data
    */
   setData(data: { nodes: Node[]; edges: Edge[] }): void;
 
   /**
-   * Viewを切替
+   * Switch view
    */
   setView(viewType: ViewType): void;
 
   /**
-   * 現在のViewタイプを取得
+   * Get current view type
    */
   getView(): ViewType;
 
   /**
-   * Graphモードを設定（graph viewのみ）
+   * Set graph mode (graph view only)
    */
   setMode(mode: GraphMode): void;
 
   /**
-   * 現在のGraphモードを取得
+   * Get current graph mode
    */
   getMode(): GraphMode | null;
 
   /**
-   * リサイズ
+   * Resize
    */
   resize(): void;
 
   /**
-   * 破棄
+   * Destroy
    */
   destroy(): void;
 
   /**
-   * ノードを選択（ハイライト表示）
-   * @param nodeId 選択するノードID（nullの場合は選択解除）
+   * Select node (highlight)
+   * @param nodeId Node ID to select (null to deselect)
    */
   selectNode(nodeId: string | null): void;
 

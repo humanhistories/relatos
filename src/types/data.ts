@@ -1,9 +1,9 @@
 /**
- * Histoverse Viewer (Relatos) - データ型定義
+ * Relatos Viewer - Data Type Definitions
  */
 
 /**
- * ノードの位置情報（Graph用）
+ * Node position information (for Graph view)
  */
 export interface NodePosition {
   x: number;
@@ -11,24 +11,24 @@ export interface NodePosition {
 }
 
 /**
- * エッジのアンカー位置（Graph用）
- * ノードの境界上の接続点
+ * Edge anchor position (for Graph view)
+ * Connection point on node boundary
  */
 export interface EdgeAnchor {
   /**
-   * ソースノードID
+   * Source node ID
    */
   nodeId: string;
   /**
-   * アンカー位置（ノード中心からの相対座標、または角度）
-   * 実装詳細: 角度（0-2π）または相対座標（-1 to 1）
+   * Anchor position (relative coordinates from node center, or angle)
+   * Implementation detail: angle (0-2π) or relative coordinates (-1 to 1)
    */
   position: number | { x: number; y: number };
 }
 
 /**
- * エッジの折れ点（Graph用）
- * 編集モードで追加された中間点
+ * Edge bend point (for Graph view)
+ * Intermediate point added in edit mode
  */
 export interface EdgeBend {
   x: number;
@@ -36,74 +36,74 @@ export interface EdgeBend {
 }
 
 /**
- * ノード
+ * Node
  */
 export interface Node {
   /**
-   * ノードID（一意）
+   * Node ID (unique)
    */
   id: string;
 
   /**
-   * ノードラベル
+   * Node label
    */
   label: string;
 
   /**
-   * ノードタイプ（オプション）
+   * Node type (optional)
    */
   type?: string;
 
   /**
-   * Graph用の位置情報
-   * 存在しない場合、graphでは円形配置で初期化される
+   * Position information for Graph view
+   * If not present, graph initializes with circular layout
    */
   position?: NodePosition;
 
   /**
-   * Map2D/Globe3D用の地理座標
+   * Geographic coordinates for Map2D/Globe3D
    * [latitude, longitude]
    */
   coordinates?: [number, number];
 
   /**
-   * メタデータ（任意）
+   * Metadata (arbitrary)
    */
   meta?: Record<string, unknown>;
 
   /**
-   * ノード情報（表表示などに使用、任意のデータを内包可能）
+   * Node information (for table display, can contain arbitrary data)
    */
   info?: Record<string, unknown>;
 }
 
 /**
- * エッジ（関係）
+ * Edge (relationship)
  */
 export interface Edge {
   /**
-   * エッジID（一意）
+   * Edge ID (unique)
    */
   id: string;
 
   /**
-   * ソースノードID
+   * Source node ID
    */
   src: string;
 
   /**
-   * ターゲットノードID
+   * Target node ID
    */
   dst: string;
 
   /**
-   * 関係タイプ
+   * Relationship type
    */
   relType: string;
 
   /**
-   * Graph用のアンカー情報
-   * 編集モードで変更可能
+   * Anchor information for Graph view
+   * Can be modified in edit mode
    */
   anchors?: {
     src: EdgeAnchor;
@@ -111,34 +111,34 @@ export interface Edge {
   };
 
   /**
-   * Graph用の折れ点情報
-   * 編集モードで追加可能
-   * 空配列の場合は直線、要素がある場合は折れ線
+   * Bend point information for Graph view
+   * Can be added in edit mode
+   * Empty array for straight line, elements for polyline
    */
   bends?: EdgeBend[];
 
   /**
-   * メタデータ（任意）
+   * Metadata (arbitrary)
    */
   meta?: Record<string, unknown>;
 
   /**
-   * エッジ情報（表表示などに使用、任意のデータを内包可能）
+   * Edge information (for table display, can contain arbitrary data)
    */
   info?: Record<string, unknown>;
 }
 
 /**
- * 双方向エッジの統合情報（内部用）
- * 双方向エッジは1本のpathで両端矢印として描画される
+ * Merged bidirectional edge information (internal use)
+ * Bidirectional edges are rendered as a single path with arrows at both ends
  */
 export interface MergedEdge extends Edge {
   /**
-   * 双方向フラグ
+   * Bidirectional flag
    */
   bidirectional: boolean;
   /**
-   * 統合されたペアのエッジID（元の2本のエッジ）
+   * Merged pair edge IDs (original two edges)
    */
   mergedIds: [string, string];
 }

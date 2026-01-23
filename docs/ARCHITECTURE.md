@@ -185,6 +185,7 @@ const viewer = createRelatosViewer('#container', {
 - `viewer.getMode(): 'view' | 'edit'`: Get current graph mode
 - `viewer.selectNode(nodeId: string | null)`: Select node (highlight display, pass null to deselect)
 - `viewer.setTime(timeISO: string)`: Set time for day/night shading and moon position (ISO 8601 format)
+- `viewer.setLighting(enabled: boolean)`: Set lighting state for Map2D and Globe3D (day/night shading)
 - `viewer.resize()`: Resize viewer to fit container
 - `viewer.destroy()`: Destroy viewer and clean up resources
 

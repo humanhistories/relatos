@@ -440,7 +440,7 @@ export class Map2DView implements View {
   }
 
   /**
-   * 夜のシェード（昼夜境界線）を更新
+   * Update night shade (day/night terminator)
    */
   private updateNightShade(): void {
     if (!this.map || !this.Leaflet) {
@@ -834,9 +834,9 @@ export class Map2DView implements View {
   }
 
   /**
-   * 年内の日数を計算
-   * @param date 日付
-   * @returns 年内の日数（1-365/366）
+   * Calculate day of year
+   * @param date Date
+   * @returns Day of year (1-365/366)
    */
   private getDayOfYear(date: Date): number {
     const start = new Date(date.getFullYear(), 0, 0);
@@ -1021,9 +1021,26 @@ export class Map2DView implements View {
     });
     this.markers.clear();
 
-    this.polylines.forEach(polyline => {
-      this.map!.removeLayer(polyline);
+    // Remove all polylines from map (create array copy to avoid iteration issues)
+    // Use try-catch to handle cases where layer might already be removed or not exist
+    // Also iterate by keys to ensure we remove all entries
+    const edgeIdsToRemove = Array.from(this.polylines.keys());
+    edgeIdsToRemove.forEach(edgeId => {
+      const polyline = this.polylines.get(edgeId);
+      if (polyline && this.map) {
+        try {
+          // Check if layer is on map before removing
+          if (this.map.hasLayer(polyline)) {
+            this.map.removeLayer(polyline);
+          }
+        } catch (e) {
+          // Layer might already be removed or invalid, ignore error
+        }
+      }
+      // Remove from Map regardless of removal success
+      this.polylines.delete(edgeId);
     });
+    // Clear any remaining entries (safety measure)
     this.polylines.clear();
 
     // Collect nodes without coordinates (coordinates is undefined, null, or not a valid number pair)
@@ -1047,7 +1064,7 @@ export class Map2DView implements View {
       const RECT_MIN_LON = -32;
       const RECT_MAX_LON = 0;
       
-      // 矩形の境界線を描画
+      // Draw rectangle border
       const rectBounds = this.Leaflet.latLngBounds(
         [RECT_MIN_LAT, RECT_MIN_LON],
         [RECT_MAX_LAT, RECT_MAX_LON]
@@ -1061,7 +1078,7 @@ export class Map2DView implements View {
       });
       this.rectLayer.addTo(this.map);
 
-      // ノードを矩形内に均等に配置
+      // Place nodes evenly in rectangle
       const cols = Math.ceil(Math.sqrt(nodesWithoutCoords.length));
       const rows = Math.ceil(nodesWithoutCoords.length / cols);
       const latStep = (RECT_MAX_LAT - RECT_MIN_LAT) / (rows + 1);
@@ -1148,13 +1165,13 @@ export class Map2DView implements View {
       // Create marker
       const marker = this.Leaflet.marker([latitude, longitude], { icon });
 
-      // ラベルを追加（ポップアップとして）
+      // Add label (as popup)
       marker.bindPopup(node.label, {
         closeButton: false,
         offset: [0, -10],
       });
 
-      // クリックイベントを設定
+      // Set click event
       marker.on('click', (e: any) => {
         if (this.onNodeClick) {
           const latlng = e.latlng;
@@ -1184,12 +1201,12 @@ export class Map2DView implements View {
         const [srcLat, srcLon] = srcNode.coordinates;
         const [dstLat, dstLon] = dstNode.coordinates;
 
-        // エッジの色を取得
+        // Get edge color
         const edgeColor = edge.style?.color || '#999999';
         const edgeWeight = edge.style?.weight || 1;
         const width = Math.max(1, Math.min(5, edgeWeight));
 
-        // ポリラインを作成
+        // Create polyline
         const polyline = this.Leaflet.polyline(
           [[srcLat, srcLon], [dstLat, dstLon]],
           {
@@ -1199,7 +1216,7 @@ export class Map2DView implements View {
           }
         );
 
-        // クリックイベントを設定
+        // Set click event
         polyline.on('click', (e: any) => {
           if (this.onEdgeClick) {
             const latlng = e.latlng;
@@ -1211,6 +1228,18 @@ export class Map2DView implements View {
             });
           }
         });
+
+        // Remove existing polyline if it exists (to handle duplicate edge.id)
+        const existingPolyline = this.polylines.get(edge.id);
+        if (existingPolyline && this.map) {
+          try {
+            if (this.map.hasLayer(existingPolyline)) {
+              this.map.removeLayer(existingPolyline);
+            }
+          } catch (e) {
+            // Ignore error
+          }
+        }
 
         polyline.addTo(this.map);
         this.polylines.set(edge.id, polyline);
@@ -1235,9 +1264,26 @@ export class Map2DView implements View {
     });
     this.markers.clear();
 
-    this.polylines.forEach(polyline => {
-      this.map!.removeLayer(polyline);
+    // Remove all polylines from map (create array copy to avoid iteration issues)
+    // Use try-catch to handle cases where layer might already be removed or not exist
+    // Also iterate by keys to ensure we remove all entries
+    const edgeIdsToRemove = Array.from(this.polylines.keys());
+    edgeIdsToRemove.forEach(edgeId => {
+      const polyline = this.polylines.get(edgeId);
+      if (polyline && this.map) {
+        try {
+          // Check if layer is on map before removing
+          if (this.map.hasLayer(polyline)) {
+            this.map.removeLayer(polyline);
+          }
+        } catch (e) {
+          // Layer might already be removed or invalid, ignore error
+        }
+      }
+      // Remove from Map regardless of removal success
+      this.polylines.delete(edgeId);
     });
+    // Clear any remaining entries (safety measure)
     this.polylines.clear();
 
     // Remove rectangle layer
@@ -1267,7 +1313,7 @@ export class Map2DView implements View {
       const RECT_MIN_LON = -32;
       const RECT_MAX_LON = 0;
       
-      // 矩形の境界線を描画
+      // Draw rectangle border
       const rectBounds = this.Leaflet.latLngBounds(
         [RECT_MIN_LAT, RECT_MIN_LON],
         [RECT_MAX_LAT, RECT_MAX_LON]
@@ -1281,7 +1327,7 @@ export class Map2DView implements View {
       });
       this.rectLayer.addTo(this.map);
 
-      // ノードを矩形内に均等に配置
+      // Place nodes evenly in rectangle
       const cols = Math.ceil(Math.sqrt(nodesWithoutCoords.length));
       const rows = Math.ceil(nodesWithoutCoords.length / cols);
       const latStep = (RECT_MAX_LAT - RECT_MIN_LAT) / (rows + 1);
@@ -1423,6 +1469,18 @@ export class Map2DView implements View {
           }
         });
 
+        // Remove existing polyline if it exists (to handle duplicate edge.id)
+        const existingPolyline = this.polylines.get(edge.id);
+        if (existingPolyline && this.map) {
+          try {
+            if (this.map.hasLayer(existingPolyline)) {
+              this.map.removeLayer(existingPolyline);
+            }
+          } catch (e) {
+            // Ignore error
+          }
+        }
+
         polyline.addTo(this.map);
         this.polylines.set(edge.id, polyline);
       }
@@ -1447,7 +1505,7 @@ export class Map2DView implements View {
   }
 
   /**
-   * タイルタイプボタンの表示を更新
+   * Update tile type button display
    */
   private updateTileTypeButton(): void {
     if (!this.tileTypeButton) {
@@ -1479,7 +1537,7 @@ export class Map2DView implements View {
   }
 
   /**
-   * エッジ表示ON/OFFボタンの表示を更新
+   * Update edge display ON/OFF button display
    */
   private updateAlwaysShowEdgesButton(): void {
     if (!this.alwaysShowEdgesButton) {
@@ -1511,7 +1569,6 @@ export class Map2DView implements View {
    */
   /**
    * Calculate moon phase (0 to 1, where 0 = new moon, 0.5 = full moon)
-   * Based on SunCalc's getMoonIllumination function
    */
   private getMoonIllumination(date: Date): { fraction: number; phase: number; angle: number } {
     const julianDay = this.julian(date);
@@ -1598,7 +1655,6 @@ export class Map2DView implements View {
    *    - Latitude = DEC (moon's declination)
    *    - Longitude = RA - GMST (moon's right ascension minus Greenwich sidereal time)
    * 
-   * This method is based on SunCalc's internal moonCoords function.
    */
   private calculateMoonPosition(date: Date, unusedLat: number, unusedLon: number): [number, number] | null {
     try {
@@ -1606,7 +1662,7 @@ export class Map2DView implements View {
       const julianDay = this.julian(date);
       const d = julianDay - 2451545.0; // Days since J2000.0
       
-      // Calculate moon's ecliptic coordinates (based on SunCalc's moonCoords)
+      // Calculate moon's ecliptic coordinates
       const L = (218.316 + 13.176396 * d) * Math.PI / 180; // Ecliptic longitude
       const M = (134.963 + 13.064993 * d) * Math.PI / 180; // Mean anomaly
       const F = (93.272 + 13.229350 * d) * Math.PI / 180;  // Mean distance
@@ -1615,7 +1671,6 @@ export class Map2DView implements View {
       const b = (5.128 * Math.sin(F)) * Math.PI / 180;     // Latitude
       
       // Convert ecliptic coordinates to equatorial coordinates (RA, DEC)
-      // Based on SunCalc's rightAscension and declination functions
       const e = (23.4397 * Math.PI / 180); // Obliquity of the Earth
       const ra = Math.atan2(
         Math.sin(l) * Math.cos(e) - Math.tan(b) * Math.sin(e),
@@ -1796,7 +1851,7 @@ export class Map2DView implements View {
   }
 
   /**
-   * カメラを調整してすべてのノードが表示されるようにする
+   * Adjust camera to show all nodes
    */
   private fitToNodes(): void {
     if (!this.map || !this.Leaflet || this.nodes.length === 0) {

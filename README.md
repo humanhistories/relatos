@@ -32,18 +32,23 @@ accessible, and reusable.
 
 ## Installation
 
-Relatos is currently distributed via GitHub.
-npm distribution may be provided in the future.
+Relatos can be installed via npm:
+
+```bash
+npm install relatos
+```
 
 ### From GitHub
 
-```
+Alternatively, you can install directly from GitHub:
+
+```bash
 npm install git+https://github.com/humanhistories/relatos.git
 ```
 
-Or clone and build manually
+Or clone and build manually:
 
-```
+```bash
 git clone https://github.com/humanhistories/relatos.git
 cd relatos
 npm install
@@ -147,13 +152,7 @@ Note: The Map2D view assumes standard Web Mercator (EPSG:3857) XYZ tile servers 
 
 ### Requirements
 
-Relatos includes Cesium and Leaflet as dependencies, so they are automatically installed with Relatos:
-
-```bash
-npm install relatos
-```
-
-The following libraries are included as dependencies:
+The following libraries are included as dependencies and are automatically installed when you install Relatos:
 
  * **Leaflet** — required for the 2D Map view  
    The Map2D view assumes standard Web Mercator (EPSG:3857) XYZ tile servers (e.g., `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`).

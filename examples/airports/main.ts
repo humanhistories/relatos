@@ -407,8 +407,8 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
     editable: true,
   },
   // Shared settings for Map2D and Globe3D
-  time: timeInput.value,
-  enableLighting: true, // Enable day/night shading on initial load
+    time: timeInput.value,
+    enableLighting: true, // Enable day/night shading on initial load
   // Shared tile server configuration (Map2D / Globe3D common)
   tileServers: [
     {

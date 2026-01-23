@@ -492,9 +492,11 @@ export class Globe3DView implements View {
 
     // Monitor camera changes in real-time to limit altitude
     let isAdjusting = false; // Flag to prevent infinite loop
+    let isFlying = false; // Flag to prevent interference during flyTo animation
+    
     this.viewer.scene.camera.changed.addEventListener(() => {
-      if (isAdjusting) {
-        return; // Skip while adjusting
+      if (isAdjusting || isFlying) {
+        return; // Skip while adjusting or during flyTo animation
       }
 
       const camera = this.viewer!.scene.camera;
@@ -512,6 +514,7 @@ export class Globe3DView implements View {
         );
         camera.setView({
           destination: newPosition,
+          orientation: camera.orientation,
         });
         // Reset flag after adjustment
         setTimeout(() => {
@@ -519,6 +522,10 @@ export class Globe3DView implements View {
         }, 0);
       }
     });
+    
+    // Store isFlying flag for use in fitToNodes
+    (this as any)._isFlying = () => isFlying;
+    (this as any)._setIsFlying = (value: boolean) => { isFlying = value; };
   }
 
   /**
@@ -666,12 +673,16 @@ export class Globe3DView implements View {
     // If same node is selected again, switch to fit action
     // If lastSelectedNodeId matches nodeId, toggle to fit
     if (nodeId === this.lastSelectedNodeId) {
-      // Fit action (show entire view)
+      // Fit action (show entire view) - same as fitAndCenter button
       this.selectedNodeId = null;
       this.lastSelectedNodeId = null;
       this.hidePopup(); // Close popup
+      // Update node selection state without re-rendering edges (preserves edge visibility)
+      if (this.nodeEntities.size > 0) {
+        this.updateNodeSelection();
+      }
+      // Use same logic as fitAndCenter button (only calls fitToNodes, no render)
       this.fitToNodes();
-      this.render();
       return;
     }
     
@@ -680,8 +691,14 @@ export class Globe3DView implements View {
     this.lastSelectedNodeId = nodeId;
     this.selectedNodeId = nodeId;
     
-    // Update rendering (recreate markers first)
+    // Update node selection state without re-rendering edges
+    // Only update if nodes are already rendered, otherwise render everything
+    if (this.nodeEntities.size > 0) {
+      this.updateNodeSelection();
+    } else {
+      // If nodes are not rendered yet, render everything
     this.render();
+    }
     
     const node = this.nodes.find(n => n.id === nodeId);
     if (!node) {
@@ -703,6 +720,15 @@ export class Globe3DView implements View {
           this.showPopup(entity, node);
         }
         
+        // Set flying flag to prevent camera limit interference
+        // Set flag before flyTo to ensure it's active when camera.changed fires
+        const setIsFlying = (this as any)._setIsFlying;
+        if (setIsFlying) {
+          setIsFlying(true);
+        }
+
+        // Use setTimeout to ensure isFlying flag is set before flyTo triggers camera.changed
+        setTimeout(() => {
         // Zoom in to node position (with animation)
         this.viewer.camera.flyTo({
           destination: this.Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
@@ -712,7 +738,14 @@ export class Globe3DView implements View {
             roll: 0.0,
           },
           duration: 1.0, // Move in 1 second
-        });
+            complete: () => {
+              // Animation complete - clear flying flag
+              if (setIsFlying) {
+                setIsFlying(false);
+              }
+            }
+          });
+        }, 0);
         return;
       }
     }
@@ -753,6 +786,15 @@ export class Globe3DView implements View {
           this.showPopup(entity, node);
         }
         
+        // Set flying flag to prevent camera limit interference
+        // Set flag before flyTo to ensure it's active when camera.changed fires
+        const setIsFlying = (this as any)._setIsFlying;
+        if (setIsFlying) {
+          setIsFlying(true);
+        }
+
+        // Use setTimeout to ensure isFlying flag is set before flyTo triggers camera.changed
+        setTimeout(() => {
         // Fly camera to the node position with animation
         this.viewer.camera.flyTo({
           destination: this.Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
@@ -762,7 +804,14 @@ export class Globe3DView implements View {
             roll: 0.0,
           },
           duration: 1.0, // 1 second animation
-        });
+            complete: () => {
+              // Animation complete - clear flying flag
+              if (setIsFlying) {
+                setIsFlying(false);
+              }
+            }
+          });
+        }, 0);
       }
     }
   }
@@ -969,6 +1018,50 @@ export class Globe3DView implements View {
 
     // Adjust camera so that all nodes are visible (used only on initial fit)
     this.fitToNodes();
+  }
+
+  /**
+   * Update node selection state without re-rendering edges
+   * This preserves edge visibility during node selection
+   */
+  private updateNodeSelection(): void {
+    if (!this.viewer || !this.Cesium) {
+      return;
+    }
+
+    // Update all node entities' selection state
+    for (const [nodeId, entity] of this.nodeEntities.entries()) {
+      const node = this.nodes.find(n => n.id === nodeId);
+      if (!node) {
+        continue;
+      }
+
+      const isSelected = this.selectedNodeId === nodeId;
+      const nodeColor = node.style?.color || '#ffffff';
+      const borderColor = isSelected ? '#2196f3' : (node.style?.borderColor || '#333333');
+
+      // Update point size and colors
+      if (entity.point) {
+        entity.point.pixelSize = isSelected ? 15 : 10;
+        
+        // Update point color
+        let pointColor: any;
+        const rgbMatch = nodeColor.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+        if (rgbMatch) {
+          const r = parseInt(rgbMatch[1], 16) / 255;
+          const g = parseInt(rgbMatch[2], 16) / 255;
+          const b = parseInt(rgbMatch[3], 16) / 255;
+          pointColor = new this.Cesium.Color(r, g, b, 1.0);
+        } else {
+          pointColor = this.Cesium.Color.fromCssColorString(nodeColor);
+          pointColor = pointColor.withAlpha(1.0);
+        }
+        entity.point.color = pointColor;
+        
+        // Update outline color
+        entity.point.outlineColor = this.Cesium.Color.fromCssColorString(borderColor);
+      }
+    }
   }
 
   /**
@@ -1467,6 +1560,50 @@ export class Globe3DView implements View {
     const MAX_HEIGHT = 40000000;
     const height = Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, calculatedHeight));
 
+    // Wait for imagery layer to be ready before flying
+    const waitForImagery = (): Promise<void> => {
+      return new Promise((resolve) => {
+        if (!this.baseImageryLayer) {
+          resolve();
+          return;
+        }
+        
+        // Check if imagery is already ready
+        if (this.baseImageryLayer.imageryProvider && this.baseImageryLayer.imageryProvider.ready) {
+          resolve();
+          return;
+        }
+        
+        // Wait for imagery to be ready (with timeout)
+        const timeout = setTimeout(() => {
+          resolve(); // Resolve even if not ready after 2 seconds
+        }, 2000);
+        
+        if (this.baseImageryLayer.imageryProvider && this.baseImageryLayer.imageryProvider.readyPromise) {
+          this.baseImageryLayer.imageryProvider.readyPromise
+            .then(() => {
+              clearTimeout(timeout);
+              resolve();
+            })
+            .catch(() => {
+              clearTimeout(timeout);
+              resolve(); // Resolve even on error
+            });
+        } else {
+          clearTimeout(timeout);
+          resolve();
+        }
+      });
+    };
+
+    // Set flying flag to prevent camera limit interference
+    const setIsFlying = (this as any)._setIsFlying;
+    if (setIsFlying) {
+      setIsFlying(true);
+    }
+
+    // Wait for imagery, then fly
+    waitForImagery().then(() => {
     // Set camera (with animation)
     this.viewer.camera.flyTo({
       destination: this.Cesium.Cartesian3.fromDegrees(centerLon, centerLat, height),
@@ -1476,6 +1613,33 @@ export class Globe3DView implements View {
         roll: 0,
       },
       duration: 1.0, // Animate in 1 second
+        complete: () => {
+          // Animation complete - clear flying flag and verify final position
+          if (setIsFlying) {
+            setIsFlying(false);
+          }
+          
+          // Verify and adjust final camera position if needed
+          const camera = this.viewer.scene.camera;
+          const cartographic = this.Cesium.Cartographic.fromCartesian(camera.position);
+          const finalHeight = cartographic.height;
+          const MIN_HEIGHT = 500000;
+          const MAX_HEIGHT = 40000000;
+          
+          if (finalHeight < MIN_HEIGHT || finalHeight > MAX_HEIGHT) {
+            const clampedHeight = Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, finalHeight));
+            const newPosition = this.Cesium.Cartesian3.fromRadians(
+              cartographic.longitude,
+              cartographic.latitude,
+              clampedHeight
+            );
+            camera.setView({
+              destination: newPosition,
+              orientation: camera.orientation,
+            });
+          }
+        }
+      });
     });
   }
 

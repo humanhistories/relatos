@@ -1,5 +1,5 @@
 /**
- * Histoverse Viewer (Relatos) - 型定義エクスポート
+ * Relatos Viewer - Type Definition Exports
  */
 
 export * from './options';

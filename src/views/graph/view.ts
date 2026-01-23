@@ -38,7 +38,7 @@ interface EdgePair {
 }
 
 /**
- * Graph Viewクラス
+ * Graph View class
  */
 export class GraphView implements View {
   private container: HTMLElement;
@@ -120,7 +120,7 @@ export class GraphView implements View {
     onEdgeClick?: (event: EdgeClickEvent) => void
   ) {
     this.container = container;
-    // onNodeClickをラップしてポップアップ表示処理を追加
+    // Wrap onNodeClick to add popup display handling
     this.onNodeClick = onNodeClick
       ? (event: NodeClickEvent) => {
           // Toggle popup: OFF if same node, ON if different node
@@ -208,12 +208,12 @@ export class GraphView implements View {
     this.createArrowMarkers();
     this.svg.appendChild(this.svgDefs);
 
-    // エッジグループ（ノードより下に描画）
+    // Edge group (drawn below nodes)
     this.edgesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     this.edgesGroup.setAttribute('class', 'edges');
     this.svg.appendChild(this.edgesGroup);
 
-    // ノードグループ（エッジより上に描画）
+    // Node group (drawn above edges)
     this.nodesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     this.nodesGroup.setAttribute('class', 'nodes');
     this.svg.appendChild(this.nodesGroup);
@@ -224,7 +224,7 @@ export class GraphView implements View {
     this.anchorHandlesGroup.style.display = 'none';
     this.svg.appendChild(this.anchorHandlesGroup);
 
-    // 折れ点ハンドルグループ（最前面）
+    // Bend point handles group (topmost layer)
     this.bendHandlesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     this.bendHandlesGroup.setAttribute('class', 'bend-handles');
     this.bendHandlesGroup.style.display = 'none';
@@ -266,7 +266,7 @@ export class GraphView implements View {
     this.alwaysShowEdgesButton.style.transition = 'all 0.2s';
     this.alwaysShowEdgesButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
     this.alwaysShowEdgesButton.style.pointerEvents = 'auto';
-    this.alwaysShowEdgesButton.style.color = '#000000'; // アイコンの色
+    this.alwaysShowEdgesButton.style.color = '#000000'; // Icon color
     this.alwaysShowEdgesButton.innerHTML = createSvgIcon('icon-relations', 16);
 
     this.alwaysShowEdgesButton.addEventListener('click', () => {
@@ -299,9 +299,9 @@ export class GraphView implements View {
       this.alwaysShowEdgesButton.setAttribute('aria-label', 'Hide edge labels');
       this.alwaysShowEdgesButton.setAttribute('title', 'Hide edge labels');
       this.alwaysShowEdgesButton.classList.add('relatos-always-show-edges-active');
-      // 統一された押下効果: 黄色の背景色で光る効果
+      // Unified pressed effect: yellow background glow
       this.alwaysShowEdgesButton.style.backgroundColor = '#fff9c4';
-      this.alwaysShowEdgesButton.style.color = '#000000'; // アイコンの色
+      this.alwaysShowEdgesButton.style.color = '#000000'; // Icon color
       this.alwaysShowEdgesButton.style.borderColor = '#999';
       this.alwaysShowEdgesButton.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.2)';
       this.alwaysShowEdgesButton.style.transform = 'translateY(1px)';
@@ -362,14 +362,14 @@ export class GraphView implements View {
 
     if (this.mode === 'edit') {
       // Edit mode: pressed/depressed appearance with red icon
-      // Edit中であることを強調するため、背景色は黄色（統一効果）でアイコン色は赤色
+      // Emphasize edit mode: yellow background (unified effect) with red icon
       this.editToggleButton.setAttribute('aria-label', 'Exit edit mode');
       this.editToggleButton.setAttribute('title', 'Exit edit mode');
       this.editToggleButton.classList.add('relatos-edit-toggle-active');
-      this.editToggleButton.style.backgroundColor = '#fff9c4'; // 統一された押下効果（黄色の背景色）
-      this.editToggleButton.style.color = 'red'; // Edit中であることを強調する赤色アイコン
+      this.editToggleButton.style.backgroundColor = '#fff9c4'; // Unified pressed effect (yellow background)
+      this.editToggleButton.style.color = 'red'; // Red icon to emphasize edit mode
       this.editToggleButton.style.borderColor = '#999';
-      // 統一された凹み効果
+      // Unified depressed effect
       this.editToggleButton.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.2)';
       this.editToggleButton.style.transform = 'translateY(1px)';
     } else {
@@ -380,7 +380,7 @@ export class GraphView implements View {
       this.editToggleButton.style.backgroundColor = '#fff';
       this.editToggleButton.style.color = '#333';
       this.editToggleButton.style.borderColor = '#ccc';
-      // 統一された通常時のシャドウ
+      // Unified normal shadow
       this.editToggleButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
       this.editToggleButton.style.transform = 'translateY(0)';
     }
@@ -610,7 +610,7 @@ export class GraphView implements View {
    * Update transform: zoom on DOM wrapper, translate on SVG groups
    */
   private updateTransform(): void {
-    // ポップアップの位置を更新
+    // Update popup position
     if (this.popupNodeId && this.popupElement) {
       const node = this.nodes.find(n => n.id === this.popupNodeId);
       if (node) {
@@ -618,7 +618,7 @@ export class GraphView implements View {
       }
     }
     
-    // NaNチェック（NaNの場合はデフォルト値を使用）
+    // NaN check (use default value if NaN)
     const zoom = isFinite(this.zoom) && this.zoom > 0 ? this.zoom : 1;
     const offsetX = isFinite(this.offsetX) ? this.offsetX : 0;
     const offsetY = isFinite(this.offsetY) ? this.offsetY : 0;
@@ -704,7 +704,7 @@ export class GraphView implements View {
     const scaleX = containerRectCheck.width / width;
     const scaleY = containerRectCheck.height / height;
     
-    // NaNチェック
+    // NaN check
     if (!isFinite(scaleX) || !isFinite(scaleY)) {
       return;
     }
@@ -739,7 +739,7 @@ export class GraphView implements View {
     // Since updateTransform negates the offset in translate(-offsetX, -offsetY),
     // we need to negate the offset calculation here to account for the double negation.
     // The sign is reversed from the theoretical calculation.
-    // NaNチェック
+    // NaN check
     if (!isFinite(centerX) || !isFinite(centerY) || !isFinite(centerXInSvgSpace) || !isFinite(centerYInSvgSpace)) {
       return;
     }
@@ -758,7 +758,7 @@ export class GraphView implements View {
   }
 
   /**
-   * アニメーション付きでフィット&センター
+   * Fit and center with animation
    */
   private animateFitAndCenter(): void {
     if (this.nodes.length === 0) {
@@ -824,7 +824,7 @@ export class GraphView implements View {
     const containerCenterX = containerRectCheck.width / 2;
     const containerCenterY = containerRectCheck.height / 2;
 
-    // アニメーションでフィット
+    // Fit with animation
     this.animateZoomToPoint(targetZoom, containerCenterX, containerCenterY, centerX, centerY);
   }
 
@@ -861,7 +861,7 @@ export class GraphView implements View {
         return;
       }
       
-      // ノードやエッジ以外の場所をクリックした場合はポップアップを閉じる
+      // Close popup if clicked outside nodes or edges
       if (this.mode === 'view') {
         this.hidePopup();
       }
@@ -1268,7 +1268,7 @@ export class GraphView implements View {
       }
       // End panning
       if (this.panning) {
-        this.lastPanEndTime = Date.now(); // パン操作終了時刻を記録
+        this.lastPanEndTime = Date.now(); // Record pan operation end time
       }
       this.panning = null;
       this.resizingNode = null;
@@ -1291,7 +1291,7 @@ export class GraphView implements View {
       }
       // End panning
       if (this.panning) {
-        this.lastPanEndTime = Date.now(); // パン操作終了時刻を記録
+        this.lastPanEndTime = Date.now(); // Record pan operation end time
       }
       this.panning = null;
       this.resizingNode = null;
@@ -1317,7 +1317,7 @@ export class GraphView implements View {
       }
       // End panning
       if (this.panning) {
-        this.lastPanEndTime = Date.now(); // パン操作終了時刻を記録
+        this.lastPanEndTime = Date.now(); // Record pan operation end time
       }
       this.panning = null;
       this.resizingNode = null;
@@ -1416,7 +1416,7 @@ export class GraphView implements View {
   }
 
   /**
-   * データを設定
+   * Set data
    */
   setData(nodes: Node[], edges: Edge[]): void {
     this.nodes = nodes;
@@ -1427,7 +1427,7 @@ export class GraphView implements View {
     // otherwise place in remaining 1/4 area
     this.ensureNodePositions();
 
-    // 描画
+    // Render
     this.render();
     
     // Automatically execute fit operation at initial position (consider zoom out to prevent node overlap)
@@ -1446,9 +1446,9 @@ export class GraphView implements View {
   }
 
   /**
-   * ノードを選択（ハイライト表示）
-   * @param nodeId 選択するノードID（nullの場合は選択解除）
-   * @param zoomToNode ノードへズームインするかどうか（デフォルト: true）
+   * Select node (highlight)
+   * @param nodeId Node ID to select (null to deselect)
+   * @param zoomToNode Whether to zoom in to node (default: true)
    */
   selectNode(nodeId: string | null, zoomToNode: boolean = true): void {
     // Toggle behavior: switch to fit if same node is already zoomed in
@@ -1464,30 +1464,30 @@ export class GraphView implements View {
     // New node selected or deselected
     this.selectedNodeId = nodeId;
     if (nodeId) {
-      this.zoomedNodeId = nodeId; // ズームされたノードIDを記録
+      this.zoomedNodeId = nodeId; // Record zoomed node ID
     } else {
       this.zoomedNodeId = null;
     }
     this.render();
     
-    // ノードへズームイン（LeafletのflyToのように）
+    // Zoom in to node (like Leaflet's flyTo)
     if (nodeId && zoomToNode) {
       this.zoomToNode(nodeId);
-      // ポップアップを表示
+      // Show popup
       const node = this.nodes.find(n => n.id === nodeId);
       if (node) {
         this.showPopup(node);
       }
     } else if (!nodeId) {
-      // 選択解除された場合はフィット
+      // Fit if deselected
       this.zoomedNodeId = null;
       this.hidePopup();
     }
   }
 
   /**
-   * 指定されたノードへズームイン（LeafletのflyToのようにアニメーション）
-   * @param nodeId ズームするノードID
+   * Zoom in to specified node (with animation like Leaflet's flyTo)
+   * @param nodeId Node ID to zoom to
    */
   private zoomToNode(nodeId: string): void {
     const node = this.nodes.find(n => n.id === nodeId);
@@ -1518,7 +1518,7 @@ export class GraphView implements View {
     const zoomForHeight = targetDisplaySize / nodeHeight;
     const calculatedZoom = Math.min(zoomForWidth, zoomForHeight);
     
-    // ズームレベルの制限（最小0.5倍、最大3.0倍）
+    // Zoom level limit (minimum 0.5x, maximum 3.0x)
     const minZoom = 0.5;
     const maxZoom = 3.0; // Limit maximum zoom level to 3.0
     const targetZoom = Math.max(minZoom, Math.min(maxZoom, calculatedZoom));
@@ -1527,18 +1527,18 @@ export class GraphView implements View {
     const containerCenterX = containerRect.width / 2;
     const containerCenterY = containerRect.height / 2;
 
-    // アニメーションでズームイン
-    // fitAndCenterと同じ計算方法を使用してオフセットを調整
+    // Zoom in with animation
+    // Adjust offset using same calculation method as fitAndCenter
     this.animateZoomToPoint(targetZoom, containerCenterX, containerCenterY, nodeCenterX, nodeCenterY);
   }
 
   /**
-   * 指定されたポイントへアニメーションでズーム
-   * @param targetZoom 目標ズームレベル
-   * @param screenCenterX スクリーン中心X座標（コンテナ内の相対座標）
-   * @param screenCenterY スクリーン中心Y座標（コンテナ内の相対座標）
-   * @param targetSvgX 目標SVG座標X
-   * @param targetSvgY 目標SVG座標Y
+   * Zoom to specified point with animation
+   * @param targetZoom Target zoom level
+   * @param screenCenterX Screen center X coordinate (relative to container)
+   * @param screenCenterY Screen center Y coordinate (relative to container)
+   * @param targetSvgX Target SVG X coordinate
+   * @param targetSvgY Target SVG Y coordinate
    */
   private animateZoomToPoint(
     targetZoom: number,
@@ -1551,14 +1551,14 @@ export class GraphView implements View {
     const startOffsetX = this.offsetX;
     const startOffsetY = this.offsetY;
     
-    // 目標オフセットを事前に計算
+    // Calculate target offset in advance
     const containerRect = this.container.getBoundingClientRect();
     const targetCenterXInSvgSpace = containerRect.width / (2 * targetZoom);
     const targetCenterYInSvgSpace = containerRect.height / (2 * targetZoom);
     const targetOffsetX = targetSvgX - targetCenterXInSvgSpace;
     const targetOffsetY = targetSvgY - targetCenterYInSvgSpace;
     
-    const duration = 500; // アニメーション時間（ミリ秒）
+    const duration = 500; // Animation duration (milliseconds)
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
@@ -1573,16 +1573,16 @@ export class GraphView implements View {
       const currentOffsetX = startOffsetX + (targetOffsetX - startOffsetX) * easeOut;
       const currentOffsetY = startOffsetY + (targetOffsetY - startOffsetY) * easeOut;
 
-      // 更新
+      // Update
       this.zoom = currentZoom;
       this.offsetX = currentOffsetX;
       this.offsetY = currentOffsetY;
       this.updateTransform();
       this.render();
 
-      // アニメーション完了時にデバッグ情報を出力
+      // Output debug information when animation completes
       if (progress >= 1) {
-        // 画面中心のSVG座標を計算
+        // Calculate screen center SVG coordinates
         const finalContainerRect = this.container.getBoundingClientRect();
         const containerCenterScreenX = finalContainerRect.width / 2;
         const containerCenterScreenY = finalContainerRect.height / 2;
@@ -1599,9 +1599,9 @@ export class GraphView implements View {
   }
 
   /**
-   * ノードの位置情報を確保（ない場合は自動配置）
-   * coordinates（緯度経度）がある場合は緯度経度ベースで配置、
-   * ない場合は残り1/4の領域に配置
+   * Ensure node position information (auto-layout if not present)
+   * If coordinates (latitude/longitude) exist, place based on lat/lon,
+   * otherwise place in remaining 1/4 area
    */
   private ensureNodePositions(): void {
     const nodesWithCoords = this.nodes.filter(n => n.coordinates && n.coordinates.length === 2);
@@ -1617,24 +1617,24 @@ export class GraphView implements View {
     const baseWidth = containerRect.width || 1000;
     const baseHeight = containerRect.height || 600;
 
-    // 緯度経度対応エリアを十分広くする（ズームアウトした状態で配置するため）
-    // 実際の座標空間を拡大して、後でfitAndCenterでズームアウトする
-    const scaleFactor = 2.0; // 座標空間を2倍に拡大
-    // 左側に非対応エリアを配置するため、緯度経度用領域を右側にシフト
-    const nonGeoAreaWidth = baseWidth * scaleFactor * 0.25; // 左側エリアの幅（25%）
-    const geoAreaWidth = baseWidth * scaleFactor * 0.75; // 緯度経度用領域（75%）
+    // Make lat/lon area wide enough (to place in zoomed-out state)
+    // Expand coordinate space, then zoom out with fitAndCenter
+    const scaleFactor = 2.0; // Expand coordinate space by 2x
+    // Shift lat/lon area to right to place non-geo area on left
+    const nonGeoAreaWidth = baseWidth * scaleFactor * 0.25; // Left area width (25%)
+    const geoAreaWidth = baseWidth * scaleFactor * 0.75; // Lat/lon area (75%)
     const geoAreaHeight = baseHeight * scaleFactor;
-    const geoAreaStartX = nonGeoAreaWidth; // 緯度経度用領域の開始X位置
+    const geoAreaStartX = nonGeoAreaWidth; // Lat/lon area start X position
 
-    // 非対応エリア（左側に配置、グリッド配置）
-    const nonGeoAreaHeight = baseHeight * scaleFactor; // 縦幅は緯度経度用領域と同じ
+    // Non-geo area (placed on left, grid layout)
+    const nonGeoAreaHeight = baseHeight * scaleFactor; // Height same as lat/lon area
     const nonGeoAreaStartX = 0; // Start from left side
 
     const existingPositions: Array<{ x: number; y: number; width: number; height: number }> = [];
     // Preserve original position information of existing nodes (positions calculated from lat/lon)
     const existingOriginalPositions: Map<string, { originalX: number; originalY: number }> = new Map();
 
-    // 既存の位置情報を収集
+    // Collect existing position information
     for (const node of this.nodes) {
       if (node.position) {
         const nodeStyle = node.style || {};
@@ -1656,9 +1656,9 @@ export class GraphView implements View {
       }
     }
 
-    // 緯度経度ありのノードの位置を計算
+    // Calculate positions for nodes with lat/lon
     if (nodesWithCoords.length > 0) {
-      // 緯度経度の範囲を計算
+      // Calculate lat/lon range
       const lats = nodesWithCoords.map(n => n.coordinates![0]);
       const lons = nodesWithCoords.map(n => n.coordinates![1]);
       const minLat = Math.min(...lats);
@@ -1666,7 +1666,7 @@ export class GraphView implements View {
       const minLon = Math.min(...lons);
       const maxLon = Math.max(...lons);
 
-      // 範囲を少し広げる（マージンを追加）
+      // Expand range slightly (add margin)
       const latRange = maxLat - minLat;
       const lonRange = maxLon - minLon;
       const margin = Math.max(latRange, lonRange) * 0.1 || 0.01; // Default when range is 0
@@ -1678,16 +1678,16 @@ export class GraphView implements View {
         maxLon: maxLon + margin,
       };
 
-      // すべてのノード（既存+新規）の元の中心座標を事前計算
+      // Pre-calculate original center coordinates for all nodes (existing + new)
       // Map<nodeId, {originalCenterX, originalCenterY}>
       const nodeOriginalCenters: Map<string, { originalCenterX: number; originalCenterY: number }> = new Map();
       const nodeInfoMap: Map<string, { node: Node; width: number; height: number; originalCenterX: number; originalCenterY: number }> = new Map();
 
-      // すべてのノード（既存+新規）の元の中心座標を計算
+      // Calculate original center coordinates for all nodes (existing + new)
       for (const node of nodesWithCoords) {
         const [lat, lon] = node.coordinates!;
         const normalizedX = (lon - bounds.minLon) / (bounds.maxLon - bounds.minLon);
-        const normalizedY = 1 - (lat - bounds.minLat) / (bounds.maxLat - bounds.minLat); // Y軸は反転
+        const normalizedY = 1 - (lat - bounds.minLat) / (bounds.maxLat - bounds.minLat); // Y axis is inverted
 
         const svgPos = {
           x: geoAreaStartX + normalizedX * geoAreaWidth,
@@ -1712,16 +1712,16 @@ export class GraphView implements View {
         });
       }
 
-      // x方向とy方向を分離した制約ベースの衝突解決アルゴリズム
+      // Constraint-based collision resolution algorithm with separated x and y directions
       this.resolveNodePositionsWithOrderConstraints(nodeInfoMap, nodeOriginalCenters);
     }
 
     // Grid layout for nodes without lat/lon in left area (same approach as Map2D)
     const nodesWithoutCoordsNeedingPosition = nodesWithoutCoords.filter(n => !n.position);
     if (nodesWithoutCoordsNeedingPosition.length > 0) {
-      const padding = 20; // ノード間のパディング
+      const padding = 20; // Padding between nodes
       
-      // グリッド配置（Map2Dと同じ要領）
+      // Grid layout (same as Map2D)
       const cols = Math.ceil(Math.sqrt(nodesWithoutCoordsNeedingPosition.length));
       const rows = Math.ceil(nodesWithoutCoordsNeedingPosition.length / cols);
       const availableWidth = nonGeoAreaWidth - padding * 2;
@@ -1737,7 +1737,7 @@ export class GraphView implements View {
         const row = Math.floor(index / cols);
         const col = index % cols;
         
-        // セル内の中央に配置
+        // Place at center of cell
         const x = nonGeoAreaStartX + padding + (col + 0.5) * cellWidth;
         const y = padding + (row + 0.5) * cellHeight;
 
@@ -1754,11 +1754,11 @@ export class GraphView implements View {
   }
 
   /**
-   * x方向とy方向を分離した制約ベースの衝突解決アルゴリズム
-   * 元のx順序・y順序を制約として固定し、重ならないように調整
+   * Constraint-based collision resolution algorithm with separated x and y directions
+   * Fix original x and y order as constraints and adjust to avoid overlap
    * 
-   * @param nodeInfoMap すべてのノード情報（元の中心座標含む）
-   * @param nodeOriginalCenters すべてのノードの元の中心座標
+   * @param nodeInfoMap All node information (including original center coordinates)
+   * @param nodeOriginalCenters Original center coordinates for all nodes
    */
   private resolveNodePositionsWithOrderConstraints(
     nodeInfoMap: Map<string, { node: Node; width: number; height: number; originalCenterX: number; originalCenterY: number }>,
@@ -1774,7 +1774,7 @@ export class GraphView implements View {
     for (const [nodeId, nodeInfo] of nodeInfoMap) {
       const node = nodeInfo.node;
       if (node.position) {
-        // 既存の位置を使用
+        // Use existing position
         const centerX = node.position.x;
         const centerY = node.position.y;
         currentCenters.set(nodeId, { centerX, centerY });
@@ -1785,7 +1785,7 @@ export class GraphView implements View {
           height: nodeInfo.height,
         });
       } else {
-        // 元の中心座標を初期値として使用
+        // Use original center coordinates as initial value
         const originalCenter = nodeOriginalCenters.get(nodeId)!;
         currentCenters.set(nodeId, {
           centerX: originalCenter.originalCenterX,
@@ -1800,7 +1800,7 @@ export class GraphView implements View {
       }
     }
 
-    // 元のx順序・y順序を決定（制約として使用）
+    // Determine original x and y order (use as constraints)
     const nodesByOriginalX = Array.from(nodeInfoMap.entries()).sort((a, b) => {
       const centerA = nodeOriginalCenters.get(a[0])!;
       const centerB = nodeOriginalCenters.get(b[0])!;
@@ -1813,7 +1813,7 @@ export class GraphView implements View {
       return centerA.originalCenterY - centerB.originalCenterY;
     });
 
-    // x方向とy方向を交互に調整
+    // Adjust x and y directions alternately
     for (let iteration = 0; iteration < maxIterations; iteration++) {
       let hasCollision = false;
 
@@ -1823,7 +1823,7 @@ export class GraphView implements View {
         const currentPos = nodePositions.get(nodeId)!;
         const currentCenter = currentCenters.get(nodeId)!;
 
-        // 左側のノード（元のx順序で前のノード）との衝突をチェック
+        // Check collision with left node (previous node in original x order)
         for (let j = 0; j < i; j++) {
           const [otherId] = nodesByOriginalX[j];
           const otherPos = nodePositions.get(otherId)!;
@@ -1850,7 +1850,7 @@ export class GraphView implements View {
         const currentPos = nodePositions.get(nodeId)!;
         const currentCenter = currentCenters.get(nodeId)!;
 
-        // 上側のノード（元のy順序で前のノード）との衝突をチェック
+        // Check collision with upper node (previous node in original y order)
         for (let j = 0; j < i; j++) {
           const [otherId] = nodesByOriginalY[j];
           const otherPos = nodePositions.get(otherId)!;
@@ -1890,8 +1890,8 @@ export class GraphView implements View {
   }
 
   /**
-   * ノードの位置が他のノードと重ならないように調整（旧実装、後方互換性のために残す）
-   * 元の位置関係（東西南北）を保持しながら調整
+   * Adjust node positions to avoid overlap with other nodes (old implementation, kept for backward compatibility)
+   * Adjust while preserving original positional relationships (east-west, north-south)
    */
   private adjustNodePosition(
     node: { x: number; y: number; width: number; height: number },
@@ -1997,7 +1997,7 @@ export class GraphView implements View {
                 // East-west positional relationship is more important
                 const originalDirectionX = other.relativeDx > 0 ? -1 : 1; // If to the right (east), move left; if to the left (west), move right
                 moveDx = originalDirectionX * Math.abs(dx) / distance * requiredDistance;
-                moveDy = (dy / distance) * requiredDistance * 0.5; // 南北方向は補助的に調整
+                moveDy = (dy / distance) * requiredDistance * 0.5; // Adjust north-south direction as auxiliary
               } else {
                 // North-south positional relationship is more important
                 const originalDirectionY = other.relativeDy > 0 ? -1 : 1; // If below (south), move up; if above (north), move down
@@ -2092,14 +2092,14 @@ export class GraphView implements View {
   }
 
   /**
-   * エッジをノードペアでグループ化
-   * 無向ペアキー（minId||maxId）でグループ化し、EdgePairを生成
+   * Group edges by node pair
+   * Group by undirected pair key (minId||maxId) and generate EdgePair
    */
   private groupEdgesByPair(edges: Edge[]): EdgePair[] {
     const pairMap = new Map<string, EdgePair>();
 
     for (const edge of edges) {
-      // 無向ペアキーを生成（辞書順で固定）
+      // Generate undirected pair key (fixed in dictionary order)
       const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
       const pairKey = `${a}||${b}`;
 
@@ -2118,7 +2118,7 @@ export class GraphView implements View {
 
       // Inherit anchor/bend point information from first edge (based on A->B direction)
       if (edge.src === a && edge.dst === b) {
-        // A->B方向のエッジ
+        // A->B direction edge
         if (edge.srcAnchor && !pair.srcAnchor) {
           pair.srcAnchor = edge.srcAnchor;
         }
@@ -2129,7 +2129,7 @@ export class GraphView implements View {
           pair.bends = edge.bends;
         }
       } else {
-        // B->A方向のエッジ
+        // B->A direction edge
         if (edge.srcAnchor && !pair.dstAnchor) {
           pair.dstAnchor = edge.srcAnchor;
         }
@@ -2146,7 +2146,7 @@ export class GraphView implements View {
   }
 
   /**
-   * EdgePairから方向性を判定
+   * Determine direction from EdgePair
    * @returns { hasAtoB: boolean, hasBtoA: boolean }
    */
   private getEdgePairDirection(pair: EdgePair): { hasAtoB: boolean; hasBtoA: boolean } {
@@ -2165,7 +2165,7 @@ export class GraphView implements View {
   }
 
   /**
-   * EdgePairのパスを計算（A->B方向を基準）
+   * Calculate EdgePair path (based on A->B direction)
    */
   private calculateEdgePairPath(pair: EdgePair): string {
     const nodeA = this.nodes.find(n => n.id === pair.a);
@@ -2248,8 +2248,8 @@ export class GraphView implements View {
   }
 
   /**
-   * アンカーを自動推定
-   * ノード中心から相手ノードへの方向に最も近い辺と位置を計算
+   * Auto-estimate anchor
+   * Calculate side and position closest to direction from node center to target node
    */
   private estimateAnchor(srcNode: Node, dstNode: Node): EdgeAnchor {
     if (!srcNode.position || !dstNode.position) {
@@ -2303,7 +2303,7 @@ export class GraphView implements View {
   }
 
   /**
-   * エッジのポイント配列を取得 [start, ...bends, end]
+   * Get edge point array [start, ...bends, end]
    */
   private getEdgePoints(edge: Edge): Array<{ x: number; y: number }> {
     const srcNode = this.nodes.find(n => n.id === edge.src);
@@ -2338,7 +2338,7 @@ export class GraphView implements View {
   }
 
   /**
-   * エッジのパスを計算（アンカー考慮、折れ点対応）
+   * Calculate edge path (considering anchors, supporting bend points)
    */
   private calculateEdgePath(edge: Edge): string {
     const points = this.getEdgePoints(edge);
@@ -2355,8 +2355,8 @@ export class GraphView implements View {
   }
 
   /**
-   * EdgePairのマーカー属性を決定
-   * 方向性に応じてmarker-start/marker-endを設定
+   * Determine EdgePair marker attributes
+   * Set marker-start/marker-end based on direction
    */
   private getEdgePairMarkerAttributes(pair: EdgePair): { markerStart?: string; markerEnd?: string } {
     const { hasAtoB, hasBtoA } = this.getEdgePairDirection(pair);
@@ -2377,7 +2377,7 @@ export class GraphView implements View {
   }
 
   /**
-   * エッジの選択を解除
+   * Deselect edge
    */
   private deselectEdge(): void {
     this.selectedEdgeId = null;
@@ -2390,11 +2390,11 @@ export class GraphView implements View {
   }
 
   /**
-   * エッジを選択
+   * Select edge
    */
   private selectEdge(edgeId: string, shiftKey: boolean): void {
     if (this.selectedEdgeId === edgeId && shiftKey) {
-      // Shift+クリックでアンカーのsideを切り替え
+      // Toggle anchor side with Shift+click
       this.rotateAnchorSide(edgeId);
     } else {
       this.selectedEdgeId = edgeId;
@@ -2405,7 +2405,7 @@ export class GraphView implements View {
 
 
   /**
-   * アンカーのsideを時計回りに切り替え（Shift+クリック時）
+   * Rotate anchor side clockwise (on Shift+click)
    */
   private rotateAnchorSide(edgeId: string): void {
     const edge = this.edges.find(e => e.id === edgeId);
@@ -2413,7 +2413,7 @@ export class GraphView implements View {
       return;
     }
 
-    // エッジが属するペアを取得
+    // Get pair that edge belongs to
     const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
     const pairKey = `${a}||${b}`;
     const pair = this.groupEdgesByPair(this.edges).find(p => p.key === pairKey);
@@ -2427,7 +2427,7 @@ export class GraphView implements View {
       return sideOrder[(index + 1) % 4];
     };
 
-    // アンカーのsideを切り替え（ペアに保存）
+    // Toggle anchor side (save to pair)
     if (pair.srcAnchor) {
       pair.srcAnchor.side = getNextSide(pair.srcAnchor.side);
     }
@@ -2435,14 +2435,14 @@ export class GraphView implements View {
       pair.dstAnchor.side = getNextSide(pair.dstAnchor.side);
     }
 
-    // ペアに属する全てのエッジにアンカー情報を同期
+    // Synchronize anchor information to all edges in pair
     for (const e of pair.edges) {
       if (e.src === pair.a && e.dst === pair.b) {
-        // A->B方向
+        // A->B direction
         e.srcAnchor = pair.srcAnchor;
         e.dstAnchor = pair.dstAnchor;
       } else {
-        // B->A方向
+        // B->A direction
         e.srcAnchor = pair.dstAnchor;
         e.dstAnchor = pair.srcAnchor;
       }
@@ -2454,10 +2454,10 @@ export class GraphView implements View {
   }
 
   /**
-   * アンカーハンドルを更新
+   * Update anchor handles
    */
   private updateAnchorHandles(): void {
-    // 既存のハンドルをクリア
+    // Clear existing handles
     this.anchorHandles.clear();
     this.anchorHandlesGroup.innerHTML = '';
 
@@ -2471,7 +2471,7 @@ export class GraphView implements View {
       return;
     }
 
-    // エッジが属するペアを取得
+    // Get pair that edge belongs to
     const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
     const pairKey = `${a}||${b}`;
     const pair = this.groupEdgesByPair(this.edges).find(p => p.key === pairKey);
@@ -2500,7 +2500,7 @@ export class GraphView implements View {
     const srcPos = this.calculateAnchorPosition(nodeA, srcAnchor, widthA, heightA);
     const dstPos = this.calculateAnchorPosition(nodeB, dstAnchor, widthB, heightB);
 
-    // ハンドルを作成（エッジIDを使用 - 編集操作で使用するため）
+    // Create handle (use edge ID - for edit operations)
     this.createAnchorHandle(edge.id, 'src', srcPos.x, srcPos.y);
     this.createAnchorHandle(edge.id, 'dst', dstPos.x, dstPos.y);
 
@@ -2511,10 +2511,10 @@ export class GraphView implements View {
   }
 
   /**
-   * 折れ点ハンドルを更新
+   * Update bend point handles
    */
   private updateBendHandles(): void {
-    // 既存のハンドルをクリア
+    // Clear existing handles
     this.bendHandles.clear();
     this.bendHandlesGroup.innerHTML = '';
 
@@ -2532,7 +2532,7 @@ export class GraphView implements View {
       return;
     }
 
-    // エッジが属するペアを取得
+    // Get pair that edge belongs to
     const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
     const pairKey = `${a}||${b}`;
     const pair = this.groupEdgesByPair(this.edges).find(p => p.key === pairKey);
@@ -2543,7 +2543,7 @@ export class GraphView implements View {
       return;
     }
 
-    // 各折れ点にハンドルを作成（エッジIDを使用 - 編集操作で使用するため）
+    // Create handle for each bend point (use edge ID - for edit operations)
     pair.bends.forEach((bend, index) => {
       this.createBendHandle(edge.id, index, bend.x, bend.y);
     });
@@ -2558,7 +2558,7 @@ export class GraphView implements View {
   }
 
   /**
-   * アンカーハンドルを作成
+   * Create anchor handle
    */
   private createAnchorHandle(edgeId: string, type: 'src' | 'dst', x: number, y: number): void {
     const handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -2577,7 +2577,7 @@ export class GraphView implements View {
   }
 
   /**
-   * 折れ点ハンドルを作成
+   * Create bend point handle
    */
   private createBendHandle(edgeId: string, bendIndex: number, x: number, y: number): void {
     const handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -2613,14 +2613,14 @@ export class GraphView implements View {
     const mouseX = svgCoords.x;
     const mouseY = svgCoords.y;
 
-    // ノード位置を更新
+    // Update node position
     if (!node.position) {
       node.position = { x: 0, y: 0 };
     }
     node.position.x = mouseX - this.draggingNode.offsetX;
     node.position.y = mouseY - this.draggingNode.offsetY;
 
-    // 再描画
+    // Re-render
     this.render();
     this.updateAnchorHandles();
     this.updateBendHandles();
@@ -2831,7 +2831,7 @@ export class GraphView implements View {
       return;
     }
 
-    // エッジIDからエッジを取得し、ペアを取得
+    // Get edge by ID and find its pair
     const edge = this.edges.find(e => e.id === this.draggingAnchor!.edgeId);
     if (!edge) {
       return;
@@ -2869,7 +2869,7 @@ export class GraphView implements View {
       left: Math.abs(mouseX - (cx - w / 2)),
     };
 
-    // 最も近い辺を決定
+    // Determine closest side
     let closestSide: NodeSide = 'right';
     let minDist = distances.right;
     for (const [side, dist] of Object.entries(distances)) {
@@ -2879,7 +2879,7 @@ export class GraphView implements View {
       }
     }
 
-    // 辺上の相対位置tを計算
+    // Calculate relative position t on side
     let t = 0.5;
     switch (closestSide) {
       case 'top':
@@ -2893,27 +2893,27 @@ export class GraphView implements View {
     }
     t = Math.max(0, Math.min(1, t));
 
-    // アンカーを更新（ペアに保存）
+    // Update anchor (save to pair)
     if (this.draggingAnchor.type === 'src') {
       pair.srcAnchor = { side: closestSide, t };
     } else {
       pair.dstAnchor = { side: closestSide, t };
     }
 
-    // ペアに属する全てのエッジにアンカー情報を同期
+    // Synchronize anchor information to all edges in pair
     for (const edge of pair.edges) {
       if (edge.src === pair.a && edge.dst === pair.b) {
-        // A->B方向
+        // A->B direction
         edge.srcAnchor = pair.srcAnchor;
         edge.dstAnchor = pair.dstAnchor;
       } else {
-        // B->A方向
+        // B->A direction
         edge.srcAnchor = pair.dstAnchor;
         edge.dstAnchor = pair.srcAnchor;
       }
     }
 
-    // 再描画
+    // Re-render
     this.render();
     this.updateAnchorHandles();
     this.updateBendHandles();
@@ -2928,7 +2928,7 @@ export class GraphView implements View {
       return;
     }
 
-    // エッジIDからエッジを取得し、ペアを取得
+    // Get edge by ID and find its pair
     const edge = this.edges.find(e => e.id === this.draggingBend!.edgeId);
     if (!edge) {
       return;
@@ -2951,15 +2951,15 @@ export class GraphView implements View {
     const mouseX = svgCoords.x - this.draggingBend.offsetX;
     const mouseY = svgCoords.y - this.draggingBend.offsetY;
 
-    // 折れ点位置を更新（ペアに保存）
+    // Update bend point position (save to pair)
     pair.bends[bendIndex] = { x: mouseX, y: mouseY };
 
-    // ペアに属する全てのエッジに折れ点情報を同期
+    // Synchronize bend point information to all edges in the pair
     for (const edge of pair.edges) {
       edge.bends = [...pair.bends];
     }
 
-    // 再描画
+    // Re-render
     this.render();
     this.updateBendHandles();
     this.debouncedSave();
@@ -2987,7 +2987,7 @@ export class GraphView implements View {
     const clickX = e.clientX - svgRect.left;
     const clickY = e.clientY - svgRect.top;
 
-    // ペアのポイント配列を取得
+    // Get pair point array
     const points: Array<{ x: number; y: number }> = [];
     const nodeA = this.nodes.find(n => n.id === pair.a);
     const nodeB = this.nodes.find(n => n.id === pair.b);
@@ -3014,7 +3014,7 @@ export class GraphView implements View {
     }
     points.push(end);
 
-    // 最も近いセグメントを見つける
+    // Find nearest segment
     let nearestSegmentIndex = 0;
     let minDistance = Infinity;
 
@@ -3022,7 +3022,7 @@ export class GraphView implements View {
       const p1 = points[i];
       const p2 = points[i + 1];
 
-      // 点から線分への距離を計算
+      // Calculate distance from point to line segment
       const distance = this.pointToLineSegmentDistance(clickX, clickY, p1.x, p1.y, p2.x, p2.y);
       if (distance < minDistance) {
         minDistance = distance;
@@ -3030,7 +3030,7 @@ export class GraphView implements View {
       }
     }
 
-    // 新しい折れ点を作成（セグメントの中点に近い位置）
+    // Create new bend point (near segment midpoint)
     const p1 = points[nearestSegmentIndex];
     const p2 = points[nearestSegmentIndex + 1];
     const newBend = {
@@ -3038,16 +3038,16 @@ export class GraphView implements View {
       y: (p1.y + p2.y) / 2,
     };
 
-    // 折れ点配列を初期化（なければ）
+    // Initialize bend point array (if not present)
     if (!pair.bends) {
       pair.bends = [];
     }
 
-    // 折れ点を挿入（順序を保持）
-    // 最も近いセグメントの後に挿入（startとendの間なので、nearestSegmentIndexの位置）
+    // Insert bend point (preserve order)
+    // Insert after nearest segment (between start and end, so at nearestSegmentIndex position)
     pair.bends.splice(nearestSegmentIndex, 0, newBend);
 
-    // ペアに属する全てのエッジに折れ点情報を同期
+    // Synchronize bend point information to all edges in the pair
     for (const e of pair.edges) {
       e.bends = [...pair.bends];
     }
@@ -3057,14 +3057,14 @@ export class GraphView implements View {
       this.selectEdge(edgeId, false);
     }
 
-    // 再描画
+    // Re-render
     this.render();
     this.updateBendHandles();
     this.debouncedSave();
   }
 
   /**
-   * 点から線分への距離を計算
+   * Calculate distance from point to line segment
    */
   private pointToLineSegmentDistance(
     px: number, py: number,
@@ -3076,7 +3076,7 @@ export class GraphView implements View {
     const lengthSquared = dx * dx + dy * dy;
 
     if (lengthSquared === 0) {
-      // 線分が点の場合
+      // If line segment is a point
       return Math.sqrt((px - x1) ** 2 + (py - y1) ** 2);
     }
 
@@ -3088,7 +3088,7 @@ export class GraphView implements View {
   }
 
   /**
-   * 最も近い折れ点を削除（Delete/Backspace時）
+   * Delete nearest bend point (on Delete/Backspace)
    * Also implements View interface deleteNearestBendPoint method
    */
   deleteNearestBendPoint(): void {
@@ -3101,7 +3101,7 @@ export class GraphView implements View {
       return;
     }
 
-    // エッジが属するペアを取得
+    // Get pair that edge belongs to
     const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
     const pairKey = `${a}||${b}`;
     const pair = this.groupEdgesByPair(this.edges).find(p => p.key === pairKey);
@@ -3109,15 +3109,15 @@ export class GraphView implements View {
       return;
     }
 
-    // 最後の折れ点を削除
+    // Delete last bend point
     pair.bends.pop();
 
-    // 折れ点がなくなったら配列を削除
+    // Delete array if no bend points remain
     if (pair.bends.length === 0) {
       delete pair.bends;
     }
 
-    // ペアに属する全てのエッジから折れ点情報を削除
+    // Remove bend point information from all edges in pair
     for (const e of pair.edges) {
       if (pair.bends) {
         e.bends = [...pair.bends];
@@ -3325,8 +3325,8 @@ export class GraphView implements View {
       rect.setAttribute('y', String(y));
       rect.setAttribute('width', String(nodeWidth));
       rect.setAttribute('height', String(nodeHeight));
-      // Graphモードではノードの色をopacity 0.5で表示
-      // RGBカラーコードをrgbaに変換
+      // In Graph mode, display node color with opacity 0.5
+      // Convert RGB color code to rgba
       const rgbMatch = nodeColor.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
       if (rgbMatch) {
         const r = parseInt(rgbMatch[1], 16);
@@ -3334,7 +3334,7 @@ export class GraphView implements View {
         const b = parseInt(rgbMatch[3], 16);
         rect.setAttribute('fill', `rgba(${r}, ${g}, ${b}, 0.5)`);
       } else {
-        // カラーコードがRGB形式でない場合は、そのまま使用
+        // Use as-is if color code is not RGB format
       rect.setAttribute('fill', nodeColor);
       }
       
@@ -3345,7 +3345,7 @@ export class GraphView implements View {
       rect.setAttribute('rx', '4');
       rect.style.cursor = this.mode === 'view' ? 'pointer' : 'move';
 
-      // Text label (折り返し対応)
+      // Text label (with line wrapping)
       const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
       foreignObject.setAttribute('x', String(x));
       foreignObject.setAttribute('y', String(y));
@@ -3356,7 +3356,7 @@ export class GraphView implements View {
       labelDiv.style.width = '100%';
       labelDiv.style.height = '100%';
       labelDiv.style.display = 'flex';
-      labelDiv.style.alignItems = 'flex-start'; // 上詰め
+      labelDiv.style.alignItems = 'flex-start'; // Top aligned
       labelDiv.style.justifyContent = 'center';
       labelDiv.style.textAlign = 'center';
       labelDiv.style.fontSize = '14px';
@@ -3366,7 +3366,7 @@ export class GraphView implements View {
       labelDiv.style.overflowWrap = 'break-word';
       labelDiv.style.whiteSpace = 'normal';
       labelDiv.style.overflow = 'hidden';
-      labelDiv.style.textOverflow = 'ellipsis'; // はみ出した部分を省略
+      labelDiv.style.textOverflow = 'ellipsis'; // Ellipsis for overflow
       labelDiv.textContent = node.label;
       
       foreignObject.appendChild(labelDiv);
@@ -3386,14 +3386,14 @@ export class GraphView implements View {
       if (this.mode === 'view' && this.onNodeClick) {
         // Use capture phase to handle before SVG's click handler
         group.addEventListener('click', (e: MouseEvent) => {
-          e.stopPropagation(); // 空いている場所のクリックイベントを防ぐ
-          e.preventDefault(); // デフォルト動作を防ぐ
+          e.stopPropagation(); // Prevent click event on empty space
+          e.preventDefault(); // Prevent default behavior
           
           const svgRect = this.svg.getBoundingClientRect();
           const clickX = e.clientX - svgRect.left;
           const clickY = e.clientY - svgRect.top;
 
-          // onNodeClickコールバックを呼び出す（ポップアップ表示処理はコールバック内で行う）
+          // Call onNodeClick callback (popup display is handled in callback)
           this.onNodeClick!({
             node,
             position: { x: clickX, y: clickY },
@@ -3794,7 +3794,7 @@ export class GraphView implements View {
   }
 
   /**
-   * モードを設定
+   * Set mode
    */
   setMode(mode: GraphMode): void {
     if (!this.editable && mode === 'edit') {
@@ -3917,35 +3917,35 @@ export class GraphView implements View {
   }
 
   /**
-   * 編集可能かどうかを取得
+   * Get whether editable
    */
   isEditable(): boolean {
     return this.editable;
   }
 
   /**
-   * 編集モード切り替えボタンを取得
+   * Get edit mode toggle button
    */
   getEditToggleButton(): HTMLElement | null {
     return this.editToggleButton;
   }
 
   /**
-   * モードを取得
+   * Get mode
    */
   getMode(): GraphMode {
     return this.mode;
   }
 
   /**
-   * Viewを表示
+   * Show view
    */
   show(): void {
     this.container.style.display = 'block';
-    // データが設定されている場合、Fit操作を実行（初期状態でFitされた状態にする）
-    // これにより、Graphが初期表示時または他のビューから切り替えた時にFitされた状態になる
+    // Execute Fit operation if data is set (to be in fitted state initially)
+    // This ensures Graph is in fitted state on initial display or when switching from other views
     if (this.nodes.length > 0) {
-      // コンテナのサイズが有効になるまで少し待つ
+      // Wait a bit for container size to become valid
       setTimeout(() => {
         const containerRect = this.container.getBoundingClientRect();
         if (containerRect.width > 0 && containerRect.height > 0) {
@@ -3957,7 +3957,7 @@ export class GraphView implements View {
   }
 
   /**
-   * ポップアップを作成
+   * Create popup
    */
   private createPopup(): HTMLElement {
     const popup = document.createElement('div');
@@ -3981,7 +3981,7 @@ export class GraphView implements View {
       transition: opacity 0.2s;
     `;
     
-    // ポップアップの矢印（下部中央）
+    // Popup arrow (bottom center)
     const arrow = document.createElement('div');
     arrow.style.cssText = `
       position: absolute;
@@ -4001,29 +4001,29 @@ export class GraphView implements View {
   }
 
   /**
-   * ポップアップを表示
+   * Show popup
    */
   private showPopup(node: Node): void {
     if (!node || !node.position) {
       return;
     }
 
-    // 既存のポップアップを閉じる
+    // Close existing popup
     this.hidePopup();
 
-    // ポップアップ要素を作成（まだない場合）
+    // Create popup element if not exists
     if (!this.popupElement) {
       this.popupElement = this.createPopup();
     }
 
-    // ポップアップの内容を設定
+    // Set popup content
     this.popupElement.textContent = node.label;
     this.popupElement.style.opacity = '1';
     this.popupElement.style.display = 'block';
     this.popupNodeId = node.id;
 
-    // ポップアップの位置を更新（少し遅延させて、DOMが更新された後に位置を計算）
-    // requestAnimationFrameを使用して、次のフレームで位置を更新
+    // Update popup position (with slight delay to calculate position after DOM update)
+    // Use requestAnimationFrame to update position in next frame
     requestAnimationFrame(() => {
       if (this.popupElement && this.popupNodeId === node.id) {
         this.updatePopupPosition(node);
@@ -4032,7 +4032,7 @@ export class GraphView implements View {
   }
 
   /**
-   * ポップアップの位置を更新
+   * Update popup position
    */
   private updatePopupPosition(node: Node): void {
     if (!this.popupElement || !node || !node.position) {
@@ -4043,10 +4043,10 @@ export class GraphView implements View {
     const nodeWidth = nodeStyle.width || this.DEFAULT_NODE_WIDTH;
     const nodeHeight = nodeStyle.height || this.DEFAULT_NODE_HEIGHT;
 
-    // ノードの実際の画面位置を取得（SVG要素から直接取得）
+    // Get node's actual screen position (directly from SVG element)
     const nodeRect = this.nodeElements.get(node.id);
     if (!nodeRect) {
-      // nodeRectが取得できない場合、SVG座標から計算
+      // Calculate from SVG coordinates if nodeRect cannot be obtained
       const containerRect = this.container.getBoundingClientRect();
       const svgRect = this.svg.getBoundingClientRect();
       
@@ -4069,34 +4069,34 @@ export class GraphView implements View {
       return;
     }
 
-    // ノードのrect要素の実際の画面座標を取得
+    // Get actual screen coordinates of node's rect element
     const rectBounds = nodeRect.getBoundingClientRect();
     const containerRect = this.container.getBoundingClientRect();
     
-    // ノードの中心位置（画面座標、コンテナ相対）
+    // Node center position (screen coordinates, relative to container)
     const nodeCenterX = rectBounds.left + rectBounds.width / 2 - containerRect.left;
     const nodeCenterY = rectBounds.top + rectBounds.height / 2 - containerRect.top;
 
-    // ポップアップのサイズを取得
+    // Get popup size
     const popupRect = this.popupElement.getBoundingClientRect();
     const popupWidth = popupRect.width || 200;
     const popupHeight = popupRect.height || 50;
 
-    // ノードの上にポップアップを配置（中央揃え）
+    // Place popup above node (center aligned)
     const popupX = nodeCenterX - popupWidth / 2;
-    const popupY = nodeCenterY - rectBounds.height / 2 - popupHeight - 10; // ノードの上10px
+    const popupY = nodeCenterY - rectBounds.height / 2 - popupHeight - 10; // 10px above node
 
     this.popupElement.style.left = `${popupX}px`;
     this.popupElement.style.top = `${popupY}px`;
   }
 
   /**
-   * ポップアップを閉じる
+   * Hide popup
    */
   private hidePopup(): void {
     if (this.popupElement) {
       this.popupElement.style.opacity = '0';
-      // すぐに削除せず、トランジション完了後に非表示にする
+      // Don't remove immediately, hide after transition completes
       setTimeout(() => {
         if (this.popupElement && this.popupElement.style.opacity === '0') {
           this.popupElement.style.display = 'none';
@@ -4107,7 +4107,7 @@ export class GraphView implements View {
   }
 
   /**
-   * Viewを非表示
+   * Hide view
    */
   hide(): void {
     this.container.style.display = 'none';
@@ -4115,14 +4115,14 @@ export class GraphView implements View {
   }
 
   /**
-   * リサイズ
+   * Resize
    */
   resize(): void {
     const rect = this.container.getBoundingClientRect();
     this.svg.setAttribute('width', String(rect.width));
     this.svg.setAttribute('height', String(rect.height));
     
-    // ポップアップの位置を更新
+    // Update popup position
     if (this.popupNodeId && this.popupElement) {
       const node = this.nodes.find(n => n.id === this.popupNodeId);
       if (node) {
@@ -4132,7 +4132,7 @@ export class GraphView implements View {
   }
 
   /**
-   * 破棄
+   * Destroy
    */
   destroy(): void {
     this.nodeElements.clear();
