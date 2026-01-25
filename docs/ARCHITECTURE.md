@@ -120,7 +120,17 @@ Cesium-based 3D globe display.
   - Time controls for sun position and day/night shading
   - Lighting toggle
   - Edge visibility controls
-  - Camera controls (pan, zoom, rotate)
+  - Camera controls matching Leaflet/Graph behavior:
+    - Mouse drag: Pan/rotate globe
+    - Mouse wheel / trackpad scroll: Zoom
+    - Trackpad pinch: Zoom
+    - Ctrl+drag: Tilt camera
+
+- **Touch/Mobile Support**:
+  - One-finger drag: Pan/rotate globe
+  - Pinch gesture: Zoom
+  - Two-finger drag: Pan without rotation
+  - `touch-action: none` to prevent browser interception
 
 ## Icon-only UI Design
 

@@ -1,4 +1,4 @@
-const G = `<!-- relatos/src/assets/icons/icons.svg -->
+const W = `<!-- relatos/src/assets/icons/icons.svg -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
   <!-- =========================================
        Edit (pencil) : toggle "edit relations"
@@ -563,25 +563,25 @@ const G = `<!-- relatos/src/assets/icons/icons.svg -->
 
 </svg>`;
 let z = !1;
-const W = "relatos-icons-sprite";
-function P() {
+const Y = "relatos-icons-sprite";
+function H() {
   if (z)
     return;
-  if (document.getElementById(W)) {
+  if (document.getElementById(Y)) {
     z = !0;
     return;
   }
   const I = document.createElement("div");
-  I.id = W, I.style.display = "none", I.innerHTML = G, document.body.appendChild(I), z = !0;
+  I.id = Y, I.style.display = "none", I.innerHTML = W, document.body.appendChild(I), z = !0;
 }
 function D(I, t = 16) {
-  return P(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  return H(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${I}"></use>
   </svg>`;
 }
 class V {
   constructor(t, e) {
-    this.currentView = null, this.views = /* @__PURE__ */ new Map(), this.tabButtons = /* @__PURE__ */ new Map(), this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.lightingToggleButton = null, this.tileTypeButton = null, this.moonToggleButton = null, this.fitCenterButton = null, this.deleteBendButton = null, this.cancelEditButton = null, this.tableContainer = null, this.nodesTableContainer = null, this.edgesTableContainer = null, this.tableOptions = null, this.nodes = [], this.edges = [], this.isExternalTableContainer = !1, this.hasEdges = !1, this.sharedAlwaysShowEdges = !1, this.sharedLightingEnabled = !1, this.sharedTime = null, this.sharedTileServerIndex = 0, this.container = t, this.enabledViews = e, P(), this.container.style.display = "flex", this.container.style.flexDirection = "column", this.container.style.width = "100%", this.tabContainer = document.createElement("div"), this.tabContainer.style.display = "flex", this.tabContainer.style.gap = "4px", this.tabContainer.style.padding = "8px", this.tabContainer.style.borderBottom = "none", this.tabContainer.style.backgroundColor = "transparent", this.tabContainer.style.position = "absolute", this.tabContainer.style.top = "0", this.tabContainer.style.left = "0", this.tabContainer.style.right = "0", this.tabContainer.style.zIndex = "1000", this.tabContainer.style.pointerEvents = "none", this.viewContainer = document.createElement("div"), this.viewContainer.style.flex = "1 1 0%", this.viewContainer.style.position = "relative", this.viewContainer.style.overflow = "hidden", this.viewContainer.style.minHeight = "0", this.createTabButtons(), this.createCommonControlsContainer(), this.container.appendChild(this.viewContainer), this.viewContainer.appendChild(this.tabContainer);
+    this.currentView = null, this.views = /* @__PURE__ */ new Map(), this.tabButtons = /* @__PURE__ */ new Map(), this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.lightingToggleButton = null, this.tileTypeButton = null, this.moonToggleButton = null, this.fitCenterButton = null, this.deleteBendButton = null, this.cancelEditButton = null, this.tableContainer = null, this.nodesTableContainer = null, this.edgesTableContainer = null, this.tableOptions = null, this.nodes = [], this.edges = [], this.isExternalTableContainer = !1, this.hasEdges = !1, this.sharedAlwaysShowEdges = !1, this.sharedLightingEnabled = !1, this.sharedTime = null, this.sharedTileServerIndex = 0, this.container = t, this.enabledViews = e, H(), this.container.style.display = "flex", this.container.style.flexDirection = "column", this.container.style.width = "100%", this.tabContainer = document.createElement("div"), this.tabContainer.style.display = "flex", this.tabContainer.style.gap = "4px", this.tabContainer.style.padding = "8px", this.tabContainer.style.borderBottom = "none", this.tabContainer.style.backgroundColor = "transparent", this.tabContainer.style.position = "absolute", this.tabContainer.style.top = "0", this.tabContainer.style.left = "0", this.tabContainer.style.right = "0", this.tabContainer.style.zIndex = "1000", this.tabContainer.style.pointerEvents = "none", this.viewContainer = document.createElement("div"), this.viewContainer.style.flex = "1 1 0%", this.viewContainer.style.position = "relative", this.viewContainer.style.overflow = "hidden", this.viewContainer.style.minHeight = "0", this.createTabButtons(), this.createCommonControlsContainer(), this.container.appendChild(this.viewContainer), this.viewContainer.appendChild(this.tabContainer);
   }
   /**
    * Initialize table display options
@@ -627,8 +627,8 @@ class V {
    * Create table
    */
   createTable(t, e, s, i, o) {
-    const n = document.createElement("div"), r = document.createElement("table");
-    if (r.style.width = "100%", r.style.borderCollapse = "collapse", !document.getElementById("relatos-table-styles")) {
+    const n = document.createElement("div"), l = document.createElement("table");
+    if (l.style.width = "100%", l.style.borderCollapse = "collapse", !document.getElementById("relatos-table-styles")) {
       const h = document.createElement("style");
       h.id = "relatos-table-styles", h.textContent = `
         .relatos-table tr {
@@ -664,7 +664,7 @@ class V {
         }
       `, document.head.appendChild(h);
     }
-    r.className = "relatos-table";
+    l.className = "relatos-table";
     const a = document.createElement("thead");
     if (e)
       a.innerHTML = e;
@@ -672,31 +672,31 @@ class V {
       const h = document.createElement("tr");
       a.appendChild(h);
     }
-    r.appendChild(a);
+    l.appendChild(a);
     const c = document.createElement("tbody");
     for (const h of i) {
-      const l = document.createElement("tr");
-      l.id = `${o}-${h.id}`, l.style.cursor = "pointer";
+      const r = document.createElement("tr");
+      r.id = `${o}-${h.id}`, r.style.cursor = "pointer";
       let d = s;
       if ("info" in h && h.info)
         for (const [g, u] of Object.entries(h.info)) {
-          const w = new RegExp(`\\{\\{info\\.${g}\\}\\}`, "g");
-          d = d.replace(w, String(u || ""));
+          const m = new RegExp(`\\{\\{info\\.${g}\\}\\}`, "g");
+          d = d.replace(m, String(u || ""));
         }
       if (d = d.replace(/\{\{id\}\}/g, String(h.id || "")), d = d.replace(/\{\{label\}\}/g, String("label" in h && h.label || "")), d = d.replace(/\{\{type\}\}/g, String("type" in h && h.type || "")), "coordinates" in h && h.coordinates && (d = d.replace(/\{\{coordinates\.0\}\}/g, String(h.coordinates[0] || "")), d = d.replace(/\{\{coordinates\.1\}\}/g, String(h.coordinates[1] || "")), d = d.replace(/\{\{latitude\}\}/g, String(h.coordinates[0] || "")), d = d.replace(/\{\{longitude\}\}/g, String(h.coordinates[1] || ""))), h.style && typeof h.style == "object") {
         const g = h.style;
         d = d.replace(/\{\{style\.color\}\}/g, String(g.color ?? "")), d = d.replace(/\{\{style\.borderColor\}\}/g, String(g.borderColor ?? "")), d = d.replace(/\{\{style\.width\}\}/g, String(g.width ?? "")), d = d.replace(/\{\{style\.height\}\}/g, String(g.height ?? "")), d = d.replace(/\{\{style\.weight\}\}/g, String(g.weight ?? "")), d = d.replace(/\{\{style\.label\}\}/g, String(g.label ?? "")), d = d.replace(/\{\{style\.srcLabel\}\}/g, String(g.srcLabel ?? "")), d = d.replace(/\{\{style\.dstLabel\}\}/g, String(g.dstLabel ?? ""));
       }
-      "src" in h && (d = d.replace(/\{\{src\}\}/g, String(h.src || "")), d = d.replace(/\{\{dst\}\}/g, String(h.dst || "")), d = d.replace(/\{\{relType\}\}/g, String(h.relType || ""))), l.innerHTML = d, l.addEventListener("click", () => {
+      "src" in h && (d = d.replace(/\{\{src\}\}/g, String(h.src || "")), d = d.replace(/\{\{dst\}\}/g, String(h.dst || "")), d = d.replace(/\{\{relType\}\}/g, String(h.relType || ""))), r.innerHTML = d, r.addEventListener("click", () => {
         if (o === "node") {
-          if (this.highlightAndScrollToRow(l), !this.currentView)
+          if (this.highlightAndScrollToRow(r), !this.currentView)
             return;
           const g = this.views.get(this.currentView);
           g?.selectNode && g.selectNode(h.id);
         }
-      }), c.appendChild(l);
+      }), c.appendChild(r);
     }
-    return r.appendChild(c), n.appendChild(r), n;
+    return l.appendChild(c), n.appendChild(l), n;
   }
   /**
    * Highlight row and scroll to it
@@ -1162,7 +1162,7 @@ class V {
   }
 }
 function X(I, t = 16) {
-  return P(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  return H(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${I}"></use>
   </svg>`;
 }
@@ -1260,9 +1260,9 @@ class U {
   zoomToPoint(t, e, s) {
     const i = this.screenToSvg(e, s);
     this.zoom, this.zoom = t;
-    const o = this.container.getBoundingClientRect(), n = e - o.left, r = s - o.top, a = {
+    const o = this.container.getBoundingClientRect(), n = e - o.left, l = s - o.top, a = {
       x: n / this.zoom - this.offsetX,
-      y: r / this.zoom - this.offsetY
+      y: l / this.zoom - this.offsetY
     }, c = i.x - a.x, h = i.y - a.y;
     this.offsetX += c, this.offsetY += h;
   }
@@ -1272,10 +1272,10 @@ class U {
    * The visual size is always 100%, so we can use container coordinates
    */
   screenToSvg(t, e) {
-    const s = this.container.getBoundingClientRect(), i = t - s.left, o = e - s.top, n = i / this.zoom, r = o / this.zoom;
+    const s = this.container.getBoundingClientRect(), i = t - s.left, o = e - s.top, n = i / this.zoom, l = o / this.zoom;
     return {
       x: n - this.offsetX,
-      y: r - this.offsetY
+      y: l - this.offsetY
     };
   }
   /**
@@ -1283,7 +1283,7 @@ class U {
    */
   updateTransform() {
     if (this.popupNodeId && this.popupElement) {
-      const n = this.nodes.find((r) => r.id === this.popupNodeId);
+      const n = this.nodes.find((l) => l.id === this.popupNodeId);
       n && this.updatePopupPosition(n);
     }
     const t = isFinite(this.zoom) && this.zoom > 0 ? this.zoom : 1, e = isFinite(this.offsetX) ? this.offsetX : 0, s = isFinite(this.offsetY) ? this.offsetY : 0, i = 1 / t;
@@ -1303,23 +1303,23 @@ class U {
     let e = 1 / 0, s = 1 / 0, i = -1 / 0, o = -1 / 0;
     for (const p of this.nodes)
       if (p.position) {
-        const m = p.style || {}, f = m.width || this.DEFAULT_NODE_WIDTH, b = m.height || this.DEFAULT_NODE_HEIGHT;
-        e = Math.min(e, p.position.x - f / 2), s = Math.min(s, p.position.y - b / 2), i = Math.max(i, p.position.x + f / 2), o = Math.max(o, p.position.y + b / 2);
+        const w = p.style || {}, y = w.width || this.DEFAULT_NODE_WIDTH, C = w.height || this.DEFAULT_NODE_HEIGHT;
+        e = Math.min(e, p.position.x - y / 2), s = Math.min(s, p.position.y - C / 2), i = Math.max(i, p.position.x + y / 2), o = Math.max(o, p.position.y + C / 2);
       }
     if (e === 1 / 0)
       return;
     const n = 60;
     e -= n, s -= n, i += n, o += n;
-    const r = (e + i) / 2, a = (s + o) / 2, c = i - e, h = o - s, l = this.container.getBoundingClientRect();
-    if (l.width <= 0 || l.height <= 0 || !isFinite(c) || !isFinite(h) || c <= 0 || h <= 0)
+    const l = (e + i) / 2, a = (s + o) / 2, c = i - e, h = o - s, r = this.container.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0 || !isFinite(c) || !isFinite(h) || c <= 0 || h <= 0)
       return;
-    const d = l.width / c, g = l.height / h;
+    const d = r.width / c, g = r.height / h;
     if (!isFinite(d) || !isFinite(g))
       return;
     const u = Math.min(d, g, 1);
     this.zoom = u;
-    const w = l.width / (2 * this.zoom), y = l.height / (2 * this.zoom);
-    !isFinite(r) || !isFinite(a) || !isFinite(w) || !isFinite(y) || (this.offsetX = r - w, this.offsetY = a - y, this.svg.removeAttribute("viewBox"), this.updateTransform(), this.render());
+    const m = r.width / (2 * this.zoom), f = r.height / (2 * this.zoom);
+    !isFinite(l) || !isFinite(a) || !isFinite(m) || !isFinite(f) || (this.offsetX = l - m, this.offsetY = a - f, this.svg.removeAttribute("viewBox"), this.updateTransform(), this.render());
   }
   /**
    * Fit and center with animation
@@ -1333,21 +1333,21 @@ class U {
     let e = 1 / 0, s = 1 / 0, i = -1 / 0, o = -1 / 0;
     for (const p of this.nodes)
       if (p.position) {
-        const m = p.style || {}, f = m.width || this.DEFAULT_NODE_WIDTH, b = m.height || this.DEFAULT_NODE_HEIGHT;
-        e = Math.min(e, p.position.x - f / 2), s = Math.min(s, p.position.y - b / 2), i = Math.max(i, p.position.x + f / 2), o = Math.max(o, p.position.y + b / 2);
+        const w = p.style || {}, y = w.width || this.DEFAULT_NODE_WIDTH, C = w.height || this.DEFAULT_NODE_HEIGHT;
+        e = Math.min(e, p.position.x - y / 2), s = Math.min(s, p.position.y - C / 2), i = Math.max(i, p.position.x + y / 2), o = Math.max(o, p.position.y + C / 2);
       }
     if (e === 1 / 0)
       return;
     const n = 60;
     e -= n, s -= n, i += n, o += n;
-    const r = (e + i) / 2, a = (s + o) / 2, c = i - e, h = o - s, l = this.container.getBoundingClientRect();
-    if (l.width <= 0 || l.height <= 0 || !isFinite(c) || !isFinite(h) || c <= 0 || h <= 0)
+    const l = (e + i) / 2, a = (s + o) / 2, c = i - e, h = o - s, r = this.container.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0 || !isFinite(c) || !isFinite(h) || c <= 0 || h <= 0)
       return;
-    const d = l.width / c, g = l.height / h;
+    const d = r.width / c, g = r.height / h;
     if (!isFinite(d) || !isFinite(g))
       return;
-    const u = Math.min(d, g, 1), w = l.width / 2, y = l.height / 2;
-    this.animateZoomToPoint(u, w, y, r, a);
+    const u = Math.min(d, g, 1), m = r.width / 2, f = r.height / 2;
+    this.animateZoomToPoint(u, m, f, l, a);
   }
   /**
    * Setup event listeners (using Pointer Events for touch support)
@@ -1357,22 +1357,22 @@ class U {
       const o = i.target;
       o.closest("[data-node-id]") || o.getAttribute("data-edge-pair-key") || o.getAttribute("data-hit-edge-pair-key") || Date.now() - (this.lastPanEndTime || 0) < 100 || this.mode === "view" && this.hidePopup();
     }), this.svg.addEventListener("pointerdown", (i) => {
-      const o = i.target, n = o.closest("[data-node-id]")?.getAttribute("data-node-id"), r = o.getAttribute("data-edge-pair-key") || o.getAttribute("data-hit-edge-pair-key"), a = o.getAttribute("data-handle-type"), c = o.getAttribute("data-bend-index");
+      const o = i.target, n = o.closest("[data-node-id]")?.getAttribute("data-node-id"), l = o.getAttribute("data-edge-pair-key") || o.getAttribute("data-hit-edge-pair-key"), a = o.getAttribute("data-handle-type"), c = o.getAttribute("data-bend-index");
       if (this.mode === "edit") {
         const h = o.getAttribute("data-resize-side");
         if (h) {
-          const l = o.getAttribute("data-node-id");
-          if (l) {
-            const d = this.nodes.find((g) => g.id === l);
+          const r = o.getAttribute("data-node-id");
+          if (r) {
+            const d = this.nodes.find((g) => g.id === r);
             if (d?.position) {
-              const g = d.style || {}, u = g.width || this.DEFAULT_NODE_WIDTH, w = g.height || this.DEFAULT_NODE_HEIGHT, y = this.screenToSvg(i.clientX, i.clientY);
+              const g = d.style || {}, u = g.width || this.DEFAULT_NODE_WIDTH, m = g.height || this.DEFAULT_NODE_HEIGHT, f = this.screenToSvg(i.clientX, i.clientY);
               this.resizingNode = {
-                nodeId: l,
+                nodeId: r,
                 side: h,
-                startX: y.x,
-                startY: y.y,
+                startX: f.x,
+                startY: f.y,
                 startWidth: u,
-                startHeight: w,
+                startHeight: m,
                 startNodeX: d.position.x,
                 startNodeY: d.position.y
               }, i.target.setPointerCapture(i.pointerId), i.preventDefault(), i.stopPropagation();
@@ -1381,31 +1381,31 @@ class U {
           }
         }
         if (n) {
-          const l = this.nodes.find((d) => d.id === n);
-          if (l?.position) {
+          const r = this.nodes.find((d) => d.id === n);
+          if (r?.position) {
             const d = this.screenToSvg(i.clientX, i.clientY);
             this.draggingNode = {
               nodeId: n,
-              offsetX: d.x - l.position.x,
-              offsetY: d.y - l.position.y
+              offsetX: d.x - r.position.x,
+              offsetY: d.y - r.position.y
             }, i.target.setPointerCapture(i.pointerId), i.preventDefault(), i.stopPropagation();
             return;
           }
         } else if (c !== null) {
-          const l = o.getAttribute("data-edge-id");
-          if (l) {
-            const d = this.screenToSvg(i.clientX, i.clientY), g = this.edges.find((u) => u.id === l);
+          const r = o.getAttribute("data-edge-id");
+          if (r) {
+            const d = this.screenToSvg(i.clientX, i.clientY), g = this.edges.find((u) => u.id === r);
             if (g) {
-              const [u, w] = g.src < g.dst ? [g.src, g.dst] : [g.dst, g.src], y = `${u}||${w}`, p = this.groupEdgesByPair(this.edges).find((m) => m.key === y);
+              const [u, m] = g.src < g.dst ? [g.src, g.dst] : [g.dst, g.src], f = `${u}||${m}`, p = this.groupEdgesByPair(this.edges).find((w) => w.key === f);
               if (p && p.bends) {
-                const m = parseInt(c, 10);
-                if (m >= 0 && m < p.bends.length) {
-                  const f = p.bends[m];
+                const w = parseInt(c, 10);
+                if (w >= 0 && w < p.bends.length) {
+                  const y = p.bends[w];
                   this.draggingBend = {
-                    edgeId: l,
-                    bendIndex: m,
-                    offsetX: d.x - f.x,
-                    offsetY: d.y - f.y
+                    edgeId: r,
+                    bendIndex: w,
+                    offsetX: d.x - y.x,
+                    offsetY: d.y - y.y
                   }, i.preventDefault(), i.stopPropagation();
                   return;
                 }
@@ -1413,19 +1413,19 @@ class U {
             }
           }
         } else if (a) {
-          const l = o.getAttribute("data-edge-id");
-          if (l) {
-            const d = this.screenToSvg(i.clientX, i.clientY), g = this.edges.find((u) => u.id === l);
+          const r = o.getAttribute("data-edge-id");
+          if (r) {
+            const d = this.screenToSvg(i.clientX, i.clientY), g = this.edges.find((u) => u.id === r);
             if (g) {
-              const [u, w] = g.src < g.dst ? [g.src, g.dst] : [g.dst, g.src], y = `${u}||${w}`, p = this.groupEdgesByPair(this.edges).find((m) => m.key === y);
+              const [u, m] = g.src < g.dst ? [g.src, g.dst] : [g.dst, g.src], f = `${u}||${m}`, p = this.groupEdgesByPair(this.edges).find((w) => w.key === f);
               if (p) {
-                const m = a === "src" ? p.a : p.b, f = this.nodes.find((b) => b.id === m);
-                if (f) {
-                  const b = a === "src" ? p.b : p.a, C = this.nodes.find((E) => E.id === b);
-                  if (C) {
-                    const E = a === "src" ? p.srcAnchor || this.estimateAnchor(f, C) : p.dstAnchor || this.estimateAnchor(f, C), x = f.style || {}, B = x.width || this.DEFAULT_NODE_WIDTH, T = x.height || this.DEFAULT_NODE_HEIGHT, A = this.calculateAnchorPosition(f, E, B, T);
+                const w = a === "src" ? p.a : p.b, y = this.nodes.find((C) => C.id === w);
+                if (y) {
+                  const C = a === "src" ? p.b : p.a, b = this.nodes.find((E) => E.id === C);
+                  if (b) {
+                    const E = a === "src" ? p.srcAnchor || this.estimateAnchor(y, b) : p.dstAnchor || this.estimateAnchor(y, b), v = y.style || {}, B = v.width || this.DEFAULT_NODE_WIDTH, T = v.height || this.DEFAULT_NODE_HEIGHT, A = this.calculateAnchorPosition(y, E, B, T);
                     this.draggingAnchor = {
-                      edgeId: l,
+                      edgeId: r,
                       type: a,
                       offsetX: d.x - A.x,
                       offsetY: d.y - A.y
@@ -1436,32 +1436,32 @@ class U {
               }
             }
           }
-        } else r || this.deselectEdge();
+        } else l || this.deselectEdge();
       } else if (n) {
-        const h = this.nodes.find((l) => l.id === n);
+        const h = this.nodes.find((r) => r.id === n);
         if (h && this.onNodeClick) {
-          const l = this.screenToSvg(i.clientX, i.clientY);
+          const r = this.screenToSvg(i.clientX, i.clientY);
           this.onNodeClick({
             node: h,
-            position: { x: l.x, y: l.y },
+            position: { x: r.x, y: r.y },
             originalEvent: i
           });
         }
-      } else r || (this.deselectEdge(), this.tappedEdgePairKey && (this.tappedEdgePairKey = null, this.render()));
+      } else l || (this.deselectEdge(), this.tappedEdgePairKey && (this.tappedEdgePairKey = null, this.render()));
     });
     let t = 0, e = null;
     this.svg.addEventListener("pointerdown", (i) => {
       const o = i.target, n = o.getAttribute("data-edge-pair-key") || o.getAttribute("data-hit-edge-pair-key");
       if (this.mode === "edit" && n) {
-        const r = Date.now();
-        if (r - t < 300 && e === o) {
+        const l = Date.now();
+        if (l - t < 300 && e === o) {
           const c = this.groupEdgesByPair(this.edges).find((h) => h.key === n);
           if (c && c.edges.length > 0) {
             this.insertBendPoint(c.edges[0].id, i), i.preventDefault(), i.stopPropagation(), t = 0, e = null;
             return;
           }
         }
-        t = r, e = o;
+        t = l, e = o;
       }
     }), this.container.addEventListener("dblclick", (i) => {
       if (this.mode !== "edit")
@@ -1477,9 +1477,9 @@ class U {
           return;
         }
       }
-      let r = o;
-      for (; r && r !== this.svg; ) {
-        const a = r.getAttribute("data-hit-edge-pair-key") || r.getAttribute("data-edge-pair-key");
+      let l = o;
+      for (; l && l !== this.svg; ) {
+        const a = l.getAttribute("data-hit-edge-pair-key") || l.getAttribute("data-edge-pair-key");
         if (a) {
           const c = this.groupEdgesByPair(this.edges).find((h) => h.key === a);
           if (c && c.edges.length > 0) {
@@ -1487,26 +1487,26 @@ class U {
             return;
           }
         }
-        r = r.parentElement;
+        l = l.parentElement;
       }
     }, !0);
     const s = /* @__PURE__ */ new Map();
     this.svg.addEventListener("pointerdown", (i) => {
       if (i.pointerType === "touch" && (s.set(i.pointerId, i), s.size === 2)) {
-        const o = Array.from(s.values()), [n, r] = o;
-        this.pinchDistance = Math.hypot(r.clientX - n.clientX, r.clientY - n.clientY), this.pinchCenter = {
-          x: (n.clientX + r.clientX) / 2,
-          y: (n.clientY + r.clientY) / 2
+        const o = Array.from(s.values()), [n, l] = o;
+        this.pinchDistance = Math.hypot(l.clientX - n.clientX, l.clientY - n.clientY), this.pinchCenter = {
+          x: (n.clientX + l.clientX) / 2,
+          y: (n.clientY + l.clientY) / 2
         }, this.initialZoom = this.zoom, i.preventDefault();
       }
     }), this.svg.addEventListener("pointermove", (i) => {
       if (i.pointerType === "touch" && s.set(i.pointerId, i), this.pinchDistance !== null && this.pinchCenter !== null && s.size === 2) {
-        const c = Array.from(s.values()), [h, l] = c, g = Math.hypot(l.clientX - h.clientX, l.clientY - h.clientY) / this.pinchDistance, u = Math.pow(g, 1.5), w = Math.max(0.1, Math.min(5, this.initialZoom * u));
-        this.zoomToPoint(w, this.pinchCenter.x, this.pinchCenter.y), this.updateTransform(), this.render(), i.preventDefault();
+        const c = Array.from(s.values()), [h, r] = c, g = Math.hypot(r.clientX - h.clientX, r.clientY - h.clientY) / this.pinchDistance, u = Math.pow(g, 1.5), m = Math.max(0.1, Math.min(5, this.initialZoom * u));
+        this.zoomToPoint(m, this.pinchCenter.x, this.pinchCenter.y), this.updateTransform(), this.render(), i.preventDefault();
         return;
       }
-      const o = i.target, n = o instanceof HTMLButtonElement || o.closest("button") !== null || o.closest(".relatos-always-show-edges-toggle") !== null || o.closest(".relatos-edit-toggle") !== null || o.closest(".relatos-control-buttons") !== null, r = i.pointerType === "touch" && s.size === 1, a = i.pointerType === "mouse" && i.buttons === 1;
-      if (!n && !this.resizingNode && !this.draggingNode && !this.draggingAnchor && !this.draggingBend && (r || a)) {
+      const o = i.target, n = o instanceof HTMLButtonElement || o.closest("button") !== null || o.closest(".relatos-always-show-edges-toggle") !== null || o.closest(".relatos-edit-toggle") !== null || o.closest(".relatos-control-buttons") !== null, l = i.pointerType === "touch" && s.size === 1, a = i.pointerType === "mouse" && i.buttons === 1;
+      if (!n && !this.resizingNode && !this.draggingNode && !this.draggingAnchor && !this.draggingBend && (l || a)) {
         if (!this.panning)
           this.panning = {
             startX: i.clientX,
@@ -1515,8 +1515,8 @@ class U {
             startOffsetY: this.offsetY
           };
         else {
-          const c = i.clientX - this.panning.startX, h = i.clientY - this.panning.startY, l = c / this.zoom, d = h / this.zoom;
-          this.offsetX = this.panning.startOffsetX + l, this.offsetY = this.panning.startOffsetY + d, this.updateTransform(), this.render();
+          const c = i.clientX - this.panning.startX, h = i.clientY - this.panning.startY, r = c / this.zoom, d = h / this.zoom;
+          this.offsetX = this.panning.startOffsetX + r, this.offsetY = this.panning.startOffsetY + d, this.updateTransform(), this.render();
         }
         i.preventDefault();
         return;
@@ -1526,10 +1526,10 @@ class U {
       i.pointerType === "touch" && s.set(i.pointerId, i);
       const o = i.target;
       if (!(o instanceof HTMLButtonElement || o.closest("button") !== null || o.closest(".relatos-always-show-edges-toggle") !== null || o.closest(".relatos-edit-toggle") !== null || o.closest(".relatos-control-buttons") !== null) && this.panning && !this.resizingNode && !this.draggingNode && !this.draggingAnchor && !this.draggingBend) {
-        const r = i.pointerType === "touch" && s.size === 1, a = i.pointerType === "mouse" && (i.buttons === 1 || i.button === 0);
-        if (r || a) {
-          const c = i.clientX - this.panning.startX, h = i.clientY - this.panning.startY, l = c / this.zoom, d = h / this.zoom;
-          this.offsetX = this.panning.startOffsetX - l, this.offsetY = this.panning.startOffsetY - d, this.updateTransform(), this.render(), i.preventDefault();
+        const l = i.pointerType === "touch" && s.size === 1, a = i.pointerType === "mouse" && (i.buttons === 1 || i.button === 0);
+        if (l || a) {
+          const c = i.clientX - this.panning.startX, h = i.clientY - this.panning.startY, r = c / this.zoom, d = h / this.zoom;
+          this.offsetX = this.panning.startOffsetX - r, this.offsetY = this.panning.startOffsetY - d, this.updateTransform(), this.render(), i.preventDefault();
           return;
         }
       }
@@ -1597,16 +1597,16 @@ class U {
    * @param nodeId Node ID to zoom to
    */
   zoomToNode(t) {
-    const e = this.nodes.find((m) => m.id === t);
+    const e = this.nodes.find((w) => w.id === t);
     if (!e || !e.position)
       return;
     const s = this.container.getBoundingClientRect();
     if (s.width <= 0 || s.height <= 0)
       return;
-    const i = e.style || {}, o = i.width || this.DEFAULT_NODE_WIDTH, n = i.height || this.DEFAULT_NODE_HEIGHT, r = e.position.x + o / 2, a = e.position.y + n / 2;
+    const i = e.style || {}, o = i.width || this.DEFAULT_NODE_WIDTH, n = i.height || this.DEFAULT_NODE_HEIGHT, l = e.position.x + o / 2, a = e.position.y + n / 2;
     o * this.zoom, n * this.zoom;
-    const c = Math.min(s.width * 0.3, s.height * 0.3), h = c / o, l = c / n, d = Math.min(h, l), w = Math.max(0.5, Math.min(3, d)), y = s.width / 2, p = s.height / 2;
-    this.animateZoomToPoint(w, y, p, r, a);
+    const c = Math.min(s.width * 0.3, s.height * 0.3), h = c / o, r = c / n, d = Math.min(h, r), m = Math.max(0.5, Math.min(3, d)), f = s.width / 2, p = s.height / 2;
+    this.animateZoomToPoint(m, f, p, l, a);
   }
   /**
    * Zoom to specified point with animation
@@ -1617,15 +1617,15 @@ class U {
    * @param targetSvgY Target SVG Y coordinate
    */
   animateZoomToPoint(t, e, s, i, o) {
-    const n = this.zoom, r = this.offsetX, a = this.offsetY, c = this.container.getBoundingClientRect(), h = c.width / (2 * t), l = c.height / (2 * t), d = i - h, g = o - l, u = 500, w = performance.now(), y = (p) => {
-      const m = p - w, f = Math.min(m / u, 1), b = 1 - Math.pow(1 - f, 3), C = n + (t - n) * b, E = r + (d - r) * b, x = a + (g - a) * b;
-      if (this.zoom = C, this.offsetX = E, this.offsetY = x, this.updateTransform(), this.render(), f >= 1) {
+    const n = this.zoom, l = this.offsetX, a = this.offsetY, c = this.container.getBoundingClientRect(), h = c.width / (2 * t), r = c.height / (2 * t), d = i - h, g = o - r, u = 500, m = performance.now(), f = (p) => {
+      const w = p - m, y = Math.min(w / u, 1), C = 1 - Math.pow(1 - y, 3), b = n + (t - n) * C, E = l + (d - l) * C, v = a + (g - a) * C;
+      if (this.zoom = b, this.offsetX = E, this.offsetY = v, this.updateTransform(), this.render(), y >= 1) {
         const B = this.container.getBoundingClientRect(), T = B.width / 2, A = B.height / 2;
         T / this.zoom - this.offsetX, A / this.zoom - this.offsetY;
       }
-      f < 1 && requestAnimationFrame(y);
+      y < 1 && requestAnimationFrame(f);
     };
-    requestAnimationFrame(y);
+    requestAnimationFrame(f);
   }
   /**
    * Ensure node position information (auto-layout if not present)
@@ -1633,50 +1633,50 @@ class U {
    * otherwise place in remaining 1/4 area
    */
   ensureNodePositions() {
-    const t = this.nodes.filter((y) => y.coordinates && y.coordinates.length === 2), e = this.nodes.filter((y) => !y.coordinates || y.coordinates.length !== 2);
-    if (this.nodes.filter((y) => !y.position).length === 0 && t.length === 0 && e.length === 0)
+    const t = this.nodes.filter((f) => f.coordinates && f.coordinates.length === 2), e = this.nodes.filter((f) => !f.coordinates || f.coordinates.length !== 2);
+    if (this.nodes.filter((f) => !f.position).length === 0 && t.length === 0 && e.length === 0)
       return;
-    const i = this.container.getBoundingClientRect(), o = i.width || 1e3, n = i.height || 600, r = 2, a = o * r * 0.25, c = o * r * 0.75, h = n * r, l = a, d = n * r, g = 0, u = [];
-    for (const y of this.nodes)
-      if (y.position) {
-        const p = y.style || {}, m = p.width || this.DEFAULT_NODE_WIDTH, f = p.height || this.DEFAULT_NODE_HEIGHT;
+    const i = this.container.getBoundingClientRect(), o = i.width || 1e3, n = i.height || 600, l = 2, a = o * l * 0.25, c = o * l * 0.75, h = n * l, r = a, d = n * l, g = 0, u = [];
+    for (const f of this.nodes)
+      if (f.position) {
+        const p = f.style || {}, w = p.width || this.DEFAULT_NODE_WIDTH, y = p.height || this.DEFAULT_NODE_HEIGHT;
         if (u.push({
-          x: y.position.x - m / 2,
-          y: y.position.y - f / 2,
-          width: m,
-          height: f
-        }), y.coordinates && y.coordinates.length === 2) {
-          const [b, C] = y.coordinates;
+          x: f.position.x - w / 2,
+          y: f.position.y - y / 2,
+          width: w,
+          height: y
+        }), f.coordinates && f.coordinates.length === 2) {
+          const [C, b] = f.coordinates;
         }
       }
     if (t.length > 0) {
-      const y = t.map((M) => M.coordinates[0]), p = t.map((M) => M.coordinates[1]), m = Math.min(...y), f = Math.max(...y), b = Math.min(...p), C = Math.max(...p), E = f - m, x = C - b, B = Math.max(E, x) * 0.1 || 0.01, T = {
-        minLat: m - B,
-        maxLat: f + B,
-        minLon: b - B,
-        maxLon: C + B
+      const f = t.map((M) => M.coordinates[0]), p = t.map((M) => M.coordinates[1]), w = Math.min(...f), y = Math.max(...f), C = Math.min(...p), b = Math.max(...p), E = y - w, v = b - C, B = Math.max(E, v) * 0.1 || 0.01, T = {
+        minLat: w - B,
+        maxLat: y + B,
+        minLon: C - B,
+        maxLon: b + B
       }, A = /* @__PURE__ */ new Map(), L = /* @__PURE__ */ new Map();
       for (const M of t) {
-        const [v, S] = M.coordinates, k = (S - T.minLon) / (T.maxLon - T.minLon), N = 1 - (v - T.minLat) / (T.maxLat - T.minLat), _ = {
-          x: l + k * c,
+        const [x, S] = M.coordinates, k = (S - T.minLon) / (T.maxLon - T.minLon), N = 1 - (x - T.minLat) / (T.maxLat - T.minLat), _ = {
+          x: r + k * c,
           y: N * h
-        }, H = M.style || {}, R = H.width || this.DEFAULT_NODE_WIDTH, F = H.height || this.DEFAULT_NODE_HEIGHT, O = _.x, Y = _.y;
-        A.set(M.id, { originalCenterX: O, originalCenterY: Y }), L.set(M.id, {
+        }, P = M.style || {}, R = P.width || this.DEFAULT_NODE_WIDTH, F = P.height || this.DEFAULT_NODE_HEIGHT, O = _.x, G = _.y;
+        A.set(M.id, { originalCenterX: O, originalCenterY: G }), L.set(M.id, {
           node: M,
           width: R,
           height: F,
           originalCenterX: O,
-          originalCenterY: Y
+          originalCenterY: G
         });
       }
       this.resolveNodePositionsWithOrderConstraints(L, A);
     }
-    const w = e.filter((y) => !y.position);
-    if (w.length > 0) {
-      const p = Math.ceil(Math.sqrt(w.length)), m = Math.ceil(w.length / p), f = a - 40, b = d - 40, C = f / p, E = b / m;
-      w.forEach((x, B) => {
-        const T = x.style || {}, A = T.width || this.DEFAULT_NODE_WIDTH, L = T.height || this.DEFAULT_NODE_HEIGHT, M = Math.floor(B / p), v = B % p, S = g + 20 + (v + 0.5) * C, k = 20 + (M + 0.5) * E;
-        x.position = { x: S, y: k }, u.push({
+    const m = e.filter((f) => !f.position);
+    if (m.length > 0) {
+      const p = Math.ceil(Math.sqrt(m.length)), w = Math.ceil(m.length / p), y = a - 40, C = d - 40, b = y / p, E = C / w;
+      m.forEach((v, B) => {
+        const T = v.style || {}, A = T.width || this.DEFAULT_NODE_WIDTH, L = T.height || this.DEFAULT_NODE_HEIGHT, M = Math.floor(B / p), x = B % p, S = g + 20 + (x + 0.5) * b, k = 20 + (M + 0.5) * E;
+        v.position = { x: S, y: k }, u.push({
           x: S - A / 2,
           y: k - L / 2,
           width: A,
@@ -1695,12 +1695,12 @@ class U {
   resolveNodePositionsWithOrderConstraints(t, e) {
     const o = /* @__PURE__ */ new Map(), n = /* @__PURE__ */ new Map();
     for (const [c, h] of t) {
-      const l = h.node;
-      if (l.position) {
-        const d = l.position.x, g = l.position.y;
+      const r = h.node;
+      if (r.position) {
+        const d = r.position.x, g = r.position.y;
         o.set(c, { centerX: d, centerY: g }), n.set(c, {
-          x: l.position.x - h.width / 2,
-          y: l.position.y - h.height / 2,
+          x: r.position.x - h.width / 2,
+          y: r.position.y - h.height / 2,
           width: h.width,
           height: h.height
         });
@@ -1717,34 +1717,34 @@ class U {
         });
       }
     }
-    const r = Array.from(t.entries()).sort((c, h) => {
-      const l = e.get(c[0]), d = e.get(h[0]);
-      return l.originalCenterX - d.originalCenterX;
+    const l = Array.from(t.entries()).sort((c, h) => {
+      const r = e.get(c[0]), d = e.get(h[0]);
+      return r.originalCenterX - d.originalCenterX;
     }), a = Array.from(t.entries()).sort((c, h) => {
-      const l = e.get(c[0]), d = e.get(h[0]);
-      return l.originalCenterY - d.originalCenterY;
+      const r = e.get(c[0]), d = e.get(h[0]);
+      return r.originalCenterY - d.originalCenterY;
     });
     for (let c = 0; c < 50; c++) {
       let h = !1;
-      for (let l = 0; l < r.length; l++) {
-        const [d] = r[l], g = n.get(d), u = o.get(d);
-        for (let w = 0; w < l; w++) {
-          const [y] = r[w], p = n.get(y);
+      for (let r = 0; r < l.length; r++) {
+        const [d] = l[r], g = n.get(d), u = o.get(d);
+        for (let m = 0; m < r; m++) {
+          const [f] = l[m], p = n.get(f);
           if (g.x < p.x + p.width + 20 && g.x + g.width + 20 > p.x) {
             h = !0;
-            const m = p.width / 2 + g.width / 2 + 20, b = o.get(y).centerX + m;
-            u.centerX = b, g.x = b - g.width / 2;
+            const w = p.width / 2 + g.width / 2 + 20, C = o.get(f).centerX + w;
+            u.centerX = C, g.x = C - g.width / 2;
           }
         }
       }
-      for (let l = 0; l < a.length; l++) {
-        const [d] = a[l], g = n.get(d), u = o.get(d);
-        for (let w = 0; w < l; w++) {
-          const [y] = a[w], p = n.get(y);
+      for (let r = 0; r < a.length; r++) {
+        const [d] = a[r], g = n.get(d), u = o.get(d);
+        for (let m = 0; m < r; m++) {
+          const [f] = a[m], p = n.get(f);
           if (g.y < p.y + p.height + 20 && g.y + g.height + 20 > p.y) {
             h = !0;
-            const m = p.height / 2 + g.height / 2 + 20, b = o.get(y).centerY + m;
-            u.centerY = b, g.y = b - g.height / 2;
+            const w = p.height / 2 + g.height / 2 + 20, C = o.get(f).centerY + w;
+            u.centerY = C, g.y = C - g.height / 2;
           }
         }
       }
@@ -1753,10 +1753,10 @@ class U {
     }
     for (const [c, h] of t)
       if (!h.node.position) {
-        const l = n.get(c);
+        const r = n.get(c);
         h.node.position = {
-          x: l.x + l.width / 2,
-          y: l.y + l.height / 2
+          x: r.x + r.width / 2,
+          y: r.y + r.height / 2
         };
       }
   }
@@ -1765,70 +1765,70 @@ class U {
    * Adjust while preserving original positional relationships (east-west, north-south)
    */
   adjustNodePosition(t, e, s, i, o = 20) {
-    let r = t.x, a = t.y;
-    const c = t.width, h = t.height, l = s?.originalX ?? t.x, d = s?.originalY ?? t.y, g = e.map((u, w) => {
-      const y = u.width || this.DEFAULT_NODE_WIDTH, p = u.height || this.DEFAULT_NODE_HEIGHT, m = u.x + y / 2, f = u.y + p / 2, b = m - l, C = f - d;
+    let l = t.x, a = t.y;
+    const c = t.width, h = t.height, r = s?.originalX ?? t.x, d = s?.originalY ?? t.y, g = e.map((u, m) => {
+      const f = u.width || this.DEFAULT_NODE_WIDTH, p = u.height || this.DEFAULT_NODE_HEIGHT, w = u.x + f / 2, y = u.y + p / 2, C = w - r, b = y - d;
       return {
         x: u.x,
         y: u.y,
-        width: y,
+        width: f,
         height: p,
-        centerX: m,
-        centerY: f,
-        relativeDx: b,
+        centerX: w,
+        centerY: y,
+        relativeDx: C,
         // Infer original positional relationship (relationship between existing nodes' current positions and original node's original position)
-        relativeDy: C,
-        originalCenterX: m,
+        relativeDy: b,
+        originalCenterX: w,
         // Existing node's current position (inferred original position)
-        originalCenterY: f
+        originalCenterY: y
       };
     });
     for (let u = 0; u < o; u++) {
-      let w = !1, y = r, p = a, m = 1 / 0;
-      for (const f of g)
-        if (r < f.x + f.width + 20 && r + c + 20 > f.x && a < f.y + f.height + 20 && a + h + 20 > f.y) {
-          w = !0;
-          const b = r + c / 2, C = a + h / 2, E = f.centerX - b, x = f.centerY - C, B = Math.sqrt(E * E + x * x);
+      let m = !1, f = l, p = a, w = 1 / 0;
+      for (const y of g)
+        if (l < y.x + y.width + 20 && l + c + 20 > y.x && a < y.y + y.height + 20 && a + h + 20 > y.y) {
+          m = !0;
+          const C = l + c / 2, b = a + h / 2, E = y.centerX - C, v = y.centerY - b, B = Math.sqrt(E * E + v * v);
           if (B > 0) {
-            const T = (c + f.width) / 2 + 20;
-            let A = E, L = x;
-            if (Math.abs(f.relativeDx) > 0.1 || Math.abs(f.relativeDy) > 0.1)
-              if (Math.abs(f.relativeDx) > Math.abs(f.relativeDy))
-                A = (f.relativeDx > 0 ? -1 : 1) * Math.abs(E) / B * T, L = x / B * T * 0.5;
+            const T = (c + y.width) / 2 + 20;
+            let A = E, L = v;
+            if (Math.abs(y.relativeDx) > 0.1 || Math.abs(y.relativeDy) > 0.1)
+              if (Math.abs(y.relativeDx) > Math.abs(y.relativeDy))
+                A = (y.relativeDx > 0 ? -1 : 1) * Math.abs(E) / B * T, L = v / B * T * 0.5;
               else {
-                const O = f.relativeDy > 0 ? -1 : 1;
-                A = E / B * T * 0.5, L = O * Math.abs(x) / B * T;
+                const O = y.relativeDy > 0 ? -1 : 1;
+                A = E / B * T * 0.5, L = O * Math.abs(v) / B * T;
               }
             else
-              A = E / B * T, L = x / B * T;
-            const M = r + A, v = a + L, S = Math.sqrt(
-              Math.pow(M - l, 2) + Math.pow(v - d, 2)
-            ), k = M + c / 2, N = v + h / 2, _ = k - l, H = N - d;
+              A = E / B * T, L = v / B * T;
+            const M = l + A, x = a + L, S = Math.sqrt(
+              Math.pow(M - r, 2) + Math.pow(x - d, 2)
+            ), k = M + c / 2, N = x + h / 2, _ = k - r, P = N - d;
             let R = 0;
-            (f.relativeDx > 0 && _ < f.relativeDx || f.relativeDx < 0 && _ > f.relativeDx) && (R += 1e3), (f.relativeDy > 0 && H < f.relativeDy || f.relativeDy < 0 && H > f.relativeDy) && (R += 1e3);
+            (y.relativeDx > 0 && _ < y.relativeDx || y.relativeDx < 0 && _ > y.relativeDx) && (R += 1e3), (y.relativeDy > 0 && P < y.relativeDy || y.relativeDy < 0 && P > y.relativeDy) && (R += 1e3);
             const F = S + R;
-            F < m && (m = F, y = M, p = v);
+            F < w && (w = F, f = M, p = x);
           } else {
-            const T = (c + f.width) / 2 + 20;
+            const T = (c + y.width) / 2 + 20;
             let A = 0, L = 0;
-            if (f.relativeDx !== 0 || f.relativeDy !== 0) {
-              const k = f.relativeDx > 0 ? -1 : 1, N = f.relativeDy > 0 ? -1 : 1;
+            if (y.relativeDx !== 0 || y.relativeDy !== 0) {
+              const k = y.relativeDx > 0 ? -1 : 1, N = y.relativeDy > 0 ? -1 : 1;
               A = k * T, L = N * T;
             } else {
               const k = Math.random() * Math.PI * 2;
               A = Math.cos(k) * T, L = Math.sin(k) * T;
             }
-            const M = r + A, v = a + L, S = Math.sqrt(
-              Math.pow(M - l, 2) + Math.pow(v - d, 2)
+            const M = l + A, x = a + L, S = Math.sqrt(
+              Math.pow(M - r, 2) + Math.pow(x - d, 2)
             );
-            S < m && (m = S, y = M, p = v);
+            S < w && (w = S, f = M, p = x);
           }
         }
-      if (!w)
+      if (!m)
         break;
-      r = y, a = p;
+      l = f, a = p;
     }
-    return { x: r, y: a };
+    return { x: l, y: a };
   }
   /**
    * Group edges by node pair
@@ -1838,13 +1838,13 @@ class U {
     const e = /* @__PURE__ */ new Map();
     for (const s of t) {
       const [i, o] = s.src < s.dst ? [s.src, s.dst] : [s.dst, s.src], n = `${i}||${o}`;
-      let r = e.get(n);
-      r || (r = {
+      let l = e.get(n);
+      l || (l = {
         key: n,
         a: i,
         b: o,
         edges: []
-      }, e.set(n, r)), r.edges.push(s), s.src === i && s.dst === o ? (s.srcAnchor && !r.srcAnchor && (r.srcAnchor = s.srcAnchor), s.dstAnchor && !r.dstAnchor && (r.dstAnchor = s.dstAnchor), s.bends && !r.bends && (r.bends = s.bends)) : (s.srcAnchor && !r.dstAnchor && (r.dstAnchor = s.srcAnchor), s.dstAnchor && !r.srcAnchor && (r.srcAnchor = s.dstAnchor), s.bends && !r.bends && (r.bends = s.bends));
+      }, e.set(n, l)), l.edges.push(s), s.src === i && s.dst === o ? (s.srcAnchor && !l.srcAnchor && (l.srcAnchor = s.srcAnchor), s.dstAnchor && !l.dstAnchor && (l.dstAnchor = s.dstAnchor), s.bends && !l.bends && (l.bends = s.bends)) : (s.srcAnchor && !l.dstAnchor && (l.dstAnchor = s.srcAnchor), s.dstAnchor && !l.srcAnchor && (l.srcAnchor = s.dstAnchor), s.bends && !l.bends && (l.bends = s.bends));
     }
     return Array.from(e.values());
   }
@@ -1862,15 +1862,15 @@ class U {
    * Calculate EdgePair path (based on A->B direction)
    */
   calculateEdgePairPath(t) {
-    const e = this.nodes.find((y) => y.id === t.a), s = this.nodes.find((y) => y.id === t.b);
+    const e = this.nodes.find((f) => f.id === t.a), s = this.nodes.find((f) => f.id === t.b);
     if (!e?.position || !s?.position)
       return "";
-    const i = t.srcAnchor || this.estimateAnchor(e, s), o = t.dstAnchor || this.estimateAnchor(s, e), n = e.style || {}, r = s.style || {}, a = n.width || this.DEFAULT_NODE_WIDTH, c = n.height || this.DEFAULT_NODE_HEIGHT, h = r.width || this.DEFAULT_NODE_WIDTH, l = r.height || this.DEFAULT_NODE_HEIGHT, d = this.calculateAnchorPosition(e, i, a, c), g = this.calculateAnchorPosition(s, o, h, l), u = [d];
+    const i = t.srcAnchor || this.estimateAnchor(e, s), o = t.dstAnchor || this.estimateAnchor(s, e), n = e.style || {}, l = s.style || {}, a = n.width || this.DEFAULT_NODE_WIDTH, c = n.height || this.DEFAULT_NODE_HEIGHT, h = l.width || this.DEFAULT_NODE_WIDTH, r = l.height || this.DEFAULT_NODE_HEIGHT, d = this.calculateAnchorPosition(e, i, a, c), g = this.calculateAnchorPosition(s, o, h, r), u = [d];
     t.bends && u.push(...t.bends), u.push(g);
-    const w = [`M ${u[0].x} ${u[0].y}`];
-    for (let y = 1; y < u.length; y++)
-      w.push(`L ${u[y].x} ${u[y].y}`);
-    return w.join(" ");
+    const m = [`M ${u[0].x} ${u[0].y}`];
+    for (let f = 1; f < u.length; f++)
+      m.push(`L ${u[f].x} ${u[f].y}`);
+    return m.join(" ");
   }
   /**
    * Calculate position on node edge
@@ -1883,20 +1883,20 @@ class U {
   calculateAnchorPosition(t, e, s, i) {
     if (!t.position)
       return { x: 0, y: 0 };
-    const o = t.position.x, n = t.position.y, r = s || t.style?.width || this.DEFAULT_NODE_WIDTH, a = i || t.style?.height || this.DEFAULT_NODE_HEIGHT;
+    const o = t.position.x, n = t.position.y, l = s || t.style?.width || this.DEFAULT_NODE_WIDTH, a = i || t.style?.height || this.DEFAULT_NODE_HEIGHT;
     let c = 0, h = 0;
     switch (e.side) {
       case "top":
-        c = o - r / 2 + r * e.t, h = n - a / 2;
+        c = o - l / 2 + l * e.t, h = n - a / 2;
         break;
       case "right":
-        c = o + r / 2, h = n - a / 2 + a * e.t;
+        c = o + l / 2, h = n - a / 2 + a * e.t;
         break;
       case "bottom":
-        c = o - r / 2 + r * e.t, h = n + a / 2;
+        c = o - l / 2 + l * e.t, h = n + a / 2;
         break;
       case "left":
-        c = o - r / 2, h = n - a / 2 + a * e.t;
+        c = o - l / 2, h = n - a / 2 + a * e.t;
         break;
     }
     return { x: c, y: h };
@@ -1908,18 +1908,18 @@ class U {
   estimateAnchor(t, e) {
     if (!t.position || !e.position)
       return { side: "right", t: 0.5 };
-    const s = t.style || {}, i = s.width || this.DEFAULT_NODE_WIDTH, o = s.height || this.DEFAULT_NODE_HEIGHT, n = e.position.x - t.position.x, r = e.position.y - t.position.y, a = Math.atan2(r, n), c = a < 0 ? a + 2 * Math.PI : a;
-    let h, l;
-    return c >= 7 * Math.PI / 4 || c < Math.PI / 4 ? (h = "right", l = 0.5 + r / o * 0.5) : c >= Math.PI / 4 && c < 3 * Math.PI / 4 ? (h = "bottom", l = 0.5 + n / i * 0.5) : c >= 3 * Math.PI / 4 && c < 5 * Math.PI / 4 ? (h = "left", l = 0.5 - r / o * 0.5) : (h = "top", l = 0.5 - n / i * 0.5), l = Math.max(0, Math.min(1, l)), { side: h, t: l };
+    const s = t.style || {}, i = s.width || this.DEFAULT_NODE_WIDTH, o = s.height || this.DEFAULT_NODE_HEIGHT, n = e.position.x - t.position.x, l = e.position.y - t.position.y, a = Math.atan2(l, n), c = a < 0 ? a + 2 * Math.PI : a;
+    let h, r;
+    return c >= 7 * Math.PI / 4 || c < Math.PI / 4 ? (h = "right", r = 0.5 + l / o * 0.5) : c >= Math.PI / 4 && c < 3 * Math.PI / 4 ? (h = "bottom", r = 0.5 + n / i * 0.5) : c >= 3 * Math.PI / 4 && c < 5 * Math.PI / 4 ? (h = "left", r = 0.5 - l / o * 0.5) : (h = "top", r = 0.5 - n / i * 0.5), r = Math.max(0, Math.min(1, r)), { side: h, t: r };
   }
   /**
    * Get edge point array [start, ...bends, end]
    */
   getEdgePoints(t) {
-    const e = this.nodes.find((w) => w.id === t.src), s = this.nodes.find((w) => w.id === t.dst);
+    const e = this.nodes.find((m) => m.id === t.src), s = this.nodes.find((m) => m.id === t.dst);
     if (!e?.position || !s?.position)
       return [];
-    const i = t.srcAnchor || this.estimateAnchor(e, s), o = t.dstAnchor || this.estimateAnchor(s, e), n = e.style || {}, r = s.style || {}, a = n.width || this.DEFAULT_NODE_WIDTH, c = n.height || this.DEFAULT_NODE_HEIGHT, h = r.width || this.DEFAULT_NODE_WIDTH, l = r.height || this.DEFAULT_NODE_HEIGHT, d = this.calculateAnchorPosition(e, i, a, c), g = this.calculateAnchorPosition(s, o, h, l), u = [d];
+    const i = t.srcAnchor || this.estimateAnchor(e, s), o = t.dstAnchor || this.estimateAnchor(s, e), n = e.style || {}, l = s.style || {}, a = n.width || this.DEFAULT_NODE_WIDTH, c = n.height || this.DEFAULT_NODE_HEIGHT, h = l.width || this.DEFAULT_NODE_WIDTH, r = l.height || this.DEFAULT_NODE_HEIGHT, d = this.calculateAnchorPosition(e, i, a, c), g = this.calculateAnchorPosition(s, o, h, r), u = [d];
     return t.bends && u.push(...t.bends), u.push(g), u;
   }
   /**
@@ -1964,9 +1964,9 @@ class U {
     const [s, i] = e.src < e.dst ? [e.src, e.dst] : [e.dst, e.src], o = `${s}||${i}`, n = this.groupEdgesByPair(this.edges).find((c) => c.key === o);
     if (!n)
       return;
-    const r = ["top", "right", "bottom", "left"], a = (c) => {
-      const h = r.indexOf(c);
-      return r[(h + 1) % 4];
+    const l = ["top", "right", "bottom", "left"], a = (c) => {
+      const h = l.indexOf(c);
+      return l[(h + 1) % 4];
     };
     n.srcAnchor && (n.srcAnchor.side = a(n.srcAnchor.side)), n.dstAnchor && (n.dstAnchor.side = a(n.dstAnchor.side));
     for (const c of n.edges)
@@ -1981,17 +1981,17 @@ class U {
       this.anchorHandlesGroup.style.display = "none";
       return;
     }
-    const t = this.edges.find((m) => m.id === this.selectedEdgeId);
+    const t = this.edges.find((w) => w.id === this.selectedEdgeId);
     if (!t)
       return;
-    const [e, s] = t.src < t.dst ? [t.src, t.dst] : [t.dst, t.src], i = `${e}||${s}`, o = this.groupEdgesByPair(this.edges).find((m) => m.key === i);
+    const [e, s] = t.src < t.dst ? [t.src, t.dst] : [t.dst, t.src], i = `${e}||${s}`, o = this.groupEdgesByPair(this.edges).find((w) => w.key === i);
     if (!o)
       return;
-    const n = this.nodes.find((m) => m.id === o.a), r = this.nodes.find((m) => m.id === o.b);
-    if (!n || !r)
+    const n = this.nodes.find((w) => w.id === o.a), l = this.nodes.find((w) => w.id === o.b);
+    if (!n || !l)
       return;
-    const a = o.srcAnchor || this.estimateAnchor(n, r), c = o.dstAnchor || this.estimateAnchor(r, n), h = n.style || {}, l = r.style || {}, d = h.width || this.DEFAULT_NODE_WIDTH, g = h.height || this.DEFAULT_NODE_HEIGHT, u = l.width || this.DEFAULT_NODE_WIDTH, w = l.height || this.DEFAULT_NODE_HEIGHT, y = this.calculateAnchorPosition(n, a, d, g), p = this.calculateAnchorPosition(r, c, u, w);
-    this.createAnchorHandle(t.id, "src", y.x, y.y), this.createAnchorHandle(t.id, "dst", p.x, p.y), this.anchorHandlesGroup.style.display = "block", this.anchorHandlesGroup.style.pointerEvents = "auto";
+    const a = o.srcAnchor || this.estimateAnchor(n, l), c = o.dstAnchor || this.estimateAnchor(l, n), h = n.style || {}, r = l.style || {}, d = h.width || this.DEFAULT_NODE_WIDTH, g = h.height || this.DEFAULT_NODE_HEIGHT, u = r.width || this.DEFAULT_NODE_WIDTH, m = r.height || this.DEFAULT_NODE_HEIGHT, f = this.calculateAnchorPosition(n, a, d, g), p = this.calculateAnchorPosition(l, c, u, m);
+    this.createAnchorHandle(t.id, "src", f.x, f.y), this.createAnchorHandle(t.id, "dst", p.x, p.y), this.anchorHandlesGroup.style.display = "block", this.anchorHandlesGroup.style.pointerEvents = "auto";
   }
   /**
    * Update bend point handles
@@ -2011,8 +2011,8 @@ class U {
       this.bendHandlesGroup.style.display = "none", this.updateControlButtons();
       return;
     }
-    o.bends.forEach((n, r) => {
-      this.createBendHandle(t.id, r, n.x, n.y);
+    o.bends.forEach((n, l) => {
+      this.createBendHandle(t.id, l, n.x, n.y);
     }), this.bendHandlesGroup.style.display = "block", this.bendHandlesGroup.style.pointerEvents = "auto", this.updateControlButtons();
   }
   /**
@@ -2052,7 +2052,7 @@ class U {
       return;
     const s = this.screenToSvg(t.clientX, t.clientY), i = s.x, o = s.y;
     e.style || (e.style = {});
-    const n = i - this.resizingNode.startX, r = o - this.resizingNode.startY;
+    const n = i - this.resizingNode.startX, l = o - this.resizingNode.startY;
     switch (this.resizingNode.side) {
       case "right": {
         const c = Math.max(60, this.resizingNode.startWidth + n);
@@ -2065,30 +2065,30 @@ class U {
         break;
       }
       case "bottom": {
-        const c = Math.max(40, this.resizingNode.startHeight + r);
-        e.style.height = c, e.position.y = this.resizingNode.startNodeY + r / 2;
+        const c = Math.max(40, this.resizingNode.startHeight + l);
+        e.style.height = c, e.position.y = this.resizingNode.startNodeY + l / 2;
         break;
       }
       case "top": {
-        const c = Math.max(40, this.resizingNode.startHeight - r);
-        e.style.height = c, e.position.y = this.resizingNode.startNodeY + r / 2;
+        const c = Math.max(40, this.resizingNode.startHeight - l);
+        e.style.height = c, e.position.y = this.resizingNode.startNodeY + l / 2;
         break;
       }
     }
     const a = this.nodeElements.get(e.id);
     if (a) {
-      const c = e.style || {}, h = c.width || this.DEFAULT_NODE_WIDTH, l = c.height || this.DEFAULT_NODE_HEIGHT, d = e.position.x - h / 2, g = e.position.y - l / 2;
-      a.setAttribute("x", String(d)), a.setAttribute("y", String(g)), a.setAttribute("width", String(h)), a.setAttribute("height", String(l));
+      const c = e.style || {}, h = c.width || this.DEFAULT_NODE_WIDTH, r = c.height || this.DEFAULT_NODE_HEIGHT, d = e.position.x - h / 2, g = e.position.y - r / 2;
+      a.setAttribute("x", String(d)), a.setAttribute("y", String(g)), a.setAttribute("width", String(h)), a.setAttribute("height", String(r));
       const u = a.parentElement;
       if (u) {
-        const w = u.querySelector("foreignObject");
-        if (w) {
-          const y = e.style || {}, p = y.width || this.DEFAULT_NODE_WIDTH, m = y.height || this.DEFAULT_NODE_HEIGHT, f = e.position.x - p / 2, b = e.position.y - m / 2;
-          w.setAttribute("x", String(f)), w.setAttribute("y", String(b));
+        const m = u.querySelector("foreignObject");
+        if (m) {
+          const f = e.style || {}, p = f.width || this.DEFAULT_NODE_WIDTH, w = f.height || this.DEFAULT_NODE_HEIGHT, y = e.position.x - p / 2, C = e.position.y - w / 2;
+          m.setAttribute("x", String(y)), m.setAttribute("y", String(C));
         }
         e.position && u.querySelectorAll("[data-resize-side]").forEach((p) => {
-          const m = p.getAttribute("data-resize-side");
-          m === "top" ? (p.setAttribute("cx", String(e.position.x)), p.setAttribute("cy", String(e.position.y - l / 2))) : m === "right" ? (p.setAttribute("cx", String(e.position.x + h / 2)), p.setAttribute("cy", String(e.position.y))) : m === "bottom" ? (p.setAttribute("cx", String(e.position.x)), p.setAttribute("cy", String(e.position.y + l / 2))) : m === "left" && (p.setAttribute("cx", String(e.position.x - h / 2)), p.setAttribute("cy", String(e.position.y)));
+          const w = p.getAttribute("data-resize-side");
+          w === "top" ? (p.setAttribute("cx", String(e.position.x)), p.setAttribute("cy", String(e.position.y - r / 2))) : w === "right" ? (p.setAttribute("cx", String(e.position.x + h / 2)), p.setAttribute("cy", String(e.position.y))) : w === "bottom" ? (p.setAttribute("cx", String(e.position.x)), p.setAttribute("cy", String(e.position.y + r / 2))) : w === "left" && (p.setAttribute("cx", String(e.position.x - h / 2)), p.setAttribute("cy", String(e.position.y)));
         });
       }
     }
@@ -2144,38 +2144,38 @@ class U {
   updateAnchorPosition(t) {
     if (!this.draggingAnchor)
       return;
-    const e = this.edges.find((C) => C.id === this.draggingAnchor.edgeId);
+    const e = this.edges.find((b) => b.id === this.draggingAnchor.edgeId);
     if (!e)
       return;
-    const [s, i] = e.src < e.dst ? [e.src, e.dst] : [e.dst, e.src], o = `${s}||${i}`, n = this.groupEdgesByPair(this.edges).find((C) => C.key === o);
+    const [s, i] = e.src < e.dst ? [e.src, e.dst] : [e.dst, e.src], o = `${s}||${i}`, n = this.groupEdgesByPair(this.edges).find((b) => b.key === o);
     if (!n)
       return;
-    const r = this.draggingAnchor.type === "src" ? n.a : n.b, a = this.nodes.find((C) => C.id === r);
+    const l = this.draggingAnchor.type === "src" ? n.a : n.b, a = this.nodes.find((b) => b.id === l);
     if (!a?.position)
       return;
-    const c = this.screenToSvg(t.clientX, t.clientY), h = c.x - this.draggingAnchor.offsetX, l = c.y - this.draggingAnchor.offsetY, d = a.position.x, g = a.position.y, u = a.style || {}, w = u.width || this.DEFAULT_NODE_WIDTH, y = u.height || this.DEFAULT_NODE_HEIGHT, p = {
-      top: Math.abs(l - (g - y / 2)),
-      right: Math.abs(h - (d + w / 2)),
-      bottom: Math.abs(l - (g + y / 2)),
-      left: Math.abs(h - (d - w / 2))
+    const c = this.screenToSvg(t.clientX, t.clientY), h = c.x - this.draggingAnchor.offsetX, r = c.y - this.draggingAnchor.offsetY, d = a.position.x, g = a.position.y, u = a.style || {}, m = u.width || this.DEFAULT_NODE_WIDTH, f = u.height || this.DEFAULT_NODE_HEIGHT, p = {
+      top: Math.abs(r - (g - f / 2)),
+      right: Math.abs(h - (d + m / 2)),
+      bottom: Math.abs(r - (g + f / 2)),
+      left: Math.abs(h - (d - m / 2))
     };
-    let m = "right", f = p.right;
-    for (const [C, E] of Object.entries(p))
-      E < f && (f = E, m = C);
-    let b = 0.5;
-    switch (m) {
+    let w = "right", y = p.right;
+    for (const [b, E] of Object.entries(p))
+      E < y && (y = E, w = b);
+    let C = 0.5;
+    switch (w) {
       case "top":
       case "bottom":
-        b = (h - (d - w / 2)) / w;
+        C = (h - (d - m / 2)) / m;
         break;
       case "left":
       case "right":
-        b = (l - (g - y / 2)) / y;
+        C = (r - (g - f / 2)) / f;
         break;
     }
-    b = Math.max(0, Math.min(1, b)), this.draggingAnchor.type === "src" ? n.srcAnchor = { side: m, t: b } : n.dstAnchor = { side: m, t: b };
-    for (const C of n.edges)
-      C.src === n.a && C.dst === n.b ? (C.srcAnchor = n.srcAnchor, C.dstAnchor = n.dstAnchor) : (C.srcAnchor = n.dstAnchor, C.dstAnchor = n.srcAnchor);
+    C = Math.max(0, Math.min(1, C)), this.draggingAnchor.type === "src" ? n.srcAnchor = { side: w, t: C } : n.dstAnchor = { side: w, t: C };
+    for (const b of n.edges)
+      b.src === n.a && b.dst === n.b ? (b.srcAnchor = n.srcAnchor, b.dstAnchor = n.dstAnchor) : (b.srcAnchor = n.dstAnchor, b.dstAnchor = n.srcAnchor);
     this.render(), this.updateAnchorHandles(), this.updateBendHandles(), this.debouncedSave();
   }
   /**
@@ -2184,59 +2184,59 @@ class U {
   updateBendPosition(t) {
     if (!this.draggingBend)
       return;
-    const e = this.edges.find((l) => l.id === this.draggingBend.edgeId);
+    const e = this.edges.find((r) => r.id === this.draggingBend.edgeId);
     if (!e)
       return;
-    const [s, i] = e.src < e.dst ? [e.src, e.dst] : [e.dst, e.src], o = `${s}||${i}`, n = this.groupEdgesByPair(this.edges).find((l) => l.key === o);
+    const [s, i] = e.src < e.dst ? [e.src, e.dst] : [e.dst, e.src], o = `${s}||${i}`, n = this.groupEdgesByPair(this.edges).find((r) => r.key === o);
     if (!n || !n.bends)
       return;
-    const r = this.draggingBend.bendIndex;
-    if (r < 0 || r >= n.bends.length)
+    const l = this.draggingBend.bendIndex;
+    if (l < 0 || l >= n.bends.length)
       return;
     const a = this.screenToSvg(t.clientX, t.clientY), c = a.x - this.draggingBend.offsetX, h = a.y - this.draggingBend.offsetY;
-    n.bends[r] = { x: c, y: h };
-    for (const l of n.edges)
-      l.bends = [...n.bends];
+    n.bends[l] = { x: c, y: h };
+    for (const r of n.edges)
+      r.bends = [...n.bends];
     this.render(), this.updateBendHandles(), this.debouncedSave();
   }
   /**
    * Insert bend point (on double click/tap)
    */
   insertBendPoint(t, e) {
-    const s = this.edges.find((v) => v.id === t);
+    const s = this.edges.find((x) => x.id === t);
     if (!s)
       return;
-    const [i, o] = s.src < s.dst ? [s.src, s.dst] : [s.dst, s.src], n = `${i}||${o}`, r = this.groupEdgesByPair(this.edges).find((v) => v.key === n);
-    if (!r)
+    const [i, o] = s.src < s.dst ? [s.src, s.dst] : [s.dst, s.src], n = `${i}||${o}`, l = this.groupEdgesByPair(this.edges).find((x) => x.key === n);
+    if (!l)
       return;
-    const a = this.svg.getBoundingClientRect(), c = e.clientX - a.left, h = e.clientY - a.top, l = [], d = this.nodes.find((v) => v.id === r.a), g = this.nodes.find((v) => v.id === r.b);
+    const a = this.svg.getBoundingClientRect(), c = e.clientX - a.left, h = e.clientY - a.top, r = [], d = this.nodes.find((x) => x.id === l.a), g = this.nodes.find((x) => x.id === l.b);
     if (!d?.position || !g?.position)
       return;
-    const u = r.srcAnchor || this.estimateAnchor(d, g), w = r.dstAnchor || this.estimateAnchor(g, d), y = d.style || {}, p = g.style || {}, m = y.width || this.DEFAULT_NODE_WIDTH, f = y.height || this.DEFAULT_NODE_HEIGHT, b = p.width || this.DEFAULT_NODE_WIDTH, C = p.height || this.DEFAULT_NODE_HEIGHT, E = this.calculateAnchorPosition(d, u, m, f), x = this.calculateAnchorPosition(g, w, b, C);
-    l.push(E), r.bends && l.push(...r.bends), l.push(x);
+    const u = l.srcAnchor || this.estimateAnchor(d, g), m = l.dstAnchor || this.estimateAnchor(g, d), f = d.style || {}, p = g.style || {}, w = f.width || this.DEFAULT_NODE_WIDTH, y = f.height || this.DEFAULT_NODE_HEIGHT, C = p.width || this.DEFAULT_NODE_WIDTH, b = p.height || this.DEFAULT_NODE_HEIGHT, E = this.calculateAnchorPosition(d, u, w, y), v = this.calculateAnchorPosition(g, m, C, b);
+    r.push(E), l.bends && r.push(...l.bends), r.push(v);
     let B = 0, T = 1 / 0;
-    for (let v = 0; v < l.length - 1; v++) {
-      const S = l[v], k = l[v + 1], N = this.pointToLineSegmentDistance(c, h, S.x, S.y, k.x, k.y);
-      N < T && (T = N, B = v);
+    for (let x = 0; x < r.length - 1; x++) {
+      const S = r[x], k = r[x + 1], N = this.pointToLineSegmentDistance(c, h, S.x, S.y, k.x, k.y);
+      N < T && (T = N, B = x);
     }
-    const A = l[B], L = l[B + 1], M = {
+    const A = r[B], L = r[B + 1], M = {
       x: (A.x + L.x) / 2,
       y: (A.y + L.y) / 2
     };
-    r.bends || (r.bends = []), r.bends.splice(B, 0, M);
-    for (const v of r.edges)
-      v.bends = [...r.bends];
+    l.bends || (l.bends = []), l.bends.splice(B, 0, M);
+    for (const x of l.edges)
+      x.bends = [...l.bends];
     this.selectedEdgeId !== t && this.selectEdge(t, !1), this.render(), this.updateBendHandles(), this.debouncedSave();
   }
   /**
    * Calculate distance from point to line segment
    */
   pointToLineSegmentDistance(t, e, s, i, o, n) {
-    const r = o - s, a = n - i, c = r * r + a * a;
+    const l = o - s, a = n - i, c = l * l + a * a;
     if (c === 0)
       return Math.sqrt((t - s) ** 2 + (e - i) ** 2);
-    const h = Math.max(0, Math.min(1, ((t - s) * r + (e - i) * a) / c)), l = s + h * r, d = i + h * a;
-    return Math.sqrt((t - l) ** 2 + (e - d) ** 2);
+    const h = Math.max(0, Math.min(1, ((t - s) * l + (e - i) * a) / c)), r = s + h * l, d = i + h * a;
+    return Math.sqrt((t - r) ** 2 + (e - d) ** 2);
   }
   /**
    * Delete nearest bend point (on Delete/Backspace)
@@ -2274,69 +2274,69 @@ class U {
     this.updateTransform(), this.nodeElements.clear(), this.edgeElements.clear(), this.edgesGroup.innerHTML = "", this.nodesGroup.innerHTML = "", this.edgeLabelsGroup.innerHTML = "";
     const t = this.groupEdgesByPair(this.edges);
     for (const e of t) {
-      const s = e.edges.some((C) => C.id === this.selectedEdgeId), i = this.mode === "view" && e.key === this.hoveredEdgePairKey, o = this.mode === "view" && e.key === this.tappedEdgePairKey, n = this.alwaysShowEdges || s || i || o, a = e.edges[0].style || {}, c = a.color || this.EDGE_DEFAULT_COLOR, h = a.weight || 1, l = Math.max(this.EDGE_MIN_WEIGHT, Math.min(this.EDGE_MAX_WEIGHT, h)), d = this.EDGE_DEFAULT_WIDTH + (l - 1) * 0.5, g = n ? Math.max(d, this.EDGE_HOVER_WIDTH) : d, u = s ? "#2196f3" : c, w = n ? 1 : 0.3, y = this.calculateEdgePairPath(e);
-      if (!y)
+      const s = e.edges.some((b) => b.id === this.selectedEdgeId), i = this.mode === "view" && e.key === this.hoveredEdgePairKey, o = this.mode === "view" && e.key === this.tappedEdgePairKey, n = this.alwaysShowEdges || s || i || o, a = e.edges[0].style || {}, c = a.color || this.EDGE_DEFAULT_COLOR, h = a.weight || 1, r = Math.max(this.EDGE_MIN_WEIGHT, Math.min(this.EDGE_MAX_WEIGHT, h)), d = this.EDGE_DEFAULT_WIDTH + (r - 1) * 0.5, g = n ? Math.max(d, this.EDGE_HOVER_WIDTH) : d, u = s ? "#2196f3" : c, m = n ? 1 : 0.3, f = this.calculateEdgePairPath(e);
+      if (!f)
         continue;
       const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      p.setAttribute("d", y), p.setAttribute("stroke", "transparent"), p.setAttribute("stroke-width", String(this.HIT_PATH_WIDTH)), p.setAttribute("fill", "none"), p.setAttribute("data-hit-edge-pair-key", e.key), p.style.cursor = "pointer", p.style.pointerEvents = "stroke", this.edgesGroup.appendChild(p);
-      const m = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      m.setAttribute("d", y), m.setAttribute("stroke", u), m.setAttribute("stroke-width", String(g)), m.setAttribute("stroke-opacity", String(w)), m.setAttribute("fill", "none"), m.setAttribute("data-edge-pair-key", e.key), m.style.pointerEvents = "none", m.style.transition = "stroke-opacity 0.2s, stroke-width 0.2s";
-      const f = this.getEdgePairMarkerAttributes(e);
-      if (f.markerStart && m.setAttribute("marker-start", f.markerStart), f.markerEnd && m.setAttribute("marker-end", f.markerEnd), this.edgeElements.set(e.key, m), this.edgesGroup.appendChild(m), this.mode === "view")
+      p.setAttribute("d", f), p.setAttribute("stroke", "transparent"), p.setAttribute("stroke-width", String(this.HIT_PATH_WIDTH)), p.setAttribute("fill", "none"), p.setAttribute("data-hit-edge-pair-key", e.key), p.style.cursor = "pointer", p.style.pointerEvents = "stroke", this.edgesGroup.appendChild(p);
+      const w = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      w.setAttribute("d", f), w.setAttribute("stroke", u), w.setAttribute("stroke-width", String(g)), w.setAttribute("stroke-opacity", String(m)), w.setAttribute("fill", "none"), w.setAttribute("data-edge-pair-key", e.key), w.style.pointerEvents = "none", w.style.transition = "stroke-opacity 0.2s, stroke-width 0.2s";
+      const y = this.getEdgePairMarkerAttributes(e);
+      if (y.markerStart && w.setAttribute("marker-start", y.markerStart), y.markerEnd && w.setAttribute("marker-end", y.markerEnd), this.edgeElements.set(e.key, w), this.edgesGroup.appendChild(w), this.mode === "view")
         this.setupEdgeInteraction(p, e, a);
       else if (this.mode === "edit") {
         this.setupEdgeInteractionForEdit(p, e);
-        const C = e.key;
+        const b = e.key;
         p.addEventListener("click", (E) => {
-          const x = this.edgeClickTimers.get(p);
-          if (x != null) {
-            clearTimeout(x), this.edgeClickTimers.set(p, null);
+          const v = this.edgeClickTimers.get(p);
+          if (v != null) {
+            clearTimeout(v), this.edgeClickTimers.set(p, null);
             return;
           }
           const B = window.setTimeout(() => {
             if (this.edgeClickTimers.set(p, null), this.mode === "edit") {
-              const T = this.groupEdgesByPair(this.edges).find((A) => A.key === C);
+              const T = this.groupEdgesByPair(this.edges).find((A) => A.key === b);
               T && T.edges.length > 0 && (this.selectEdge(T.edges[0].id, E.shiftKey), this.render());
             }
           }, 300);
           this.edgeClickTimers.set(p, B);
         });
       }
-      const b = e.key;
-      p.addEventListener("dblclick", (C) => {
+      const C = e.key;
+      p.addEventListener("dblclick", (b) => {
         if (this.mode !== "edit")
           return;
         const E = this.edgeClickTimers.get(p);
         E != null && (clearTimeout(E), this.edgeClickTimers.set(p, null));
-        const x = this.groupEdgesByPair(this.edges).find((B) => B.key === b);
-        x && x.edges.length > 0 && (this.insertBendPoint(x.edges[0].id, C), C.preventDefault(), C.stopPropagation());
+        const v = this.groupEdgesByPair(this.edges).find((B) => B.key === C);
+        v && v.edges.length > 0 && (this.insertBendPoint(v.edges[0].id, b), b.preventDefault(), b.stopPropagation());
       }), n && this.renderEdgeLabels(e, a);
     }
     for (const e of this.nodes) {
       if (!e.position)
         continue;
-      const s = e.style || {}, i = s.width || this.DEFAULT_NODE_WIDTH, o = s.height || this.DEFAULT_NODE_HEIGHT, n = s.color || "#fff", r = s.borderColor || "#333", a = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      const s = e.style || {}, i = s.width || this.DEFAULT_NODE_WIDTH, o = s.height || this.DEFAULT_NODE_HEIGHT, n = s.color || "#fff", l = s.borderColor || "#333", a = document.createElementNS("http://www.w3.org/2000/svg", "g");
       a.setAttribute("data-node-id", e.id);
-      const c = document.createElementNS("http://www.w3.org/2000/svg", "rect"), h = e.position.x - i / 2, l = e.position.y - o / 2;
-      c.setAttribute("x", String(h)), c.setAttribute("y", String(l)), c.setAttribute("width", String(i)), c.setAttribute("height", String(o));
+      const c = document.createElementNS("http://www.w3.org/2000/svg", "rect"), h = e.position.x - i / 2, r = e.position.y - o / 2;
+      c.setAttribute("x", String(h)), c.setAttribute("y", String(r)), c.setAttribute("width", String(i)), c.setAttribute("height", String(o));
       const d = n.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
       if (d) {
-        const y = parseInt(d[1], 16), p = parseInt(d[2], 16), m = parseInt(d[3], 16);
-        c.setAttribute("fill", `rgba(${y}, ${p}, ${m}, 0.5)`);
+        const f = parseInt(d[1], 16), p = parseInt(d[2], 16), w = parseInt(d[3], 16);
+        c.setAttribute("fill", `rgba(${f}, ${p}, ${w}, 0.5)`);
       } else
         c.setAttribute("fill", n);
       const g = this.selectedNodeId === e.id;
-      c.setAttribute("stroke", g ? "#2196f3" : r), c.setAttribute("stroke-width", g ? "4" : "2"), c.setAttribute("rx", "4"), c.style.cursor = this.mode === "view" ? "pointer" : "move";
+      c.setAttribute("stroke", g ? "#2196f3" : l), c.setAttribute("stroke-width", g ? "4" : "2"), c.setAttribute("rx", "4"), c.style.cursor = this.mode === "view" ? "pointer" : "move";
       const u = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-      u.setAttribute("x", String(h)), u.setAttribute("y", String(l)), u.setAttribute("width", String(i)), u.setAttribute("height", String(o));
-      const w = document.createElement("div");
-      w.style.width = "100%", w.style.height = "100%", w.style.display = "flex", w.style.alignItems = "flex-start", w.style.justifyContent = "center", w.style.textAlign = "center", w.style.fontSize = "14px", w.style.color = "#333", w.style.padding = "4px", w.style.wordWrap = "break-word", w.style.overflowWrap = "break-word", w.style.whiteSpace = "normal", w.style.overflow = "hidden", w.style.textOverflow = "ellipsis", w.textContent = e.label, u.appendChild(w), a.appendChild(c), a.appendChild(u), this.mode === "edit" && this.addResizeHandles(a, e, i, o), this.nodesGroup.appendChild(a), this.nodeElements.set(e.id, c), this.mode === "view" && this.onNodeClick && a.addEventListener("click", (y) => {
-        y.stopPropagation(), y.preventDefault();
-        const p = this.svg.getBoundingClientRect(), m = y.clientX - p.left, f = y.clientY - p.top;
+      u.setAttribute("x", String(h)), u.setAttribute("y", String(r)), u.setAttribute("width", String(i)), u.setAttribute("height", String(o));
+      const m = document.createElement("div");
+      m.style.width = "100%", m.style.height = "100%", m.style.display = "flex", m.style.alignItems = "flex-start", m.style.justifyContent = "center", m.style.textAlign = "center", m.style.fontSize = "14px", m.style.color = "#333", m.style.padding = "4px", m.style.wordWrap = "break-word", m.style.overflowWrap = "break-word", m.style.whiteSpace = "normal", m.style.overflow = "hidden", m.style.textOverflow = "ellipsis", m.textContent = e.label, u.appendChild(m), a.appendChild(c), a.appendChild(u), this.mode === "edit" && this.addResizeHandles(a, e, i, o), this.nodesGroup.appendChild(a), this.nodeElements.set(e.id, c), this.mode === "view" && this.onNodeClick && a.addEventListener("click", (f) => {
+        f.stopPropagation(), f.preventDefault();
+        const p = this.svg.getBoundingClientRect(), w = f.clientX - p.left, y = f.clientY - p.top;
         this.onNodeClick({
           node: e,
-          position: { x: m, y: f },
-          originalEvent: y
+          position: { x: w, y },
+          originalEvent: f
         });
       }, !0);
     }
@@ -2350,8 +2350,8 @@ class U {
     for (const s of e) {
       const i = this.edgeElements.get(s.key);
       if (!i) continue;
-      const o = s.edges.some((m) => m.id === this.selectedEdgeId), n = this.mode === "view" && s.key === this.hoveredEdgePairKey, r = this.mode === "view" && s.key === this.tappedEdgePairKey, a = this.alwaysShowEdges || o || n || r, h = s.edges[0].style || {}, l = h.color || this.EDGE_DEFAULT_COLOR, d = h.weight || 1, g = Math.max(this.EDGE_MIN_WEIGHT, Math.min(this.EDGE_MAX_WEIGHT, d)), u = this.EDGE_DEFAULT_WIDTH + (g - 1) * 0.5, w = a ? Math.max(u, this.EDGE_HOVER_WIDTH) : u, y = o ? "#2196f3" : l, p = a ? 1 : 0.3;
-      i.setAttribute("stroke", y), i.setAttribute("stroke-width", String(w)), i.setAttribute("stroke-opacity", String(p)), a ? (this.edgeLabelsGroup.querySelectorAll(`[data-edge-pair-key="${s.key}"]`).forEach((f) => f.remove()), this.renderEdgeLabels(s, h)) : this.edgeLabelsGroup.querySelectorAll(`[data-edge-pair-key="${s.key}"]`).forEach((f) => f.remove());
+      const o = s.edges.some((w) => w.id === this.selectedEdgeId), n = this.mode === "view" && s.key === this.hoveredEdgePairKey, l = this.mode === "view" && s.key === this.tappedEdgePairKey, a = this.alwaysShowEdges || o || n || l, h = s.edges[0].style || {}, r = h.color || this.EDGE_DEFAULT_COLOR, d = h.weight || 1, g = Math.max(this.EDGE_MIN_WEIGHT, Math.min(this.EDGE_MAX_WEIGHT, d)), u = this.EDGE_DEFAULT_WIDTH + (g - 1) * 0.5, m = a ? Math.max(u, this.EDGE_HOVER_WIDTH) : u, f = o ? "#2196f3" : r, p = a ? 1 : 0.3;
+      i.setAttribute("stroke", f), i.setAttribute("stroke-width", String(m)), i.setAttribute("stroke-opacity", String(p)), a ? (this.edgeLabelsGroup.querySelectorAll(`[data-edge-pair-key="${s.key}"]`).forEach((y) => y.remove()), this.renderEdgeLabels(s, h)) : this.edgeLabelsGroup.querySelectorAll(`[data-edge-pair-key="${s.key}"]`).forEach((y) => y.remove());
     }
   }
   /**
@@ -2399,8 +2399,8 @@ class U {
       { side: "left", x: e.position.x - s / 2, y: e.position.y }
     ];
     for (const n of o) {
-      const r = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      r.setAttribute("cx", String(n.x)), r.setAttribute("cy", String(n.y)), r.setAttribute("r", "6"), r.setAttribute("fill", "#4CAF50"), r.setAttribute("stroke", "#fff"), r.setAttribute("stroke-width", "2"), r.setAttribute("data-resize-side", n.side), r.setAttribute("data-node-id", e.id), r.style.cursor = this.getResizeCursor(n.side), r.style.pointerEvents = "auto", t.appendChild(r);
+      const l = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      l.setAttribute("cx", String(n.x)), l.setAttribute("cy", String(n.y)), l.setAttribute("r", "6"), l.setAttribute("fill", "#4CAF50"), l.setAttribute("stroke", "#fff"), l.setAttribute("stroke-width", "2"), l.setAttribute("data-resize-side", n.side), l.setAttribute("data-node-id", e.id), l.style.cursor = this.getResizeCursor(n.side), l.style.pointerEvents = "auto", t.appendChild(l);
     }
   }
   /**
@@ -2446,31 +2446,31 @@ class U {
     const s = this.nodes.find((E) => E.id === t.a), i = this.nodes.find((E) => E.id === t.b);
     if (!s?.position || !i?.position)
       return;
-    const o = s.style || {}, n = i.style || {}, r = o.width || this.DEFAULT_NODE_WIDTH, a = o.height || this.DEFAULT_NODE_HEIGHT, c = n.width || this.DEFAULT_NODE_WIDTH, h = n.height || this.DEFAULT_NODE_HEIGHT, l = t.srcAnchor || this.estimateAnchor(s, i), d = t.dstAnchor || this.estimateAnchor(i, s), g = this.calculateAnchorPosition(s, l, r, a), u = this.calculateAnchorPosition(i, d, c, h), w = this.calculateEdgePairPath(t), y = t.edges.find((E) => E.src === t.a && E.dst === t.b), p = t.edges.find((E) => E.src === t.b && E.dst === t.a), m = y?.style?.label || y?.relType || "", f = p?.style?.label || p?.relType || "", b = m !== f && m && f, C = m === f && m;
-    if (b) {
-      const x = this.getPointOnPath(w, 0.75), B = this.getPointOnPath(w, 0.25), T = x ? x.x : g.x + (u.x - g.x) * (1 - 0.25), A = x ? x.y : g.y + (u.y - g.y) * (1 - 0.25), L = B ? B.x : g.x + (u.x - g.x) * 0.25, M = B ? B.y : g.y + (u.y - g.y) * 0.25;
-      if (m) {
-        const v = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        v.setAttribute("x", String(T)), v.setAttribute("y", String(A - 8)), v.setAttribute("text-anchor", "middle"), v.setAttribute("dominant-baseline", "middle"), v.setAttribute("font-size", "12"), v.setAttribute("fill", "#333"), v.setAttribute("font-weight", "bold"), v.setAttribute("pointer-events", "none"), v.setAttribute("data-edge-pair-key", t.key);
-        const S = document.createElementNS("http://www.w3.org/2000/svg", "rect"), k = m.length * 7;
-        S.setAttribute("x", String(T - k / 2 - 4)), S.setAttribute("y", String(A - 16)), S.setAttribute("width", String(k + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), v.textContent = m, this.edgeLabelsGroup.appendChild(v);
+    const o = s.style || {}, n = i.style || {}, l = o.width || this.DEFAULT_NODE_WIDTH, a = o.height || this.DEFAULT_NODE_HEIGHT, c = n.width || this.DEFAULT_NODE_WIDTH, h = n.height || this.DEFAULT_NODE_HEIGHT, r = t.srcAnchor || this.estimateAnchor(s, i), d = t.dstAnchor || this.estimateAnchor(i, s), g = this.calculateAnchorPosition(s, r, l, a), u = this.calculateAnchorPosition(i, d, c, h), m = this.calculateEdgePairPath(t), f = t.edges.find((E) => E.src === t.a && E.dst === t.b), p = t.edges.find((E) => E.src === t.b && E.dst === t.a), w = f?.style?.label || f?.relType || "", y = p?.style?.label || p?.relType || "", C = w !== y && w && y, b = w === y && w;
+    if (C) {
+      const v = this.getPointOnPath(m, 0.75), B = this.getPointOnPath(m, 0.25), T = v ? v.x : g.x + (u.x - g.x) * (1 - 0.25), A = v ? v.y : g.y + (u.y - g.y) * (1 - 0.25), L = B ? B.x : g.x + (u.x - g.x) * 0.25, M = B ? B.y : g.y + (u.y - g.y) * 0.25;
+      if (w) {
+        const x = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        x.setAttribute("x", String(T)), x.setAttribute("y", String(A - 8)), x.setAttribute("text-anchor", "middle"), x.setAttribute("dominant-baseline", "middle"), x.setAttribute("font-size", "12"), x.setAttribute("fill", "#333"), x.setAttribute("font-weight", "bold"), x.setAttribute("pointer-events", "none"), x.setAttribute("data-edge-pair-key", t.key);
+        const S = document.createElementNS("http://www.w3.org/2000/svg", "rect"), k = w.length * 7;
+        S.setAttribute("x", String(T - k / 2 - 4)), S.setAttribute("y", String(A - 16)), S.setAttribute("width", String(k + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), x.textContent = w, this.edgeLabelsGroup.appendChild(x);
       }
-      if (f) {
-        const v = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        v.setAttribute("x", String(L)), v.setAttribute("y", String(M - 8)), v.setAttribute("text-anchor", "middle"), v.setAttribute("dominant-baseline", "middle"), v.setAttribute("font-size", "12"), v.setAttribute("fill", "#333"), v.setAttribute("font-weight", "bold"), v.setAttribute("pointer-events", "none"), v.setAttribute("data-edge-pair-key", t.key);
-        const S = document.createElementNS("http://www.w3.org/2000/svg", "rect"), k = f.length * 7;
-        S.setAttribute("x", String(L - k / 2 - 4)), S.setAttribute("y", String(M - 16)), S.setAttribute("width", String(k + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), v.textContent = f, this.edgeLabelsGroup.appendChild(v);
+      if (y) {
+        const x = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        x.setAttribute("x", String(L)), x.setAttribute("y", String(M - 8)), x.setAttribute("text-anchor", "middle"), x.setAttribute("dominant-baseline", "middle"), x.setAttribute("font-size", "12"), x.setAttribute("fill", "#333"), x.setAttribute("font-weight", "bold"), x.setAttribute("pointer-events", "none"), x.setAttribute("data-edge-pair-key", t.key);
+        const S = document.createElementNS("http://www.w3.org/2000/svg", "rect"), k = y.length * 7;
+        S.setAttribute("x", String(L - k / 2 - 4)), S.setAttribute("y", String(M - 16)), S.setAttribute("width", String(k + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), x.textContent = y, this.edgeLabelsGroup.appendChild(x);
       }
-    } else if (C) {
-      const E = this.getPointOnPath(w, 0.5), x = E ? E.x : (g.x + u.x) / 2, B = E ? E.y : (g.y + u.y) / 2, T = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      T.setAttribute("x", String(x)), T.setAttribute("y", String(B)), T.setAttribute("text-anchor", "middle"), T.setAttribute("dominant-baseline", "middle"), T.setAttribute("data-edge-pair-key", t.key), T.setAttribute("font-size", "12"), T.setAttribute("fill", "#333"), T.setAttribute("font-weight", "bold"), T.setAttribute("pointer-events", "none");
-      const A = document.createElementNS("http://www.w3.org/2000/svg", "rect"), L = m.length * 7;
-      A.setAttribute("x", String(x - L / 2 - 4)), A.setAttribute("y", String(B - 8)), A.setAttribute("width", String(L + 8)), A.setAttribute("height", "16"), A.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), A.setAttribute("rx", "2"), A.setAttribute("pointer-events", "none"), A.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(A), T.textContent = m, this.edgeLabelsGroup.appendChild(T);
+    } else if (b) {
+      const E = this.getPointOnPath(m, 0.5), v = E ? E.x : (g.x + u.x) / 2, B = E ? E.y : (g.y + u.y) / 2, T = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      T.setAttribute("x", String(v)), T.setAttribute("y", String(B)), T.setAttribute("text-anchor", "middle"), T.setAttribute("dominant-baseline", "middle"), T.setAttribute("data-edge-pair-key", t.key), T.setAttribute("font-size", "12"), T.setAttribute("fill", "#333"), T.setAttribute("font-weight", "bold"), T.setAttribute("pointer-events", "none");
+      const A = document.createElementNS("http://www.w3.org/2000/svg", "rect"), L = w.length * 7;
+      A.setAttribute("x", String(v - L / 2 - 4)), A.setAttribute("y", String(B - 8)), A.setAttribute("width", String(L + 8)), A.setAttribute("height", "16"), A.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), A.setAttribute("rx", "2"), A.setAttribute("pointer-events", "none"), A.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(A), T.textContent = w, this.edgeLabelsGroup.appendChild(T);
     } else if (e.label) {
-      const E = this.getPointOnPath(w, 0.5), x = E ? E.x : (g.x + u.x) / 2, B = E ? E.y : (g.y + u.y) / 2, T = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      T.setAttribute("x", String(x)), T.setAttribute("y", String(B)), T.setAttribute("text-anchor", "middle"), T.setAttribute("dominant-baseline", "middle"), T.setAttribute("font-size", "12"), T.setAttribute("fill", "#333"), T.setAttribute("font-weight", "bold"), T.setAttribute("pointer-events", "none"), T.setAttribute("data-edge-pair-key", t.key);
+      const E = this.getPointOnPath(m, 0.5), v = E ? E.x : (g.x + u.x) / 2, B = E ? E.y : (g.y + u.y) / 2, T = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      T.setAttribute("x", String(v)), T.setAttribute("y", String(B)), T.setAttribute("text-anchor", "middle"), T.setAttribute("dominant-baseline", "middle"), T.setAttribute("font-size", "12"), T.setAttribute("fill", "#333"), T.setAttribute("font-weight", "bold"), T.setAttribute("pointer-events", "none"), T.setAttribute("data-edge-pair-key", t.key);
       const A = document.createElementNS("http://www.w3.org/2000/svg", "rect"), L = e.label.length * 7;
-      A.setAttribute("x", String(x - L / 2 - 4)), A.setAttribute("y", String(B - 8)), A.setAttribute("width", String(L + 8)), A.setAttribute("height", "16"), A.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), A.setAttribute("rx", "2"), A.setAttribute("pointer-events", "none"), A.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(A), T.textContent = e.label, this.edgeLabelsGroup.appendChild(T);
+      A.setAttribute("x", String(v - L / 2 - 4)), A.setAttribute("y", String(B - 8)), A.setAttribute("width", String(L + 8)), A.setAttribute("height", "16"), A.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), A.setAttribute("rx", "2"), A.setAttribute("pointer-events", "none"), A.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(A), T.textContent = e.label, this.edgeLabelsGroup.appendChild(T);
     }
   }
   /**
@@ -2537,10 +2537,10 @@ class U {
    * Check if selected edge has bend points (for ViewContainer)
    */
   hasBendPoints(t) {
-    const e = this.edges.find((r) => r.id === t);
+    const e = this.edges.find((l) => l.id === t);
     if (!e)
       return !1;
-    const [s, i] = e.src < e.dst ? [e.src, e.dst] : [e.dst, e.src], o = `${s}||${i}`, n = this.groupEdgesByPair(this.edges).find((r) => r.key === o);
+    const [s, i] = e.src < e.dst ? [e.src, e.dst] : [e.dst, e.src], o = `${s}||${i}`, n = this.groupEdgesByPair(this.edges).find((l) => l.key === o);
     return !!(n && n.bends && n.bends.length > 0);
   }
   /**
@@ -2625,11 +2625,11 @@ class U {
     const s = e.height || this.DEFAULT_NODE_HEIGHT, i = this.nodeElements.get(t.id);
     if (!i) {
       this.container.getBoundingClientRect(), this.svg.getBoundingClientRect();
-      const u = isFinite(this.zoom) && this.zoom > 0 ? this.zoom : 1, w = isFinite(this.offsetX) ? this.offsetX : 0, y = isFinite(this.offsetY) ? this.offsetY : 0, p = (t.position.x + w) * u, m = (t.position.y + y) * u, f = this.popupElement.getBoundingClientRect(), b = f.width || 200, C = f.height || 50, E = p - b / 2, x = m - s * u / 2 - C - 10;
-      this.popupElement.style.left = `${E}px`, this.popupElement.style.top = `${x}px`;
+      const u = isFinite(this.zoom) && this.zoom > 0 ? this.zoom : 1, m = isFinite(this.offsetX) ? this.offsetX : 0, f = isFinite(this.offsetY) ? this.offsetY : 0, p = (t.position.x + m) * u, w = (t.position.y + f) * u, y = this.popupElement.getBoundingClientRect(), C = y.width || 200, b = y.height || 50, E = p - C / 2, v = w - s * u / 2 - b - 10;
+      this.popupElement.style.left = `${E}px`, this.popupElement.style.top = `${v}px`;
       return;
     }
-    const o = i.getBoundingClientRect(), n = this.container.getBoundingClientRect(), r = o.left + o.width / 2 - n.left, a = o.top + o.height / 2 - n.top, c = this.popupElement.getBoundingClientRect(), h = c.width || 200, l = c.height || 50, d = r - h / 2, g = a - o.height / 2 - l - 10;
+    const o = i.getBoundingClientRect(), n = this.container.getBoundingClientRect(), l = o.left + o.width / 2 - n.left, a = o.top + o.height / 2 - n.top, c = this.popupElement.getBoundingClientRect(), h = c.width || 200, r = c.height || 50, d = l - h / 2, g = a - o.height / 2 - r - 10;
     this.popupElement.style.left = `${d}px`, this.popupElement.style.top = `${g}px`;
   }
   /**
@@ -2664,7 +2664,7 @@ class U {
   }
 }
 function $(I, t = 16) {
-  return P(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  return H(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${I}"></use>
   </svg>`;
 }
@@ -2672,8 +2672,8 @@ class j {
   // postRender event listener for popup position updates
   constructor(t, e, s, i, o, n) {
     this.viewer = null, this.Cesium = null, this.nodes = [], this.edges = [], this.selectedNodeId = null, this.lastSelectedNodeId = null, this.nodeEntities = /* @__PURE__ */ new Map(), this.edgeEntities = /* @__PURE__ */ new Map(), this.rectEntity = null, this.fitCenterButton = null, this.lightingToggleButton = null, this.alwaysShowEdgesButton = null, this.alwaysShowEdges = !0, this.tileTypeButton = null, this.baseImageryLayer = null, this.timeISO = null, this.customTileUrls = [], this.currentCustomTileIndex = 0, this.popupElement = null, this.popupEntity = null, this.popupUpdateListener = null, this.container = t, this.onNodeClick = e, this.cesiumLoader = s, this.globe3dOptions = i, this.onEdgeClick = n;
-    const r = o && o.length > 0 ? o : i?.customTileUrls;
-    r && r.length > 0 ? this.customTileUrls = r.map(
+    const l = o && o.length > 0 ? o : i?.customTileUrls;
+    l && l.length > 0 ? this.customTileUrls = l.map(
       (a) => typeof a == "string" ? { url: a } : a
     ) : i?.customTileUrl && (this.customTileUrls = [{ url: i.customTileUrl }]), this.container.style.position = "relative", this.container.style.width = "100%", this.container.style.height = "100%";
   }
@@ -2698,12 +2698,73 @@ class j {
       selectionIndicator: !1,
       navigationHelpButton: !1,
       requestRenderMode: !1
-    }), this.Cesium.Moon ? (this.viewer.scene.moon || (this.viewer.scene.moon = new this.Cesium.Moon()), this.viewer.scene.moon.show = !0, this.viewer.scene.moon.onlySunLighting !== void 0 && (this.viewer.scene.moon.onlySunLighting = !1)) : this.viewer.scene.moon && (this.viewer.scene.moon.show = !0), this.viewer.scene.sun && (this.viewer.scene.sun.show = !0);
+    }), this.viewer.canvas && (this.viewer.canvas.style.touchAction = "none"), this.Cesium.Moon ? (this.viewer.scene.moon || (this.viewer.scene.moon = new this.Cesium.Moon()), this.viewer.scene.moon.show = !0, this.viewer.scene.moon.onlySunLighting !== void 0 && (this.viewer.scene.moon.onlySunLighting = !1)) : this.viewer.scene.moon && (this.viewer.scene.moon.show = !0), this.viewer.scene.sun && (this.viewer.scene.sun.show = !0);
     try {
       this.viewer.imageryLayers.removeAll();
     } catch {
     }
-    this.setupCameraLimits(), this.setTileTypeInternal(!0), this.setupTimeAndLighting(), this.setupClickHandler(), (this.nodes.length > 0 || this.edges.length > 0) && this.render(), this.onLightingChange && this.isLightingEnabled();
+    this.setupCameraLimits(), this.setupTrackpadPinchZoom(), this.setTileTypeInternal(!0), this.setupTimeAndLighting(), this.setupClickHandler(), (this.nodes.length > 0 || this.edges.length > 0) && this.render(), this.onLightingChange && this.isLightingEnabled();
+  }
+  /**
+   * Setup trackpad pinch zoom for Mac
+   * Mac trackpad pinch gestures are sent as:
+   * - Chrome/Firefox: wheel event with ctrlKey=true
+   * - Safari: gesturestart/gesturechange/gestureend events
+   */
+  setupTrackpadPinchZoom() {
+    if (!this.viewer || !this.Cesium)
+      return;
+    const t = this.viewer.canvas, e = this.viewer.scene.camera, s = 5e5, i = 4e7, o = (r) => {
+      if (r.ctrlKey) {
+        r.preventDefault(), r.stopPropagation();
+        const d = 1 - r.deltaY * 0.01, g = this.Cesium.Cartographic.fromCartesian(e.position);
+        let m = g.height / d;
+        m = Math.max(s, Math.min(i, m));
+        const f = this.Cesium.Cartesian3.fromRadians(
+          g.longitude,
+          g.latitude,
+          m
+        );
+        e.setView({
+          destination: f,
+          orientation: {
+            heading: e.heading,
+            pitch: e.pitch,
+            roll: e.roll
+          }
+        });
+      }
+    };
+    let n = 1, l = 0;
+    const a = (r) => {
+      r.preventDefault(), n = r.scale || 1, l = this.Cesium.Cartographic.fromCartesian(e.position).height;
+    }, c = (r) => {
+      r.preventDefault();
+      const g = (r.scale || 1) / n;
+      let u = l / g;
+      u = Math.max(s, Math.min(i, u));
+      const m = this.Cesium.Cartographic.fromCartesian(e.position), f = this.Cesium.Cartesian3.fromRadians(
+        m.longitude,
+        m.latitude,
+        u
+      );
+      e.setView({
+        destination: f,
+        orientation: {
+          heading: e.heading,
+          pitch: e.pitch,
+          roll: e.roll
+        }
+      });
+    }, h = (r) => {
+      r.preventDefault(), n = 1, l = 0;
+    };
+    t.addEventListener("wheel", o, { passive: !1 }), "GestureEvent" in window && (t.addEventListener("gesturestart", a, { passive: !1 }), t.addEventListener("gesturechange", c, { passive: !1 }), t.addEventListener("gestureend", h, { passive: !1 })), this._trackpadPinchHandlers = {
+      wheel: o,
+      gestureStart: a,
+      gestureChange: c,
+      gestureEnd: h
+    };
   }
   /**
    * Set time information and day/night shading
@@ -2826,28 +2887,39 @@ class j {
     if (!this.viewer || !this.Cesium)
       return;
     const t = 5e5, e = 4e7, s = this.viewer.scene.screenSpaceCameraController;
-    s.minimumZoomDistance = t, s.maximumZoomDistance = e;
-    let i = !1, o = !1;
+    s.minimumZoomDistance = t, s.maximumZoomDistance = e, s.enableInputs = !0, s.enableZoom = !0, s.enableRotate = !0, s.enableTilt = !0, s.enableTranslate = !0;
+    const i = this.Cesium.CameraEventType;
+    s.zoomEventTypes = [
+      i.WHEEL,
+      i.PINCH
+    ], s.rotateEventTypes = i.LEFT_DRAG, s.tiltEventTypes = [
+      { eventType: i.LEFT_DRAG, modifier: this.Cesium.KeyboardEventModifier.CTRL },
+      { eventType: i.MIDDLE_DRAG }
+    ], s.translateEventTypes = [
+      i.RIGHT_DRAG
+      // Two-finger drag on mobile/trackpad
+    ];
+    let o = !1, n = !1;
     this.viewer.scene.camera.changed.addEventListener(() => {
-      if (i || o)
+      if (o || n)
         return;
-      const n = this.viewer.scene.camera, r = this.Cesium.Cartographic.fromCartesian(n.position), a = r.height;
-      if (a < t || a > e) {
-        i = !0;
-        const c = Math.max(t, Math.min(e, a)), h = this.Cesium.Cartesian3.fromRadians(
-          r.longitude,
-          r.latitude,
-          c
+      const l = this.viewer.scene.camera, a = this.Cesium.Cartographic.fromCartesian(l.position), c = a.height;
+      if (c < t || c > e) {
+        o = !0;
+        const h = Math.max(t, Math.min(e, c)), r = this.Cesium.Cartesian3.fromRadians(
+          a.longitude,
+          a.latitude,
+          h
         );
-        n.setView({
-          destination: h,
-          orientation: n.orientation
+        l.setView({
+          destination: r,
+          orientation: l.orientation
         }), setTimeout(() => {
-          i = !1;
+          o = !1;
         }, 0);
       }
-    }), this._isFlying = () => o, this._setIsFlying = (n) => {
-      o = n;
+    }), this._isFlying = () => n, this._setIsFlying = (l) => {
+      n = l;
     };
   }
   /**
@@ -2859,14 +2931,14 @@ class j {
     new this.Cesium.ScreenSpaceEventHandler(this.viewer.canvas).setInputAction((e) => {
       const s = this.viewer.scene.pick(e.position);
       if (s && s.id && s.id.nodeId) {
-        const o = s.id.nodeId, n = this.nodes.find((a) => a.id === o), r = this.nodeEntities.get(o);
-        if (n && r && (this.showPopup(r, n), this.onNodeClick)) {
+        const o = s.id.nodeId, n = this.nodes.find((a) => a.id === o), l = this.nodeEntities.get(o);
+        if (n && l && (this.showPopup(l, n), this.onNodeClick)) {
           const a = this.viewer.camera.pickEllipsoid(e.position, this.viewer.scene.globe.ellipsoid);
           if (a) {
-            const c = this.Cesium.Cartographic.fromCartesian(a), h = this.Cesium.Math.toDegrees(c.longitude), l = this.Cesium.Math.toDegrees(c.latitude);
+            const c = this.Cesium.Cartographic.fromCartesian(a), h = this.Cesium.Math.toDegrees(c.longitude), r = this.Cesium.Math.toDegrees(c.latitude);
             this.onNodeClick({
               node: n,
-              position: { x: h, y: l },
+              position: { x: h, y: r },
               originalEvent: e.originalEvent
             });
           }
@@ -2876,14 +2948,14 @@ class j {
       const i = this.viewer.scene.drillPick(e.position);
       for (const o of i)
         if (o.id && o.id.nodeId) {
-          const n = o.id.nodeId, r = this.nodes.find((c) => c.id === n), a = this.nodeEntities.get(n);
-          if (r && a && (this.showPopup(a, r), this.onNodeClick)) {
+          const n = o.id.nodeId, l = this.nodes.find((c) => c.id === n), a = this.nodeEntities.get(n);
+          if (l && a && (this.showPopup(a, l), this.onNodeClick)) {
             const c = this.viewer.camera.pickEllipsoid(e.position, this.viewer.scene.globe.ellipsoid);
             if (c) {
-              const h = this.Cesium.Cartographic.fromCartesian(c), l = this.Cesium.Math.toDegrees(h.longitude), d = this.Cesium.Math.toDegrees(h.latitude);
+              const h = this.Cesium.Cartographic.fromCartesian(c), r = this.Cesium.Math.toDegrees(h.longitude), d = this.Cesium.Math.toDegrees(h.latitude);
               this.onNodeClick({
-                node: r,
-                position: { x: l, y: d },
+                node: l,
+                position: { x: r, y: d },
                 originalEvent: e.originalEvent
               });
             }
@@ -2893,14 +2965,14 @@ class j {
       i.length === 0 && this.hidePopup();
       for (const o of i)
         if (o.id && o.id.edgeId) {
-          const n = o.id.edgeId, r = this.edges.find((a) => a.id === n);
-          if (r && this.onEdgeClick) {
+          const n = o.id.edgeId, l = this.edges.find((a) => a.id === n);
+          if (l && this.onEdgeClick) {
             const a = this.viewer.camera.pickEllipsoid(e.position, this.viewer.scene.globe.ellipsoid);
             if (a) {
-              const c = this.Cesium.Cartographic.fromCartesian(a), h = this.Cesium.Math.toDegrees(c.longitude), l = this.Cesium.Math.toDegrees(c.latitude);
+              const c = this.Cesium.Cartographic.fromCartesian(a), h = this.Cesium.Math.toDegrees(c.longitude), r = this.Cesium.Math.toDegrees(c.latitude);
               this.onEdgeClick({
-                edge: r,
-                position: { x: h, y: l },
+                edge: l,
+                position: { x: h, y: r },
                 originalEvent: e.originalEvent
               });
             }
@@ -2937,12 +3009,12 @@ class j {
     if (e.coordinates && e.coordinates.length === 2) {
       const [i, o] = e.coordinates;
       if (Number.isFinite(i) && Number.isFinite(o)) {
-        const [n, r] = e.coordinates, a = 3e6, c = this.nodeEntities.get(t);
+        const [n, l] = e.coordinates, a = 3e6, c = this.nodeEntities.get(t);
         c && e && this.showPopup(c, e);
         const h = this._setIsFlying;
         h && h(!0), setTimeout(() => {
           this.viewer.camera.flyTo({
-            destination: this.Cesium.Cartesian3.fromDegrees(r, n, a),
+            destination: this.Cesium.Cartesian3.fromDegrees(l, n, a),
             orientation: {
               heading: this.Cesium.Math.toRadians(0),
               pitch: this.Cesium.Math.toRadians(-90),
@@ -2964,14 +3036,14 @@ class j {
       return !Number.isFinite(o) || !Number.isFinite(n);
     });
     if (s.length > 0) {
-      const a = Math.ceil(Math.sqrt(s.length)), h = 50 / (Math.ceil(s.length / a) + 1), l = 32 / (a + 1), d = s.findIndex((g) => g.id === t);
+      const a = Math.ceil(Math.sqrt(s.length)), h = 50 / (Math.ceil(s.length / a) + 1), r = 32 / (a + 1), d = s.findIndex((g) => g.id === t);
       if (d >= 0) {
-        const g = Math.floor(d / a), u = d % a, w = -50 + (g + 1) * h, y = -32 + (u + 1) * l, p = 3e6, m = this.nodeEntities.get(t);
-        m && e && this.showPopup(m, e);
-        const f = this._setIsFlying;
-        f && f(!0), setTimeout(() => {
+        const g = Math.floor(d / a), u = d % a, m = -50 + (g + 1) * h, f = -32 + (u + 1) * r, p = 3e6, w = this.nodeEntities.get(t);
+        w && e && this.showPopup(w, e);
+        const y = this._setIsFlying;
+        y && y(!0), setTimeout(() => {
           this.viewer.camera.flyTo({
-            destination: this.Cesium.Cartesian3.fromDegrees(y, w, p),
+            destination: this.Cesium.Cartesian3.fromDegrees(f, m, p),
             orientation: {
               heading: this.Cesium.Math.toRadians(0),
               // Look north
@@ -2982,7 +3054,7 @@ class j {
             duration: 1,
             // 1 second animation
             complete: () => {
-              f && f(!1);
+              y && y(!1);
             }
           });
         }, 0);
@@ -3006,7 +3078,7 @@ class j {
       return Number.isFinite(i) && Number.isFinite(o);
     });
     if (t.length > 0) {
-      const r = [
+      const l = [
         this.Cesium.Cartesian3.fromDegrees(-32, -50, 0),
         this.Cesium.Cartesian3.fromDegrees(0, -50, 0),
         this.Cesium.Cartesian3.fromDegrees(0, 0, 0),
@@ -3014,29 +3086,29 @@ class j {
       ];
       this.rectEntity = this.viewer.entities.add({
         polygon: {
-          hierarchy: r,
+          hierarchy: l,
           material: this.Cesium.Color.fromCssColorString("#f0f0f0").withAlpha(0.1),
           outline: !0,
           outlineColor: this.Cesium.Color.fromCssColorString("#666"),
           height: 0
         }
       });
-      const a = Math.ceil(Math.sqrt(t.length)), h = 50 / (Math.ceil(t.length / a) + 1), l = 32 / (a + 1);
+      const a = Math.ceil(Math.sqrt(t.length)), h = 50 / (Math.ceil(t.length / a) + 1), r = 32 / (a + 1);
       t.forEach((d, g) => {
-        const u = Math.floor(g / a), w = g % a, y = -50 + (u + 1) * h, p = -32 + (w + 1) * l, m = this.selectedNodeId === d.id, f = d.style?.color || "#ffffff", b = m ? "#2196f3" : d.style?.borderColor || "#333333";
-        let C;
-        const E = f.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+        const u = Math.floor(g / a), m = g % a, f = -50 + (u + 1) * h, p = -32 + (m + 1) * r, w = this.selectedNodeId === d.id, y = d.style?.color || "#ffffff", C = w ? "#2196f3" : d.style?.borderColor || "#333333";
+        let b;
+        const E = y.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
         if (E) {
           const T = parseInt(E[1], 16) / 255, A = parseInt(E[2], 16) / 255, L = parseInt(E[3], 16) / 255;
-          C = new this.Cesium.Color(T, A, L, 1);
+          b = new this.Cesium.Color(T, A, L, 1);
         } else
-          C = this.Cesium.Color.fromCssColorString(f), C = C.withAlpha(1);
-        const x = this.Cesium.Color.fromCssColorString(b), B = this.viewer.entities.add({
-          position: this.Cesium.Cartesian3.fromDegrees(p, y, 0),
+          b = this.Cesium.Color.fromCssColorString(y), b = b.withAlpha(1);
+        const v = this.Cesium.Color.fromCssColorString(C), B = this.viewer.entities.add({
+          position: this.Cesium.Cartesian3.fromDegrees(p, f, 0),
           point: {
-            pixelSize: m ? 15 : 10,
-            color: C,
-            outlineColor: x,
+            pixelSize: w ? 15 : 10,
+            color: b,
+            outlineColor: v,
             outlineWidth: 2,
             heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND
           },
@@ -3058,21 +3130,21 @@ class j {
       });
     }
     for (const s of e) {
-      const [i, o] = s.coordinates, n = this.selectedNodeId === s.id, r = s.style?.color || "#ffffff", a = n ? "#2196f3" : s.style?.borderColor || "#333333";
+      const [i, o] = s.coordinates, n = this.selectedNodeId === s.id, l = s.style?.color || "#ffffff", a = n ? "#2196f3" : s.style?.borderColor || "#333333";
       let c;
-      const h = r.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+      const h = l.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
       if (h) {
-        const g = parseInt(h[1], 16) / 255, u = parseInt(h[2], 16) / 255, w = parseInt(h[3], 16) / 255;
-        c = new this.Cesium.Color(g, u, w, 1);
+        const g = parseInt(h[1], 16) / 255, u = parseInt(h[2], 16) / 255, m = parseInt(h[3], 16) / 255;
+        c = new this.Cesium.Color(g, u, m, 1);
       } else
-        c = this.Cesium.Color.fromCssColorString(r), c = c.withAlpha(1);
-      const l = this.Cesium.Color.fromCssColorString(a), d = this.viewer.entities.add({
+        c = this.Cesium.Color.fromCssColorString(l), c = c.withAlpha(1);
+      const r = this.Cesium.Color.fromCssColorString(a), d = this.viewer.entities.add({
         position: this.Cesium.Cartesian3.fromDegrees(o, i, 0),
         point: {
           pixelSize: n ? 15 : 10,
           color: c,
           // Use node fill color
-          outlineColor: l,
+          outlineColor: r,
           // Use border color
           outlineWidth: 2,
           heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND
@@ -3100,10 +3172,10 @@ class j {
         const i = this.nodes.find((u) => u.id === s.src), o = this.nodes.find((u) => u.id === s.dst);
         if (!i?.coordinates || !o?.coordinates)
           continue;
-        const [n, r] = i.coordinates, [a, c] = o.coordinates, h = s.style?.color || "#999999", l = s.style?.weight || 1, d = Math.max(1, Math.min(5, l)), g = this.viewer.entities.add({
+        const [n, l] = i.coordinates, [a, c] = o.coordinates, h = s.style?.color || "#999999", r = s.style?.weight || 1, d = Math.max(1, Math.min(5, r)), g = this.viewer.entities.add({
           polyline: {
             positions: [
-              this.Cesium.Cartesian3.fromDegrees(r, n, 0),
+              this.Cesium.Cartesian3.fromDegrees(l, n, 0),
               this.Cesium.Cartesian3.fromDegrees(c, a, 0)
             ],
             width: d,
@@ -3124,20 +3196,20 @@ class j {
   updateNodeSelection() {
     if (!(!this.viewer || !this.Cesium))
       for (const [t, e] of this.nodeEntities.entries()) {
-        const s = this.nodes.find((r) => r.id === t);
+        const s = this.nodes.find((l) => l.id === t);
         if (!s)
           continue;
         const i = this.selectedNodeId === t, o = s.style?.color || "#ffffff", n = i ? "#2196f3" : s.style?.borderColor || "#333333";
         if (e.point) {
           e.point.pixelSize = i ? 15 : 10;
-          let r;
+          let l;
           const a = o.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
           if (a) {
-            const c = parseInt(a[1], 16) / 255, h = parseInt(a[2], 16) / 255, l = parseInt(a[3], 16) / 255;
-            r = new this.Cesium.Color(c, h, l, 1);
+            const c = parseInt(a[1], 16) / 255, h = parseInt(a[2], 16) / 255, r = parseInt(a[3], 16) / 255;
+            l = new this.Cesium.Color(c, h, r, 1);
           } else
-            r = this.Cesium.Color.fromCssColorString(o), r = r.withAlpha(1);
-          e.point.color = r, e.point.outlineColor = this.Cesium.Color.fromCssColorString(n);
+            l = this.Cesium.Color.fromCssColorString(o), l = l.withAlpha(1);
+          e.point.color = l, e.point.outlineColor = this.Cesium.Color.fromCssColorString(n);
         }
       }
   }
@@ -3158,7 +3230,7 @@ class j {
       return Number.isFinite(i) && Number.isFinite(o);
     });
     if (t.length > 0) {
-      const r = [
+      const l = [
         this.Cesium.Cartesian3.fromDegrees(-32, -50, 0),
         this.Cesium.Cartesian3.fromDegrees(0, -50, 0),
         this.Cesium.Cartesian3.fromDegrees(0, 0, 0),
@@ -3166,29 +3238,29 @@ class j {
       ];
       this.rectEntity = this.viewer.entities.add({
         polygon: {
-          hierarchy: r,
+          hierarchy: l,
           material: this.Cesium.Color.fromCssColorString("#f0f0f0").withAlpha(0.1),
           outline: !0,
           outlineColor: this.Cesium.Color.fromCssColorString("#666"),
           height: 0
         }
       });
-      const a = Math.ceil(Math.sqrt(t.length)), h = 50 / (Math.ceil(t.length / a) + 1), l = 32 / (a + 1);
+      const a = Math.ceil(Math.sqrt(t.length)), h = 50 / (Math.ceil(t.length / a) + 1), r = 32 / (a + 1);
       t.forEach((d, g) => {
-        const u = Math.floor(g / a), w = g % a, y = -50 + (u + 1) * h, p = -32 + (w + 1) * l, m = this.selectedNodeId === d.id, f = d.style?.color || "#ffffff", b = m ? "#2196f3" : d.style?.borderColor || "#333333";
-        let C;
-        const E = f.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+        const u = Math.floor(g / a), m = g % a, f = -50 + (u + 1) * h, p = -32 + (m + 1) * r, w = this.selectedNodeId === d.id, y = d.style?.color || "#ffffff", C = w ? "#2196f3" : d.style?.borderColor || "#333333";
+        let b;
+        const E = y.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
         if (E) {
           const T = parseInt(E[1], 16) / 255, A = parseInt(E[2], 16) / 255, L = parseInt(E[3], 16) / 255;
-          C = new this.Cesium.Color(T, A, L, 1);
+          b = new this.Cesium.Color(T, A, L, 1);
         } else
-          C = this.Cesium.Color.fromCssColorString(f), C = C.withAlpha(1);
-        const x = this.Cesium.Color.fromCssColorString(b), B = this.viewer.entities.add({
-          position: this.Cesium.Cartesian3.fromDegrees(p, y, 0),
+          b = this.Cesium.Color.fromCssColorString(y), b = b.withAlpha(1);
+        const v = this.Cesium.Color.fromCssColorString(C), B = this.viewer.entities.add({
+          position: this.Cesium.Cartesian3.fromDegrees(p, f, 0),
           point: {
-            pixelSize: m ? 15 : 10,
-            color: C,
-            outlineColor: x,
+            pixelSize: w ? 15 : 10,
+            color: b,
+            outlineColor: v,
             outlineWidth: 2,
             heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND
           },
@@ -3210,20 +3282,20 @@ class j {
       });
     }
     for (const s of e) {
-      const [i, o] = s.coordinates, n = this.selectedNodeId === s.id, r = s.style?.color || "#ffffff", a = n ? "#2196f3" : s.style?.borderColor || "#333333";
+      const [i, o] = s.coordinates, n = this.selectedNodeId === s.id, l = s.style?.color || "#ffffff", a = n ? "#2196f3" : s.style?.borderColor || "#333333";
       let c;
-      const h = r.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+      const h = l.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
       if (h) {
-        const g = parseInt(h[1], 16) / 255, u = parseInt(h[2], 16) / 255, w = parseInt(h[3], 16) / 255;
-        c = new this.Cesium.Color(g, u, w, 1);
+        const g = parseInt(h[1], 16) / 255, u = parseInt(h[2], 16) / 255, m = parseInt(h[3], 16) / 255;
+        c = new this.Cesium.Color(g, u, m, 1);
       } else
-        c = this.Cesium.Color.fromCssColorString(r), c = c.withAlpha(1);
-      const l = this.Cesium.Color.fromCssColorString(a), d = this.viewer.entities.add({
+        c = this.Cesium.Color.fromCssColorString(l), c = c.withAlpha(1);
+      const r = this.Cesium.Color.fromCssColorString(a), d = this.viewer.entities.add({
         position: this.Cesium.Cartesian3.fromDegrees(o, i, 0),
         point: {
           pixelSize: n ? 15 : 10,
           color: c,
-          outlineColor: l,
+          outlineColor: r,
           outlineWidth: 2,
           heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND
         },
@@ -3249,10 +3321,10 @@ class j {
         const i = this.nodes.find((u) => u.id === s.src), o = this.nodes.find((u) => u.id === s.dst);
         if (!i?.coordinates || !o?.coordinates)
           continue;
-        const [n, r] = i.coordinates, [a, c] = o.coordinates, h = s.style?.color || "#999999", l = s.style?.weight || 1, d = Math.max(1, Math.min(5, l)), g = this.viewer.entities.add({
+        const [n, l] = i.coordinates, [a, c] = o.coordinates, h = s.style?.color || "#999999", r = s.style?.weight || 1, d = Math.max(1, Math.min(5, r)), g = this.viewer.entities.add({
           polyline: {
             positions: [
-              this.Cesium.Cartesian3.fromDegrees(r, n, 0),
+              this.Cesium.Cartesian3.fromDegrees(l, n, 0),
               this.Cesium.Cartesian3.fromDegrees(c, a, 0)
             ],
             width: d,
@@ -3281,9 +3353,9 @@ class j {
   setTileTypeInternal(t = !1) {
     if (!this.viewer || !this.Cesium)
       return;
-    const e = (r, a, c, h = !1) => {
-      const l = (g) => String(g).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"), d = `<a href="${l(c)}" target="_blank" rel="noopener noreferrer">${l(a)}</a>`;
-      return new r.Credit(d, h);
+    const e = (l, a, c, h = !1) => {
+      const r = (g) => String(g).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"), d = `<a href="${r(c)}" target="_blank" rel="noopener noreferrer">${r(a)}</a>`;
+      return new l.Credit(d, h);
     };
     if (this.baseImageryLayer)
       try {
@@ -3291,22 +3363,22 @@ class j {
       } catch {
       }
     if (this.customTileUrls.length > 0) {
-      const r = this.customTileUrls[this.currentCustomTileIndex], a = r.url.includes("NaturalEarthII"), c = r.maximumLevel ?? (a ? 2 : 19);
+      const l = this.customTileUrls[this.currentCustomTileIndex], a = l.url.includes("NaturalEarthII"), c = l.maximumLevel ?? (a ? 2 : 19);
       let h;
-      if (r.credit) {
-        const g = r.credit;
+      if (l.credit) {
+        const g = l.credit;
         g.href ? h = e(this.Cesium, g.label, g.href, g.showOnScreen ?? !1) : h = new this.Cesium.Credit(g.label, g.showOnScreen ?? !1);
       } else
         h = new this.Cesium.Credit(
           `Custom tile server (${this.currentCustomTileIndex + 1}/${this.customTileUrls.length})`
         );
-      const l = {
-        url: r.url,
+      const r = {
+        url: l.url,
         maximumLevel: c,
         credit: h
       };
-      a && this.Cesium?.GeographicTilingScheme && (l.tilingScheme = new this.Cesium.GeographicTilingScheme());
-      const d = new this.Cesium.UrlTemplateImageryProvider(l);
+      a && this.Cesium?.GeographicTilingScheme && (r.tilingScheme = new this.Cesium.GeographicTilingScheme());
+      const d = new this.Cesium.UrlTemplateImageryProvider(r);
       this.baseImageryLayer = this.viewer.imageryLayers.addImageryProvider(d, 0), this.updateTileTypeButton();
       return;
     }
@@ -3324,7 +3396,7 @@ class j {
       // EPSG:4326 (Geographic Coordinate System)
       credit: s,
       customTags: {
-        reverseY: (r, a, c, h) => {
+        reverseY: (l, a, c, h) => {
           const d = Math.pow(2, h) - 1 - c;
           return String(d);
         }
@@ -3377,48 +3449,48 @@ class j {
   fitToNodes() {
     if (!this.viewer || !this.Cesium || this.nodes.length === 0)
       return;
-    const t = this.nodes.filter((b) => {
-      if (!b.coordinates || !Array.isArray(b.coordinates) || b.coordinates.length !== 2) return !1;
-      const [C, E] = b.coordinates;
-      return Number.isFinite(C) && Number.isFinite(E);
-    }), e = this.nodes.filter((b) => {
-      if (!b.coordinates || !Array.isArray(b.coordinates) || b.coordinates.length !== 2) return !0;
-      const [C, E] = b.coordinates;
-      return !Number.isFinite(C) || !Number.isFinite(E);
+    const t = this.nodes.filter((C) => {
+      if (!C.coordinates || !Array.isArray(C.coordinates) || C.coordinates.length !== 2) return !1;
+      const [b, E] = C.coordinates;
+      return Number.isFinite(b) && Number.isFinite(E);
+    }), e = this.nodes.filter((C) => {
+      if (!C.coordinates || !Array.isArray(C.coordinates) || C.coordinates.length !== 2) return !0;
+      const [b, E] = C.coordinates;
+      return !Number.isFinite(b) || !Number.isFinite(E);
     }), s = [], i = [];
-    if (t.forEach((b) => {
-      if (b.coordinates && b.coordinates.length === 2) {
-        const [C, E] = b.coordinates;
-        Number.isFinite(C) && Number.isFinite(E) && (s.push(C), i.push(E));
+    if (t.forEach((C) => {
+      if (C.coordinates && C.coordinates.length === 2) {
+        const [b, E] = C.coordinates;
+        Number.isFinite(b) && Number.isFinite(E) && (s.push(b), i.push(E));
       }
     }), e.length > 0) {
       const B = Math.ceil(Math.sqrt(e.length)), A = 50 / (Math.ceil(e.length / B) + 1), L = 32 / (B + 1);
-      e.forEach((M, v) => {
-        const S = Math.floor(v / B), k = v % B, N = -50 + (S + 1) * A, _ = -32 + (k + 1) * L;
+      e.forEach((M, x) => {
+        const S = Math.floor(x / B), k = x % B, N = -50 + (S + 1) * A, _ = -32 + (k + 1) * L;
         s.push(N), i.push(_);
       });
     }
     if (s.length === 0)
       return;
-    const o = Math.min(...s), n = Math.max(...s), r = Math.min(...i), a = Math.max(...i), c = (o + n) / 2, h = (r + a) / 2, l = n - o, d = a - r, g = Math.max(l, d), u = Math.max(1e6, g * 111e3 * 2), p = Math.max(5e5, Math.min(4e7, u)), m = () => new Promise((b) => {
+    const o = Math.min(...s), n = Math.max(...s), l = Math.min(...i), a = Math.max(...i), c = (o + n) / 2, h = (l + a) / 2, r = n - o, d = a - l, g = Math.max(r, d), u = Math.max(1e6, g * 111e3 * 2), p = Math.max(5e5, Math.min(4e7, u)), w = () => new Promise((C) => {
       if (!this.baseImageryLayer) {
-        b();
+        C();
         return;
       }
       if (this.baseImageryLayer.imageryProvider && this.baseImageryLayer.imageryProvider.ready) {
-        b();
+        C();
         return;
       }
-      const C = setTimeout(() => {
-        b();
+      const b = setTimeout(() => {
+        C();
       }, 2e3);
       this.baseImageryLayer.imageryProvider && this.baseImageryLayer.imageryProvider.readyPromise ? this.baseImageryLayer.imageryProvider.readyPromise.then(() => {
-        clearTimeout(C), b();
+        clearTimeout(b), C();
       }).catch(() => {
-        clearTimeout(C), b();
-      }) : (clearTimeout(C), b());
-    }), f = this._setIsFlying;
-    f && f(!0), m().then(() => {
+        clearTimeout(b), C();
+      }) : (clearTimeout(b), C());
+    }), y = this._setIsFlying;
+    y && y(!0), w().then(() => {
       this.viewer.camera.flyTo({
         destination: this.Cesium.Cartesian3.fromDegrees(h, c, p),
         orientation: {
@@ -3429,17 +3501,17 @@ class j {
         duration: 1,
         // Animate in 1 second
         complete: () => {
-          f && f(!1);
-          const b = this.viewer.scene.camera, C = this.Cesium.Cartographic.fromCartesian(b.position), E = C.height, x = 5e5, B = 4e7;
-          if (E < x || E > B) {
-            const T = Math.max(x, Math.min(B, E)), A = this.Cesium.Cartesian3.fromRadians(
-              C.longitude,
-              C.latitude,
+          y && y(!1);
+          const C = this.viewer.scene.camera, b = this.Cesium.Cartographic.fromCartesian(C.position), E = b.height, v = 5e5, B = 4e7;
+          if (E < v || E > B) {
+            const T = Math.max(v, Math.min(B, E)), A = this.Cesium.Cartesian3.fromRadians(
+              b.longitude,
+              b.latitude,
               T
             );
-            b.setView({
+            C.setView({
               destination: A,
-              orientation: b.orientation
+              orientation: C.orientation
             });
           }
         }
@@ -3469,7 +3541,11 @@ class j {
    * Destroy view
    */
   destroy() {
-    this.hidePopup(), this.popupElement && this.popupElement.parentNode && (this.popupElement.parentNode.removeChild(this.popupElement), this.popupElement = null), this.viewer && (this.viewer.destroy(), this.viewer = null), this.nodeEntities.clear(), this.edgeEntities.clear();
+    if (this.hidePopup(), this.popupElement && this.popupElement.parentNode && (this.popupElement.parentNode.removeChild(this.popupElement), this.popupElement = null), this.viewer && this._trackpadPinchHandlers) {
+      const t = this.viewer.canvas, e = this._trackpadPinchHandlers;
+      e.wheel && t.removeEventListener("wheel", e.wheel), "GestureEvent" in window && (e.gestureStart && t.removeEventListener("gesturestart", e.gestureStart), e.gestureChange && t.removeEventListener("gesturechange", e.gestureChange), e.gestureEnd && t.removeEventListener("gestureend", e.gestureEnd)), this._trackpadPinchHandlers = null;
+    }
+    this.viewer && (this.viewer.destroy(), this.viewer = null), this.nodeEntities.clear(), this.edgeEntities.clear();
   }
   /**
    * Create custom popup (Leaflet style)
@@ -3543,9 +3619,9 @@ class j {
     let s = 1;
     const i = this.container.getBoundingClientRect(), o = this.container.offsetWidth;
     o > 0 && i.width > 0 && (s = i.width / o);
-    const n = e.x / s, r = e.y / s;
+    const n = e.x / s, l = e.y / s;
     this.popupElement.style.display = "block";
-    const a = n - this.popupElement.offsetWidth / 2, c = r - this.popupElement.offsetHeight - 15;
+    const a = n - this.popupElement.offsetWidth / 2, c = l - this.popupElement.offsetHeight - 15;
     this.popupElement.style.left = `${a}px`, this.popupElement.style.top = `${c}px`;
   }
   /**
@@ -3556,7 +3632,7 @@ class j {
   }
 }
 function K(I, t = 16) {
-  return P(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  return H(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${I}"></use>
   </svg>`;
 }
@@ -3564,8 +3640,8 @@ class q {
   // Current index in customTileUrls array
   constructor(t, e, s, i, o, n) {
     this.map = null, this.Leaflet = null, this.nodes = [], this.edges = [], this.selectedNodeId = null, this.lastSelectedNodeId = null, this.markers = /* @__PURE__ */ new Map(), this.polylines = /* @__PURE__ */ new Map(), this.rectLayer = null, this.fitCenterButton = null, this.lightingToggleButton = null, this.alwaysShowEdgesButton = null, this.alwaysShowEdges = !0, this.tileTypeButton = null, this.baseTileLayer = null, this.nightShadeLayer = null, this.nightShadeDebugLayer = null, this.lightingEnabled = !1, this.timeISO = null, this.moonToggleButton = null, this.moonEnabled = !1, this.moonMarker = null, this.customTileUrls = [], this.currentCustomTileIndex = 0, this.container = t, this.onNodeClick = e, this.leafletLoader = s, this.map2dOptions = o, this.onEdgeClick = n;
-    const r = i && i.length > 0 ? i : o?.customTileUrls;
-    r && r.length > 0 ? this.customTileUrls = r.map(
+    const l = i && i.length > 0 ? i : o?.customTileUrls;
+    l && l.length > 0 ? this.customTileUrls = l.map(
       (a) => typeof a == "string" ? { url: a } : a
     ) : o?.customTileUrl && (this.customTileUrls = [{ url: o.customTileUrl }]), this.container.style.position = "relative", this.container.style.width = "100%", this.container.style.height = "100%";
   }
@@ -3582,7 +3658,7 @@ class q {
     const e = this.map2dOptions?.center || [0, 0], s = this.map2dOptions?.zoom || 2;
     let i = 5;
     if (this.customTileUrls.length > 0) {
-      const n = this.customTileUrls.map((r) => r.maxZoom ?? r.maximumLevel ?? 19);
+      const n = this.customTileUrls.map((l) => l.maxZoom ?? l.maximumLevel ?? 19);
       i = Math.min(...n);
     }
     const o = {
@@ -3605,12 +3681,12 @@ class q {
     this.baseTileLayer && this.map.removeLayer(this.baseTileLayer);
     let t;
     if (this.customTileUrls.length > 0) {
-      const i = this.customTileUrls[this.currentCustomTileIndex], o = i.maxZoom ?? i.maximumLevel ?? 19, n = i.tms ?? !1, r = i.attribution ?? `Custom tile server (${this.currentCustomTileIndex + 1}/${this.customTileUrls.length})`;
+      const i = this.customTileUrls[this.currentCustomTileIndex], o = i.maxZoom ?? i.maximumLevel ?? 19, n = i.tms ?? !1, l = i.attribution ?? `Custom tile server (${this.currentCustomTileIndex + 1}/${this.customTileUrls.length})`;
       t = this.Leaflet.tileLayer(i.url, {
         maxZoom: o,
         tms: n,
         // TMS format (Y from bottom to top) if specified
-        attribution: r
+        attribution: l
       }), t.addTo(this.map), this.baseTileLayer = t;
       return;
     }
@@ -3744,17 +3820,17 @@ class q {
     const o = this.unwrapLongitudes(i);
     let n = o.map((g) => [g.lat, g.lng]);
     n.length > 0 && (n[0][0] !== n[n.length - 1][0] || n[0][1] !== n[n.length - 1][1]) && n.push([n[0][0], n[0][1]]);
-    const r = n.map(([g, u]) => ({ lat: g, lng: u }));
-    this.isCounterClockwise(r) && n.reverse();
+    const l = n.map(([g, u]) => ({ lat: g, lng: u }));
+    this.isCounterClockwise(l) && n.reverse();
     const c = n.map(([g, u]) => ({ lat: g, lng: u }));
     if (this.isCounterClockwise(c)) {
       n.reverse();
-      const g = n.map(([u, w]) => ({ lat: u, lng: w }));
+      const g = n.map(([u, m]) => ({ lat: u, lng: m }));
       this.isCounterClockwise(g);
     }
-    const l = o.map((g) => [g.lat, g.lng]);
-    l.length > 0 && (l[0][0] !== l[l.length - 1][0] || l[0][1] !== l[l.length - 1][1]) && l.push([l[0][0], l[0][1]]);
-    const d = this.Leaflet.polygon(l, {
+    const r = o.map((g) => [g.lat, g.lng]);
+    r.length > 0 && (r[0][0] !== r[r.length - 1][0] || r[0][1] !== r[r.length - 1][1]) && r.push([r[0][0], r[0][1]]);
+    const d = this.Leaflet.polygon(r, {
       fillColor: "#000000",
       fillOpacity: 0.3,
       color: "#000000",
@@ -3834,8 +3910,8 @@ class q {
     s = (s % 360 + 360) % 360;
     let i = 357.528 + 0.9856003 * e;
     i = (i % 360 + 360) % 360;
-    const o = Math.PI / 180, n = s + 1.915 * Math.sin(i * o) + 0.02 * Math.sin(2 * i * o), r = 1.00014 - 0.01671 * Math.cos(i * o) - 14e-4 * Math.cos(2 * i * o);
-    return { lambda: n, R: r };
+    const o = Math.PI / 180, n = s + 1.915 * Math.sin(i * o) + 0.02 * Math.sin(2 * i * o), l = 1.00014 - 0.01671 * Math.cos(i * o) - 14e-4 * Math.cos(2 * i * o);
+    return { lambda: n, R: l };
   }
   /**
    * Calculate ecliptic obliquity
@@ -3851,8 +3927,8 @@ class q {
    * Based on Leaflet.Terminator implementation
    */
   sunEquatorialPosition(t, e) {
-    const s = Math.PI / 180, i = 180 / Math.PI, o = Math.atan(Math.cos(e * s) * Math.tan(t * s)) * i, n = Math.asin(Math.sin(e * s) * Math.sin(t * s)) * i, r = Math.floor(t / 90) * 90, a = Math.floor(o / 90) * 90;
-    return { alpha: o + (r - a), delta: n };
+    const s = Math.PI / 180, i = 180 / Math.PI, o = Math.atan(Math.cos(e * s) * Math.tan(t * s)) * i, n = Math.asin(Math.sin(e * s) * Math.sin(t * s)) * i, l = Math.floor(t / 90) * 90, a = Math.floor(o / 90) * 90;
+    return { alpha: o + (l - a), delta: n };
   }
   /**
    * Compute the hour angle of the sun for a longitude on Earth
@@ -3884,9 +3960,9 @@ class q {
           return null;
       } else if (i = new Date(t), isNaN(i.getTime()))
         return null;
-      const o = this.julian(i), n = this.GMST(o), r = this.sunEclipticPosition(o), a = this.eclipticObliquity(o), c = this.sunEquatorialPosition(r.lambda, a), h = [];
-      for (let l = 0; l <= e * s; l++) {
-        const d = -e / 2 + l / s, g = this.hourAngle(d, c, n), u = this.terminatorLatitude(g, c);
+      const o = this.julian(i), n = this.GMST(o), l = this.sunEclipticPosition(o), a = this.eclipticObliquity(o), c = this.sunEquatorialPosition(l.lambda, a), h = [];
+      for (let r = 0; r <= e * s; r++) {
+        const d = -e / 2 + r / s, g = this.hourAngle(d, c, n), u = this.terminatorLatitude(g, c);
         h.push({ lat: u, lng: d });
       }
       return c.delta < 0 ? (h.unshift({ lat: 90, lng: -e / 2 }), h.push({ lat: 90, lng: e / 2 })) : (h.unshift({ lat: -90, lng: -e / 2 }), h.push({ lat: -90, lng: e / 2 })), h.length > 0 ? h : null;
@@ -3943,8 +4019,8 @@ class q {
     if (e.coordinates && e.coordinates.length === 2) {
       const [i, o] = e.coordinates;
       if (Number.isFinite(i) && Number.isFinite(o)) {
-        const [n, r] = e.coordinates;
-        this.renderWithoutFit(), this.map.flyTo([n, r], 4, {
+        const [n, l] = e.coordinates;
+        this.renderWithoutFit(), this.map.flyTo([n, l], 4, {
           duration: 1,
           easeLinearity: 0.25
           // Easing linearity (0.25 is recommended)
@@ -3963,17 +4039,17 @@ class q {
       return !Number.isFinite(o) || !Number.isFinite(n);
     });
     if (s.length > 0) {
-      const a = Math.ceil(Math.sqrt(s.length)), h = 50 / (Math.ceil(s.length / a) + 1), l = 32 / (a + 1), d = s.findIndex((g) => g.id === t);
+      const a = Math.ceil(Math.sqrt(s.length)), h = 50 / (Math.ceil(s.length / a) + 1), r = 32 / (a + 1), d = s.findIndex((g) => g.id === t);
       if (d >= 0) {
-        const g = Math.floor(d / a), u = d % a, w = -50 + (g + 1) * h, y = -32 + (u + 1) * l;
-        this.renderWithoutFit(), this.map.flyTo([w, y], 4, {
+        const g = Math.floor(d / a), u = d % a, m = -50 + (g + 1) * h, f = -32 + (u + 1) * r;
+        this.renderWithoutFit(), this.map.flyTo([m, f], 4, {
           duration: 1,
           // 1 second animation
           easeLinearity: 0.25
         });
         const p = () => {
-          const m = this.markers.get(t);
-          m && m.openPopup(), this.map.off("moveend", p);
+          const w = this.markers.get(t);
+          w && w.openPopup(), this.map.off("moveend", p);
         };
         this.map.once("moveend", p);
       }
@@ -4018,23 +4094,23 @@ class q {
         weight: 1,
         dashArray: "5,5"
       }), this.rectLayer.addTo(this.map);
-      const c = Math.ceil(Math.sqrt(e.length)), l = 50 / (Math.ceil(e.length / c) + 1), d = 32 / (c + 1);
+      const c = Math.ceil(Math.sqrt(e.length)), r = 50 / (Math.ceil(e.length / c) + 1), d = 32 / (c + 1);
       e.forEach((g, u) => {
-        const w = Math.floor(u / c), y = u % c, p = -50 + (w + 1) * l, m = -32 + (y + 1) * d, f = this.selectedNodeId === g.id, b = g.style?.color || "#ffffff", C = f ? "#2196f3" : g.style?.borderColor || "#333333", E = `
+        const m = Math.floor(u / c), f = u % c, p = -50 + (m + 1) * r, w = -32 + (f + 1) * d, y = this.selectedNodeId === g.id, C = g.style?.color || "#ffffff", b = y ? "#2196f3" : g.style?.borderColor || "#333333", E = `
           <div style="
-            width: ${f ? 15 : 10}px;
-            height: ${f ? 15 : 10}px;
-            background-color: ${b};
-            border: 2px solid ${C};
+            width: ${y ? 15 : 10}px;
+            height: ${y ? 15 : 10}px;
+            background-color: ${C};
+            border: 2px solid ${b};
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
           "></div>
-        `, x = this.Leaflet.divIcon({
+        `, v = this.Leaflet.divIcon({
           html: E,
           className: "relatos-node-marker",
-          iconSize: [f ? 15 : 10, f ? 15 : 10],
-          iconAnchor: [f ? 7.5 : 5, f ? 7.5 : 5]
-        }), B = this.Leaflet.marker([p, m], { icon: x });
+          iconSize: [y ? 15 : 10, y ? 15 : 10],
+          iconAnchor: [y ? 7.5 : 5, y ? 7.5 : 5]
+        }), B = this.Leaflet.marker([p, w], { icon: v });
         B.bindPopup(g.label, {
           closeButton: !1,
           offset: [0, -10]
@@ -4051,21 +4127,21 @@ class q {
       });
     }
     for (const i of s) {
-      const [o, n] = i.coordinates, r = this.selectedNodeId === i.id, a = i.style?.color || "#ffffff", c = r ? "#2196f3" : i.style?.borderColor || "#333333", h = `
+      const [o, n] = i.coordinates, l = this.selectedNodeId === i.id, a = i.style?.color || "#ffffff", c = l ? "#2196f3" : i.style?.borderColor || "#333333", h = `
         <div style="
-          width: ${r ? 15 : 10}px;
-          height: ${r ? 15 : 10}px;
+          width: ${l ? 15 : 10}px;
+          height: ${l ? 15 : 10}px;
           background-color: ${a};
           border: 2px solid ${c};
           border-radius: 50%;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         "></div>
-      `, l = this.Leaflet.divIcon({
+      `, r = this.Leaflet.divIcon({
         html: h,
         className: "relatos-node-marker",
-        iconSize: [r ? 15 : 10, r ? 15 : 10],
-        iconAnchor: [r ? 7.5 : 5, r ? 7.5 : 5]
-      }), d = this.Leaflet.marker([o, n], { icon: l });
+        iconSize: [l ? 15 : 10, l ? 15 : 10],
+        iconAnchor: [l ? 7.5 : 5, l ? 7.5 : 5]
+      }), d = this.Leaflet.marker([o, n], { icon: r });
       d.bindPopup(i.label, {
         closeButton: !1,
         offset: [0, -10]
@@ -4083,32 +4159,32 @@ class q {
     }
     if (this.alwaysShowEdges)
       for (const i of this.edges) {
-        const o = this.nodes.find((y) => y.id === i.src), n = this.nodes.find((y) => y.id === i.dst);
+        const o = this.nodes.find((f) => f.id === i.src), n = this.nodes.find((f) => f.id === i.dst);
         if (!o?.coordinates || !n?.coordinates)
           continue;
-        const [r, a] = o.coordinates, [c, h] = n.coordinates, l = i.style?.color || "#999999", d = i.style?.weight || 1, g = Math.max(1, Math.min(5, d)), u = this.Leaflet.polyline(
-          [[r, a], [c, h]],
+        const [l, a] = o.coordinates, [c, h] = n.coordinates, r = i.style?.color || "#999999", d = i.style?.weight || 1, g = Math.max(1, Math.min(5, d)), u = this.Leaflet.polyline(
+          [[l, a], [c, h]],
           {
-            color: l,
+            color: r,
             weight: g,
             opacity: 0.7
           }
         );
-        u.on("click", (y) => {
+        u.on("click", (f) => {
           if (this.onEdgeClick) {
-            const p = y.latlng;
+            const p = f.latlng;
             this.onEdgeClick({
               edge: i,
               position: { x: p.lng, y: p.lat },
-              originalEvent: y.originalEvent,
+              originalEvent: f.originalEvent,
               view: "map2d"
             });
           }
         });
-        const w = this.polylines.get(i.id);
-        if (w && this.map)
+        const m = this.polylines.get(i.id);
+        if (m && this.map)
           try {
-            this.map.hasLayer(w) && this.map.removeLayer(w);
+            this.map.hasLayer(m) && this.map.removeLayer(m);
           } catch {
           }
         u.addTo(this.map), this.polylines.set(i.id, u);
@@ -4153,23 +4229,23 @@ class q {
         weight: 1,
         dashArray: "5,5"
       }), this.rectLayer.addTo(this.map);
-      const c = Math.ceil(Math.sqrt(e.length)), l = 50 / (Math.ceil(e.length / c) + 1), d = 32 / (c + 1);
+      const c = Math.ceil(Math.sqrt(e.length)), r = 50 / (Math.ceil(e.length / c) + 1), d = 32 / (c + 1);
       e.forEach((g, u) => {
-        const w = Math.floor(u / c), y = u % c, p = -50 + (w + 1) * l, m = -32 + (y + 1) * d, f = this.selectedNodeId === g.id, b = g.style?.color || "#ffffff", C = f ? "#2196f3" : g.style?.borderColor || "#333333", E = `
+        const m = Math.floor(u / c), f = u % c, p = -50 + (m + 1) * r, w = -32 + (f + 1) * d, y = this.selectedNodeId === g.id, C = g.style?.color || "#ffffff", b = y ? "#2196f3" : g.style?.borderColor || "#333333", E = `
           <div style="
-            width: ${f ? 15 : 10}px;
-            height: ${f ? 15 : 10}px;
-            background-color: ${b};
-            border: 2px solid ${C};
+            width: ${y ? 15 : 10}px;
+            height: ${y ? 15 : 10}px;
+            background-color: ${C};
+            border: 2px solid ${b};
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
           "></div>
-        `, x = this.Leaflet.divIcon({
+        `, v = this.Leaflet.divIcon({
           html: E,
           className: "relatos-node-marker",
-          iconSize: [f ? 15 : 10, f ? 15 : 10],
-          iconAnchor: [f ? 7.5 : 5, f ? 7.5 : 5]
-        }), B = this.Leaflet.marker([p, m], { icon: x });
+          iconSize: [y ? 15 : 10, y ? 15 : 10],
+          iconAnchor: [y ? 7.5 : 5, y ? 7.5 : 5]
+        }), B = this.Leaflet.marker([p, w], { icon: v });
         B.bindPopup(g.label, {
           closeButton: !1,
           offset: [0, -10]
@@ -4187,21 +4263,21 @@ class q {
       });
     }
     for (const i of s) {
-      const [o, n] = i.coordinates, r = this.selectedNodeId === i.id, a = i.style?.color || "#ffffff", c = r ? "#2196f3" : i.style?.borderColor || "#333333", h = `
+      const [o, n] = i.coordinates, l = this.selectedNodeId === i.id, a = i.style?.color || "#ffffff", c = l ? "#2196f3" : i.style?.borderColor || "#333333", h = `
         <div style="
-          width: ${r ? 15 : 10}px;
-          height: ${r ? 15 : 10}px;
+          width: ${l ? 15 : 10}px;
+          height: ${l ? 15 : 10}px;
           background-color: ${a};
           border: 2px solid ${c};
           border-radius: 50%;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         "></div>
-      `, l = this.Leaflet.divIcon({
+      `, r = this.Leaflet.divIcon({
         html: h,
         className: "relatos-node-marker",
-        iconSize: [r ? 15 : 10, r ? 15 : 10],
-        iconAnchor: [r ? 7.5 : 5, r ? 7.5 : 5]
-      }), d = this.Leaflet.marker([o, n], { icon: l });
+        iconSize: [l ? 15 : 10, l ? 15 : 10],
+        iconAnchor: [l ? 7.5 : 5, l ? 7.5 : 5]
+      }), d = this.Leaflet.marker([o, n], { icon: r });
       d.bindPopup(i.label, {
         closeButton: !1,
         offset: [0, -10]
@@ -4218,32 +4294,32 @@ class q {
     }
     if (this.alwaysShowEdges)
       for (const i of this.edges) {
-        const o = this.nodes.find((y) => y.id === i.src), n = this.nodes.find((y) => y.id === i.dst);
+        const o = this.nodes.find((f) => f.id === i.src), n = this.nodes.find((f) => f.id === i.dst);
         if (!o?.coordinates || !n?.coordinates)
           continue;
-        const [r, a] = o.coordinates, [c, h] = n.coordinates, l = i.style?.color || "#999999", d = i.style?.weight || 1, g = Math.max(1, Math.min(5, d)), u = this.Leaflet.polyline(
-          [[r, a], [c, h]],
+        const [l, a] = o.coordinates, [c, h] = n.coordinates, r = i.style?.color || "#999999", d = i.style?.weight || 1, g = Math.max(1, Math.min(5, d)), u = this.Leaflet.polyline(
+          [[l, a], [c, h]],
           {
-            color: l,
+            color: r,
             weight: g,
             opacity: 0.7
           }
         );
-        u.on("click", (y) => {
+        u.on("click", (f) => {
           if (this.onEdgeClick) {
-            const p = y.latlng;
+            const p = f.latlng;
             this.onEdgeClick({
               edge: i,
               position: { x: p.lng, y: p.lat },
-              originalEvent: y.originalEvent,
+              originalEvent: f.originalEvent,
               view: "map2d"
             });
           }
         });
-        const w = this.polylines.get(i.id);
-        if (w && this.map)
+        const m = this.polylines.get(i.id);
+        if (m && this.map)
           try {
-            this.map.hasLayer(w) && this.map.removeLayer(w);
+            this.map.hasLayer(m) && this.map.removeLayer(m);
           } catch {
           }
         u.addTo(this.map), this.polylines.set(i.id, u);
@@ -4291,28 +4367,28 @@ class q {
    * Calculate moon phase (0 to 1, where 0 = new moon, 0.5 = full moon)
    */
   getMoonIllumination(t) {
-    const s = this.julian(t) - 2451545, i = (357.5291 + 0.98560028 * s) * Math.PI / 180, o = (1.9148 * Math.sin(i) + 0.02 * Math.sin(2 * i) + 3e-4 * Math.sin(3 * i)) * Math.PI / 180, n = 102.9372 * Math.PI / 180, r = i + o + n + Math.PI, a = 23.4397 * Math.PI / 180, c = Math.atan2(
-      Math.sin(r) * Math.cos(a) - Math.tan(0) * Math.sin(a),
-      Math.cos(r)
+    const s = this.julian(t) - 2451545, i = (357.5291 + 0.98560028 * s) * Math.PI / 180, o = (1.9148 * Math.sin(i) + 0.02 * Math.sin(2 * i) + 3e-4 * Math.sin(3 * i)) * Math.PI / 180, n = 102.9372 * Math.PI / 180, l = i + o + n + Math.PI, a = 23.4397 * Math.PI / 180, c = Math.atan2(
+      Math.sin(l) * Math.cos(a) - Math.tan(0) * Math.sin(a),
+      Math.cos(l)
     ), h = Math.asin(
-      Math.sin(0) * Math.cos(a) + Math.cos(0) * Math.sin(a) * Math.sin(r)
-    ), l = (218.316 + 13.176396 * s) * Math.PI / 180, d = (134.963 + 13.064993 * s) * Math.PI / 180, g = (93.272 + 13.22935 * s) * Math.PI / 180, u = l + 6.289 * Math.sin(d) * Math.PI / 180, w = 5.128 * Math.sin(g) * Math.PI / 180, y = Math.atan2(
-      Math.sin(u) * Math.cos(a) - Math.tan(w) * Math.sin(a),
+      Math.sin(0) * Math.cos(a) + Math.cos(0) * Math.sin(a) * Math.sin(l)
+    ), r = (218.316 + 13.176396 * s) * Math.PI / 180, d = (134.963 + 13.064993 * s) * Math.PI / 180, g = (93.272 + 13.22935 * s) * Math.PI / 180, u = r + 6.289 * Math.sin(d) * Math.PI / 180, m = 5.128 * Math.sin(g) * Math.PI / 180, f = Math.atan2(
+      Math.sin(u) * Math.cos(a) - Math.tan(m) * Math.sin(a),
       Math.cos(u)
     ), p = Math.asin(
-      Math.sin(w) * Math.cos(a) + Math.cos(w) * Math.sin(a) * Math.sin(u)
-    ), m = 385001 - 20905 * Math.cos(d), f = 149598e3, b = Math.acos(
-      Math.sin(h) * Math.sin(p) + Math.cos(h) * Math.cos(p) * Math.cos(c - y)
-    ), C = Math.atan2(
-      f * Math.sin(b),
-      m - f * Math.cos(b)
+      Math.sin(m) * Math.cos(a) + Math.cos(m) * Math.sin(a) * Math.sin(u)
+    ), w = 385001 - 20905 * Math.cos(d), y = 149598e3, C = Math.acos(
+      Math.sin(h) * Math.sin(p) + Math.cos(h) * Math.cos(p) * Math.cos(c - f)
+    ), b = Math.atan2(
+      y * Math.sin(C),
+      w - y * Math.cos(C)
     ), E = Math.atan2(
-      Math.cos(h) * Math.sin(c - y),
-      Math.sin(h) * Math.cos(p) - Math.cos(h) * Math.sin(p) * Math.cos(c - y)
+      Math.cos(h) * Math.sin(c - f),
+      Math.sin(h) * Math.cos(p) - Math.cos(h) * Math.sin(p) * Math.cos(c - f)
     );
     return {
-      fraction: (1 + Math.cos(C)) / 2,
-      phase: 0.5 + 0.5 * C * (E < 0 ? -1 : 1) / Math.PI,
+      fraction: (1 + Math.cos(b)) / 2,
+      phase: 0.5 + 0.5 * b * (E < 0 ? -1 : 1) / Math.PI,
       angle: E
     };
   }
@@ -4341,16 +4417,16 @@ class q {
    */
   calculateMoonPosition(t, e, s) {
     try {
-      const i = this.julian(t), o = i - 2451545, n = (218.316 + 13.176396 * o) * Math.PI / 180, r = (134.963 + 13.064993 * o) * Math.PI / 180, a = (93.272 + 13.22935 * o) * Math.PI / 180, c = n + 6.289 * Math.sin(r) * Math.PI / 180, h = 5.128 * Math.sin(a) * Math.PI / 180, l = 23.4397 * Math.PI / 180, d = Math.atan2(
-        Math.sin(c) * Math.cos(l) - Math.tan(h) * Math.sin(l),
+      const i = this.julian(t), o = i - 2451545, n = (218.316 + 13.176396 * o) * Math.PI / 180, l = (134.963 + 13.064993 * o) * Math.PI / 180, a = (93.272 + 13.22935 * o) * Math.PI / 180, c = n + 6.289 * Math.sin(l) * Math.PI / 180, h = 5.128 * Math.sin(a) * Math.PI / 180, r = 23.4397 * Math.PI / 180, d = Math.atan2(
+        Math.sin(c) * Math.cos(r) - Math.tan(h) * Math.sin(r),
         Math.cos(c)
       ), g = Math.asin(
-        Math.sin(h) * Math.cos(l) + Math.cos(h) * Math.sin(l) * Math.sin(c)
-      ), w = this.GMST(i) * Math.PI / 12, y = g;
-      let p = d - w;
-      const m = y * 180 / Math.PI;
-      let f = p * 180 / Math.PI;
-      return f = f % 360, f > 180 ? f -= 360 : f < -180 && (f += 360), [m, f];
+        Math.sin(h) * Math.cos(r) + Math.cos(h) * Math.sin(r) * Math.sin(c)
+      ), m = this.GMST(i) * Math.PI / 12, f = g;
+      let p = d - m;
+      const w = f * 180 / Math.PI;
+      let y = p * 180 / Math.PI;
+      return y = y % 360, y > 180 ? y -= 360 : y < -180 && (y += 360), [w, y];
     } catch {
       return null;
     }
@@ -4428,29 +4504,29 @@ class q {
       return;
     const t = this.nodes.filter((h) => {
       if (!h.coordinates || !Array.isArray(h.coordinates) || h.coordinates.length !== 2) return !1;
-      const [l, d] = h.coordinates;
-      return Number.isFinite(l) && Number.isFinite(d);
+      const [r, d] = h.coordinates;
+      return Number.isFinite(r) && Number.isFinite(d);
     }), e = this.nodes.filter((h) => {
       if (!h.coordinates || !Array.isArray(h.coordinates) || h.coordinates.length !== 2) return !0;
-      const [l, d] = h.coordinates;
-      return !Number.isFinite(l) || !Number.isFinite(d);
+      const [r, d] = h.coordinates;
+      return !Number.isFinite(r) || !Number.isFinite(d);
     }), s = [], i = [];
     if (t.forEach((h) => {
       if (h.coordinates && h.coordinates.length === 2) {
-        const [l, d] = h.coordinates;
-        Number.isFinite(l) && Number.isFinite(d) && (s.push(l), i.push(d));
+        const [r, d] = h.coordinates;
+        Number.isFinite(r) && Number.isFinite(d) && (s.push(r), i.push(d));
       }
     }), e.length > 0) {
-      const u = Math.ceil(Math.sqrt(e.length)), y = 50 / (Math.ceil(e.length / u) + 1), p = 32 / (u + 1);
-      e.forEach((m, f) => {
-        const b = Math.floor(f / u), C = f % u, E = -50 + (b + 1) * y, x = -32 + (C + 1) * p;
-        s.push(E), i.push(x);
+      const u = Math.ceil(Math.sqrt(e.length)), f = 50 / (Math.ceil(e.length / u) + 1), p = 32 / (u + 1);
+      e.forEach((w, y) => {
+        const C = Math.floor(y / u), b = y % u, E = -50 + (C + 1) * f, v = -32 + (b + 1) * p;
+        s.push(E), i.push(v);
       });
     }
     if (s.length === 0)
       return;
-    const o = Math.min(...s), n = Math.max(...s), r = Math.min(...i), a = Math.max(...i), c = this.Leaflet.latLngBounds(
-      [o, r],
+    const o = Math.min(...s), n = Math.max(...s), l = Math.min(...i), a = Math.max(...i), c = this.Leaflet.latLngBounds(
+      [o, l],
       [n, a]
     );
     this.map.flyToBounds(c, {
@@ -4496,27 +4572,27 @@ class q {
   }
 }
 function Z(I, t = {}) {
-  P();
+  H();
   let e;
   if (typeof I == "string") {
-    const l = document.querySelector(I);
-    if (!l || !(l instanceof HTMLElement))
+    const r = document.querySelector(I);
+    if (!r || !(r instanceof HTMLElement))
       throw new Error(`Container element not found: ${I}`);
-    e = l;
+    e = r;
   } else
     e = I;
-  const s = t.enabledViews || ["graph", "map2d", "globe3d"], i = t.initialView || (s.includes("map2d") ? "map2d" : s[0]), o = t.graph?.mode || "view", n = t.graph?.editable || !1, r = t.tileServers, a = new V(e, s);
+  const s = t.enabledViews || ["graph", "map2d", "globe3d"], i = t.initialView || (s.includes("map2d") ? "map2d" : s[0]), o = t.graph?.mode || "view", n = t.graph?.editable || !1, l = t.tileServers, a = new V(e, s);
   t.time && a.setTime(t.time), typeof t.enableLighting == "boolean" && a.setLightingEnabled(t.enableLighting), t.tables && a.setTableOptions(t.tables), t.events?.onNodeClick && a.setOnNodeClickCallback(t.events.onNodeClick);
-  const c = t.events?.onNodeClick ? (l) => {
-    t.events.onNodeClick(l), a.highlightNodeRow(l.node.id);
-  } : void 0, h = (l) => {
-    t.events?.onEdgeClick && t.events.onEdgeClick(l), a.highlightEdgeRow(l.edge.id);
+  const c = t.events?.onNodeClick ? (r) => {
+    t.events.onNodeClick(r), a.highlightNodeRow(r.node.id);
+  } : void 0, h = (r) => {
+    t.events?.onEdgeClick && t.events.onEdgeClick(r), a.highlightEdgeRow(r.edge.id);
   };
   if (s.includes("graph")) {
-    const l = document.createElement("div");
-    l.style.width = "100%", l.style.height = "100%", a.getViewContainer().appendChild(l);
+    const r = document.createElement("div");
+    r.style.width = "100%", r.style.height = "100%", a.getViewContainer().appendChild(r);
     const d = new U(
-      l,
+      r,
       c || t.events?.onNodeClick,
       t.events?.onSave,
       n,
@@ -4531,13 +4607,13 @@ function Z(I, t = {}) {
     }), d.setMode(o), t.data && d.setData(t.data.nodes, t.data.edges), a.registerView("graph", d);
   }
   if (s.includes("map2d") && t.loaders?.leaflet) {
-    const l = document.createElement("div");
-    l.style.width = "100%", l.style.height = "100%", a.getViewContainer().appendChild(l);
+    const r = document.createElement("div");
+    r.style.width = "100%", r.style.height = "100%", a.getViewContainer().appendChild(r);
     const d = new q(
-      l,
+      r,
       c || t.events?.onNodeClick,
       t.loaders.leaflet,
-      r,
+      l,
       t.map2d,
       h
     );
@@ -4549,17 +4625,17 @@ function Z(I, t = {}) {
   }
   if (s.includes("globe3d") && t.loaders?.cesium)
     try {
-      const l = document.createElement("div");
-      l.style.width = "100%", l.style.height = "100%", a.getViewContainer().appendChild(l);
+      const r = document.createElement("div");
+      r.style.width = "100%", r.style.height = "100%", a.getViewContainer().appendChild(r);
       const d = new j(
-        l,
+        r,
         c || t.events?.onNodeClick,
         t.loaders.cesium,
         t.globe3d ? {
           customTileUrl: t.globe3d.customTileUrl,
           customTileUrls: t.globe3d.customTileUrls
         } : void 0,
-        r,
+        l,
         h
       );
       d.setAlwaysShowEdgesChangeCallback((g) => {
@@ -4570,30 +4646,30 @@ function Z(I, t = {}) {
     } catch {
     }
   return a.setInitialView(i), t.data && a.setData(t.data.nodes, t.data.edges), {
-    setData(l) {
+    setData(r) {
       const d = a.getView("graph");
-      d && d.setData(l.nodes, l.edges);
+      d && d.setData(r.nodes, r.edges);
       const g = a.getView("map2d");
-      g && g.setData(l.nodes, l.edges);
+      g && g.setData(r.nodes, r.edges);
       const u = a.getView("globe3d");
-      u && u.setData(l.nodes, l.edges), a.setData(l.nodes, l.edges);
+      u && u.setData(r.nodes, r.edges), a.setData(r.nodes, r.edges);
     },
-    setView(l) {
-      a.switchView(l);
+    setView(r) {
+      a.switchView(r);
     },
     getView() {
-      const l = a.getCurrentView();
-      if (!l)
+      const r = a.getCurrentView();
+      if (!r)
         throw new Error("No view is currently active");
-      return l;
+      return r;
     },
-    setMode(l) {
+    setMode(r) {
       const d = a.getView("graph");
-      d && d.setMode(l);
+      d && d.setMode(r);
     },
     getMode() {
-      const l = a.getView("graph");
-      return l ? l.getMode() : null;
+      const r = a.getView("graph");
+      return r ? r.getMode() : null;
     },
     resize() {
       a.resize();
@@ -4601,19 +4677,19 @@ function Z(I, t = {}) {
     destroy() {
       a.destroy();
     },
-    selectNode(l) {
+    selectNode(r) {
       const d = a.getView("graph");
-      d && d.selectNode && d.selectNode(l);
+      d && d.selectNode && d.selectNode(r);
       const g = a.getView("map2d");
-      g && g.selectNode && g.selectNode(l);
+      g && g.selectNode && g.selectNode(r);
       const u = a.getView("globe3d");
-      u && u.selectNode && u.selectNode(l);
+      u && u.selectNode && u.selectNode(r);
     },
-    setTime(l) {
-      a.setTime(l);
+    setTime(r) {
+      a.setTime(r);
     },
-    setLighting(l) {
-      a.setLightingEnabled(l);
+    setLighting(r) {
+      a.setLightingEnabled(r);
     }
   };
 }

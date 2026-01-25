@@ -140,6 +140,13 @@ export class Globe3DView implements View {
       requestRenderMode: false,
     });
     
+    // Enable touch gestures (pinch zoom, pan) on mobile devices
+    // Setting touch-action: none prevents browser from intercepting touch events
+    // and allows Cesium's screenSpaceCameraController to handle them
+    if (this.viewer.canvas) {
+      this.viewer.canvas.style.touchAction = 'none';
+    }
+    
     // Enable moon (always visible in Globe3D, lighting controlled by setLighting)
     if (this.Cesium.Moon) {
       if (!this.viewer.scene.moon) {
@@ -166,6 +173,7 @@ export class Globe3DView implements View {
     }
     
     this.setupCameraLimits();
+    this.setupTrackpadPinchZoom();
     this.setTileTypeInternal(true);
     this.setupTimeAndLighting();
     this.setupClickHandler();
@@ -178,6 +186,130 @@ export class Globe3DView implements View {
     if (this.onLightingChange) {
       const currentState = this.isLightingEnabled();
     }
+  }
+
+  /**
+   * Setup trackpad pinch zoom for Mac
+   * Mac trackpad pinch gestures are sent as:
+   * - Chrome/Firefox: wheel event with ctrlKey=true
+   * - Safari: gesturestart/gesturechange/gestureend events
+   */
+  private setupTrackpadPinchZoom(): void {
+    if (!this.viewer || !this.Cesium) {
+      return;
+    }
+
+    const canvas = this.viewer.canvas;
+    const camera = this.viewer.scene.camera;
+    const MIN_HEIGHT = 500000;
+    const MAX_HEIGHT = 40000000;
+
+    // Handle wheel event with ctrlKey (Chrome/Firefox trackpad pinch)
+    const wheelHandler = (event: WheelEvent) => {
+      // ctrlKey is true when the wheel event is from a trackpad pinch gesture
+      if (event.ctrlKey) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Calculate zoom factor from deltaY
+        // Negative deltaY = pinch out (zoom in), Positive deltaY = pinch in (zoom out)
+        const zoomFactor = 1 - event.deltaY * 0.01;
+        
+        // Get current camera height
+        const cartographic = this.Cesium.Cartographic.fromCartesian(camera.position);
+        const currentHeight = cartographic.height;
+        
+        // Calculate new height (inverted: pinch out = zoom in = lower height)
+        let newHeight = currentHeight / zoomFactor;
+        
+        // Clamp to min/max height
+        newHeight = Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, newHeight));
+        
+        // Apply new camera position
+        const newPosition = this.Cesium.Cartesian3.fromRadians(
+          cartographic.longitude,
+          cartographic.latitude,
+          newHeight
+        );
+        
+        camera.setView({
+          destination: newPosition,
+          orientation: {
+            heading: camera.heading,
+            pitch: camera.pitch,
+            roll: camera.roll,
+          },
+        });
+      }
+    };
+
+    // Handle Safari gesture events
+    let gestureStartScale = 1;
+    let gestureStartHeight = 0;
+
+    const gestureStartHandler = (event: any) => {
+      event.preventDefault();
+      gestureStartScale = event.scale || 1;
+      const cartographic = this.Cesium.Cartographic.fromCartesian(camera.position);
+      gestureStartHeight = cartographic.height;
+    };
+
+    const gestureChangeHandler = (event: any) => {
+      event.preventDefault();
+      
+      const scale = event.scale || 1;
+      const relativeScale = scale / gestureStartScale;
+      
+      // Calculate new height (scale > 1 = zoom in = lower height)
+      let newHeight = gestureStartHeight / relativeScale;
+      
+      // Clamp to min/max height
+      newHeight = Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, newHeight));
+      
+      // Get current camera position
+      const cartographic = this.Cesium.Cartographic.fromCartesian(camera.position);
+      
+      // Apply new camera position
+      const newPosition = this.Cesium.Cartesian3.fromRadians(
+        cartographic.longitude,
+        cartographic.latitude,
+        newHeight
+      );
+      
+      camera.setView({
+        destination: newPosition,
+        orientation: {
+          heading: camera.heading,
+          pitch: camera.pitch,
+          roll: camera.roll,
+        },
+      });
+    };
+
+    const gestureEndHandler = (event: any) => {
+      event.preventDefault();
+      gestureStartScale = 1;
+      gestureStartHeight = 0;
+    };
+
+    // Add event listeners
+    // Use passive: false to allow preventDefault
+    canvas.addEventListener('wheel', wheelHandler, { passive: false });
+    
+    // Safari gesture events (only available in Safari)
+    if ('GestureEvent' in window) {
+      canvas.addEventListener('gesturestart', gestureStartHandler, { passive: false });
+      canvas.addEventListener('gesturechange', gestureChangeHandler, { passive: false });
+      canvas.addEventListener('gestureend', gestureEndHandler, { passive: false });
+    }
+
+    // Store handlers for cleanup
+    (this as any)._trackpadPinchHandlers = {
+      wheel: wheelHandler,
+      gestureStart: gestureStartHandler,
+      gestureChange: gestureChangeHandler,
+      gestureEnd: gestureEndHandler,
+    };
   }
 
   /**
@@ -411,6 +543,62 @@ export class Globe3DView implements View {
     const controller = this.viewer.scene.screenSpaceCameraController;
     controller.minimumZoomDistance = MIN_HEIGHT;
     controller.maximumZoomDistance = MAX_HEIGHT;
+    
+    // Explicitly enable touch input for mobile devices
+    // This ensures pinch zoom, two-finger pan, and other touch gestures work properly
+    controller.enableInputs = true;
+    controller.enableZoom = true;
+    controller.enableRotate = true;
+    controller.enableTilt = true;
+    controller.enableTranslate = true;
+    
+    // Configure camera controls to match Leaflet/Graph behavior on both desktop and mobile:
+    // 
+    // Desktop (MacBook):
+    // - Mouse drag (left button): Pan/rotate globe (like Leaflet's drag to pan)
+    // - Mouse wheel / Trackpad scroll: Zoom (like Leaflet/Graph)
+    // - Trackpad pinch: Zoom (like Leaflet/Graph)
+    // - Right-click drag: Not used (matches Leaflet/Graph)
+    // - Ctrl+drag: Tilt camera (advanced, not in Leaflet/Graph but useful for 3D)
+    //
+    // Mobile:
+    // - One-finger drag: Pan/rotate globe
+    // - Pinch: Zoom
+    // - Two-finger drag: Pan without rotation
+    // 
+    // Cesium event types:
+    // - CameraEventType.PINCH: Two-finger pinch gesture (mobile)
+    // - CameraEventType.LEFT_DRAG: Left mouse drag / one-finger touch drag
+    // - CameraEventType.RIGHT_DRAG: Right mouse drag / two-finger touch drag
+    // - CameraEventType.MIDDLE_DRAG: Middle mouse drag
+    // - CameraEventType.WHEEL: Mouse wheel / trackpad scroll
+    const CameraEventType = this.Cesium.CameraEventType;
+    
+    // Zoom: Mouse wheel (desktop) + Trackpad scroll (MacBook) + Pinch gesture (mobile)
+    // This matches Leaflet and Graph zoom behavior
+    controller.zoomEventTypes = [
+      CameraEventType.WHEEL,
+      CameraEventType.PINCH,
+    ];
+    
+    // Rotate globe: Left mouse drag / one-finger drag
+    // This is equivalent to Leaflet's "pan" - dragging moves the view
+    // On a 3D globe, "rotating" the globe under the camera achieves the same effect as panning
+    controller.rotateEventTypes = CameraEventType.LEFT_DRAG;
+    
+    // Tilt: Only with Ctrl modifier (advanced feature, not in Leaflet/Graph)
+    // This prevents accidental tilting when the user just wants to pan
+    controller.tiltEventTypes = [
+      { eventType: CameraEventType.LEFT_DRAG, modifier: this.Cesium.KeyboardEventModifier.CTRL },
+      { eventType: CameraEventType.MIDDLE_DRAG },
+    ];
+    
+    // Translate (pan without rotation): Two-finger drag on mobile
+    // On desktop, middle mouse drag can be used
+    // Right-click drag is NOT assigned (matches Leaflet/Graph where right-click does nothing)
+    controller.translateEventTypes = [
+      CameraEventType.RIGHT_DRAG, // Two-finger drag on mobile/trackpad
+    ];
 
     // Monitor camera changes in real-time to limit altitude
     let isAdjusting = false; // Flag to prevent infinite loop
@@ -1583,6 +1771,28 @@ export class Globe3DView implements View {
     if (this.popupElement && this.popupElement.parentNode) {
       this.popupElement.parentNode.removeChild(this.popupElement);
       this.popupElement = null;
+    }
+    
+    // Remove trackpad pinch event handlers
+    if (this.viewer && (this as any)._trackpadPinchHandlers) {
+      const canvas = this.viewer.canvas;
+      const handlers = (this as any)._trackpadPinchHandlers;
+      
+      if (handlers.wheel) {
+        canvas.removeEventListener('wheel', handlers.wheel);
+      }
+      if ('GestureEvent' in window) {
+        if (handlers.gestureStart) {
+          canvas.removeEventListener('gesturestart', handlers.gestureStart);
+        }
+        if (handlers.gestureChange) {
+          canvas.removeEventListener('gesturechange', handlers.gestureChange);
+        }
+        if (handlers.gestureEnd) {
+          canvas.removeEventListener('gestureend', handlers.gestureEnd);
+        }
+      }
+      (this as any)._trackpadPinchHandlers = null;
     }
     
     if (this.viewer) {
