@@ -142,3 +142,64 @@ export interface MergedEdge extends Edge {
    */
   mergedIds: [string, string];
 }
+
+/**
+ * Group position and size information (for Graph view)
+ * Layout information that can be edited
+ */
+export interface GroupLayout {
+  /**
+   * Group position (top-left corner)
+   */
+  position: {
+    x: number;
+    y: number;
+  };
+  /**
+   * Group size
+   */
+  size: {
+    width: number;
+    height: number;
+  };
+}
+
+/**
+ * Group (for Graph view)
+ * Represents a collection of nodes that can be visually grouped together
+ * Supports up to 3 levels of hierarchy
+ */
+export interface Group {
+  /**
+   * Group ID (unique)
+   */
+  id: string;
+
+  /**
+   * Group label
+   */
+  label: string;
+
+  /**
+   * List of node IDs belonging to this group
+   */
+  nodeIds: string[];
+
+  /**
+   * Parent group ID (optional, for hierarchy support)
+   * Maximum 3 levels of hierarchy are supported
+   */
+  parentId?: string;
+
+  /**
+   * Layout information for Graph view
+   * Can be modified in edit mode (position and size only)
+   * If not present, layout is calculated automatically
+   */
+  layout?: GroupLayout;
+
+  /**
+   * Metadata (arbitrary)
+   */
+  meta?: Record<string, unknown>;
+}

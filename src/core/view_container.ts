@@ -4,6 +4,7 @@
  */
 
 import type { ViewType, Node, Edge } from '../types';
+import type { Group } from '../types/data';
 import type { TableOptions } from '../types/options';
 import { injectSvgSprite } from '../assets/icons/icons-embedded';
 
@@ -149,9 +150,11 @@ export class ViewContainer {
   private tableContainer: HTMLElement | null = null;
   private nodesTableContainer: HTMLElement | null = null;
   private edgesTableContainer: HTMLElement | null = null;
+  private groupsTableContainer: HTMLElement | null = null;
   private tableOptions: TableOptions | null = null;
   private nodes: Node[] = [];
   private edges: Edge[] = [];
+  private groups: Group[] = [];
   private isExternalTableContainer: boolean = false; // Whether using external container
   private hasEdges: boolean = false; // Whether edges exist
   private onNodeClickCallback?: (event: import('../types/events').NodeClickEvent) => void; // Callback for table row clicks
@@ -219,7 +222,7 @@ export class ViewContainer {
    */
   setTableOptions(tableOptions: TableOptions | null): void {
     this.tableOptions = tableOptions;
-    if (tableOptions && (tableOptions.nodes?.format || tableOptions.edges?.format)) {
+    if (tableOptions && (tableOptions.nodes?.format || tableOptions.edges?.format || tableOptions.groups?.format)) {
       this.createTableContainer();
     } else if (this.tableContainer) {
       // Remove table if not needed
@@ -236,6 +239,7 @@ export class ViewContainer {
       }
       this.nodesTableContainer = null;
       this.edgesTableContainer = null;
+      this.groupsTableContainer = null;
     }
   }
 
@@ -284,11 +288,12 @@ export class ViewContainer {
   }
 
   /**
-   * Set node and edge data
+   * Set node, edge, and group data
    */
-  setData(nodes: Node[], edges: Edge[]): void {
+  setData(nodes: Node[], edges: Edge[], groups?: Group[]): void {
     this.nodes = nodes;
     this.edges = edges;
+    this.groups = groups || [];
     this.hasEdges = Array.isArray(edges) && edges.length > 0;
     this.updateTables();
     this.updateAlwaysShowEdgesButtonVisibility();
@@ -316,6 +321,12 @@ export class ViewContainer {
       this.edgesTableContainer = this.createTable('edges', this.tableOptions.edges.header || '', this.tableOptions.edges.format, this.edges, 'edge');
       this.tableContainer.appendChild(this.edgesTableContainer);
     }
+
+    // Display group table
+    if (this.tableOptions.groups?.format) {
+      this.groupsTableContainer = this.createTable('groups', this.tableOptions.groups.header || '', this.tableOptions.groups.format, this.groups, 'group');
+      this.tableContainer.appendChild(this.groupsTableContainer);
+    }
   }
 
   /**
@@ -325,8 +336,8 @@ export class ViewContainer {
     id: string,
     header: string,
     format: string,
-    data: Node[] | Edge[],
-    rowIdPrefix: 'node' | 'edge'
+    data: Node[] | Edge[] | Group[],
+    rowIdPrefix: 'node' | 'edge' | 'group'
   ): HTMLElement {
     const tableContainer = document.createElement('div');
     const table = document.createElement('table');
@@ -404,6 +415,10 @@ export class ViewContainer {
         }
       }
       
+      // Replace any remaining {{info.fieldName}} patterns with empty string
+      // (for fields that don't exist in the item's info)
+      rowHtml = rowHtml.replace(/\{\{info\.[^}]+\}\}/g, '');
+      
       // Then embed Node/Edge basic fields ({{fieldName}} format)
       // This allows access to both standard fields and info fields
       rowHtml = rowHtml.replace(/\{\{id\}\}/g, String(item.id || ''));
@@ -438,6 +453,28 @@ export class ViewContainer {
         rowHtml = rowHtml.replace(/\{\{src\}\}/g, String(item.src || ''));
         rowHtml = rowHtml.replace(/\{\{dst\}\}/g, String(item.dst || ''));
         rowHtml = rowHtml.replace(/\{\{relType\}\}/g, String(item.relType || ''));
+      }
+
+      // Group specific fields
+      if ('nodeIds' in item) {
+        const group = item as Group;
+        rowHtml = rowHtml.replace(/\{\{nodeIds\}\}/g, String(group.nodeIds?.join(', ') || ''));
+        rowHtml = rowHtml.replace(/\{\{nodeCount\}\}/g, String(group.nodeIds?.length || 0));
+        rowHtml = rowHtml.replace(/\{\{parentId\}\}/g, String(group.parentId || ''));
+        // meta fields
+        if (group.meta && typeof group.meta === 'object') {
+          for (const [key, value] of Object.entries(group.meta)) {
+            const regex = new RegExp(`\\{\\{meta\\.${key}\\}\\}`, 'g');
+            rowHtml = rowHtml.replace(regex, String(value || ''));
+          }
+        }
+        // layout fields
+        if (group.layout) {
+          rowHtml = rowHtml.replace(/\{\{layout\.position\.x\}\}/g, String(group.layout.position.x || ''));
+          rowHtml = rowHtml.replace(/\{\{layout\.position\.y\}\}/g, String(group.layout.position.y || ''));
+          rowHtml = rowHtml.replace(/\{\{layout\.size\.width\}\}/g, String(group.layout.size.width || ''));
+          rowHtml = rowHtml.replace(/\{\{layout\.size\.height\}\}/g, String(group.layout.size.height || ''));
+        }
       }
 
       row.innerHTML = rowHtml;
@@ -545,6 +582,20 @@ export class ViewContainer {
     }
 
     const row = this.tableContainer.querySelector(`#edge-${edgeId}`) as HTMLTableRowElement;
+    if (row) {
+      this.highlightAndScrollToRow(row);
+    }
+  }
+
+  /**
+   * Highlight row and scroll based on group ID (called from onGroupClick)
+   */
+  highlightGroupRow(groupId: string | null): void {
+    if (!groupId || !this.tableContainer) {
+      return;
+    }
+
+    const row = this.tableContainer.querySelector(`#group-${groupId}`) as HTMLTableRowElement;
     if (row) {
       this.highlightAndScrollToRow(row);
     }

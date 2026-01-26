@@ -226,6 +226,7 @@ export interface RelatosViewerOptions {
   events?: {
     onNodeClick?: (event: NodeClickEvent) => void;
     onEdgeClick?: (event: any) => void;
+    onGroupClick?: (event: import('./types/events').GroupClickEvent) => void;
     onSave?: (payload: SavePayload) => void;
   };
 }

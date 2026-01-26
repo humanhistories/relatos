@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatos Viewer Example - Network Traffic</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      padding: 0;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    h1 {
+      padding: 20px;
+      margin: 0;
+      color: #333;
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #viewer-container {
+      flex: 1;
+      width: 100%;
+      background-color: #fff;
+      min-height: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Relatos Viewer Example - Network Traffic</h1>
+  <div id="viewer-container"></div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

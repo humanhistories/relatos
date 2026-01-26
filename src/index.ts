@@ -10,6 +10,7 @@ import type {
   Node,
   Edge,
 } from './types';
+import type { Group } from './types/data';
 import { ViewContainer } from './core/view_container';
 import { GraphView } from './views/graph/view';
 import { Globe3DView } from './views/globe3d/view';
@@ -87,6 +88,15 @@ export function createRelatosViewer(
     viewContainer.highlightEdgeRow(event.edge.id);
   };
 
+  // Wrap onGroupClick to also highlight table row
+  // Always define callback: call options.events?.onGroupClick if exists, then always call highlightGroupRow
+  const wrappedOnGroupClick = (event: import('./types/events').GroupClickEvent) => {
+    if (options.events?.onGroupClick) {
+      options.events.onGroupClick(event);
+    }
+    viewContainer.highlightGroupRow(event.group.id);
+  };
+
   // Create Graph View (always enabled if in enabledViews)
   if (enabledViews.includes('graph')) {
     const graphViewContainer = document.createElement('div');
@@ -99,7 +109,8 @@ export function createRelatosViewer(
       wrappedOnNodeClick || options.events?.onNodeClick,
       options.events?.onSave,
       graphEditable,
-      wrappedOnEdgeClick
+      wrappedOnEdgeClick,
+      wrappedOnGroupClick
     );
     // Update edit toggle button when mode changes
     graphView.setModeChangeCallback(() => {
@@ -116,7 +127,8 @@ export function createRelatosViewer(
     });
     graphView.setMode(graphMode);
     if (options.data) {
-      graphView.setData(options.data.nodes, options.data.edges);
+      const groups = 'groups' in options.data && Array.isArray(options.data.groups) ? options.data.groups : undefined;
+      graphView.setData(options.data.nodes, options.data.edges, groups);
     }
     viewContainer.registerView('graph', graphView);
   }
@@ -197,15 +209,16 @@ export function createRelatosViewer(
 
   // Set initial data in ViewContainer (for table display)
   if (options.data) {
-    viewContainer.setData(options.data.nodes, options.data.edges);
+    const groups = 'groups' in options.data && Array.isArray(options.data.groups) ? options.data.groups : undefined;
+    viewContainer.setData(options.data.nodes, options.data.edges, groups);
   }
 
   // Return RelatosViewer instance
   return {
-    setData(data: { nodes: Node[]; edges: Edge[] }): void {
+    setData(data: { nodes: Node[]; edges: Edge[]; groups?: Group[] }): void {
       const graphView = viewContainer.getView('graph') as GraphView | undefined;
       if (graphView) {
-        graphView.setData(data.nodes, data.edges);
+        graphView.setData(data.nodes, data.edges, data.groups);
       }
       const map2dView = viewContainer.getView('map2d') as Map2DView | undefined;
       if (map2dView) {
@@ -216,7 +229,7 @@ export function createRelatosViewer(
         globe3dView.setData(data.nodes, data.edges);
       }
       // Also set data in ViewContainer (for table display)
-      viewContainer.setData(data.nodes, data.edges);
+      viewContainer.setData(data.nodes, data.edges, data.groups);
     },
 
     setView(viewType: ViewType): void {

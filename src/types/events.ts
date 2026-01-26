@@ -2,7 +2,7 @@
  * Relatos Viewer - Event Type Definitions
  */
 
-import type { Node, Edge } from './data';
+import type { Node, Edge, Group } from './data';
 import type { ViewType } from './options';
 
 /**
@@ -56,6 +56,31 @@ export interface EdgeClickEvent {
 }
 
 /**
+ * Group click event
+ */
+export interface GroupClickEvent {
+  /**
+   * Clicked group
+   */
+  group: Group;
+  /**
+   * Click position (view coordinate system)
+   */
+  position: {
+    x: number;
+    y: number;
+  };
+  /**
+   * Original DOM event
+   */
+  originalEvent: MouseEvent | TouchEvent;
+  /**
+   * View that triggered the event
+   */
+  view?: ViewType;
+}
+
+/**
  * View change event
  */
 export interface ViewChangeEvent {
@@ -84,6 +109,12 @@ export interface SavePayload {
    * Includes edit information such as anchors, bends
    */
   edges: Edge[];
+  /**
+   * Edited group list (layout information only)
+   * Only layout information (position and size) is editable
+   * Group membership (nodeIds) and hierarchy (parentId) cannot be changed
+   */
+  groups?: Group[];
 }
 
 /**
@@ -100,6 +131,11 @@ export interface RelatosEvents {
    * Callback on edge click (optional)
    */
   onEdgeClick?: (event: EdgeClickEvent) => void;
+
+  /**
+   * Callback on group click
+   */
+  onGroupClick?: (event: GroupClickEvent) => void;
 
   /**
    * Callback for saving changes in edit mode

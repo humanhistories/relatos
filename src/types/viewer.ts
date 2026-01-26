@@ -3,7 +3,7 @@
  */
 
 import type { ViewType, GraphMode } from './options';
-import type { Node, Edge } from './data';
+import type { Node, Edge, Group } from './data';
 import type { SavePayload } from './events';
 
 /**
@@ -23,14 +23,14 @@ export interface RelatosViewer {
 
   /**
    * Set data
-   * @param data Node and edge data
+   * @param data Node, edge, and group data
    */
-  setData(data: { nodes: Node[]; edges: Edge[] }): void;
+  setData(data: { nodes: Node[]; edges: Edge[]; groups?: Group[] }): void;
 
   /**
    * Get current data
    */
-  getData(): { nodes: Node[]; edges: Edge[] };
+  getData(): { nodes: Node[]; edges: Edge[]; groups?: Group[] };
 
   /**
    * Set graph mode (graph view only)

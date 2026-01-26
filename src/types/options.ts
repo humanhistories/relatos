@@ -2,7 +2,7 @@
  * Relatos Viewer - Options type definitions
  */
 
-import type { Node, Edge } from './data';
+import type { Node, Edge, Group } from './data';
 import type { RelatosEvents } from './events';
 
 /**
@@ -226,6 +226,24 @@ export interface TableOptions {
      */
     format: string | null;
   } | null;
+
+  /**
+   * Group information table configuration
+   * Table is not output if format is null
+   */
+  groups?: {
+    /**
+     * Header HTML (optional)
+     * Default header is used if not specified
+     */
+    header?: string;
+    /**
+     * HTML format within <tr> tag
+     * Embed data with {{fieldName}}
+     * Table is not output if null
+     */
+    format: string | null;
+  } | null;
 }
 
 /**
@@ -257,6 +275,7 @@ export interface RelatosViewerOptions {
   data?: {
     nodes: Node[];
     edges: Edge[];
+    groups?: Group[];
   };
 
   /**

@@ -4,7 +4,8 @@
  */
 
 import type { Node, Edge, GraphMode, EdgeAnchor, NodeSide, EdgeStyle } from '../../types';
-import type { NodeClickEvent, EdgeClickEvent } from '../../types/events';
+import type { Group, GroupLayout } from '../../types/data';
+import type { NodeClickEvent, EdgeClickEvent, GroupClickEvent, SavePayload } from '../../types/events';
 import type { View } from '../../core/view_container';
 import { injectSvgSprite } from '../../assets/icons/icons-embedded';
 
@@ -47,12 +48,15 @@ export class GraphView implements View {
   private svgDefs: SVGDefsElement;
   private nodesGroup: SVGGElement;
   private edgesGroup: SVGGElement;
+  private groupsGroup: SVGGElement; // Group for group rectangles
   private nodes: Node[] = [];
   private edges: Edge[] = [];
+  private groups: Group[] = [];
   private mode: GraphMode = 'view';
   private editable: boolean = false;
   private onNodeClick?: (event: NodeClickEvent) => void;
   private onEdgeClick?: (event: EdgeClickEvent) => void;
+  private onGroupClick?: (event: GroupClickEvent) => void;
   private nodeElements: Map<string, SVGRectElement> = new Map();
   private edgeElements: Map<string, SVGPathElement> = new Map();
   private selectedEdgeId: string | null = null;
@@ -65,10 +69,12 @@ export class GraphView implements View {
   private bendHandles: Map<number, SVGCircleElement> = new Map(); // bend index -> handle element
   private draggingBend: { edgeId: string; bendIndex: number; offsetX: number; offsetY: number } | null = null;
   private draggingNode: { nodeId: string; offsetX: number; offsetY: number } | null = null;
+  private draggingGroup: { groupId: string; offsetX: number; offsetY: number } | null = null;
   private panning: { startX: number; startY: number; startOffsetX: number; startOffsetY: number } | null = null; // Pan state
   private lastPanEndTime: number = 0; // Timestamp when pan operation ended (milliseconds)
   private resizingNode: { nodeId: string; side: 'top' | 'right' | 'bottom' | 'left'; startX: number; startY: number; startWidth: number; startHeight: number; startNodeX: number; startNodeY: number } | null = null;
-  private onSave?: (payload: { nodes: Node[]; edges: Edge[] }) => void;
+  private resizingGroup: { groupId: string; side: 'top' | 'right' | 'bottom' | 'left'; startX: number; startY: number; startWidth: number; startHeight: number; startPosX: number; startPosY: number } | null = null;
+  private onSave?: (payload: SavePayload) => void;
   private saveDebounceTimer: number | null = null;
   private readonly SAVE_DEBOUNCE_MS = 500;
   private resizeRenderTimer: number | null = null; // Throttle render during resize
@@ -115,9 +121,10 @@ export class GraphView implements View {
   constructor(
     container: HTMLElement,
     onNodeClick?: (event: NodeClickEvent) => void,
-    onSave?: (payload: { nodes: Node[]; edges: Edge[] }) => void,
+    onSave?: (payload: SavePayload) => void,
     editable: boolean = false,
-    onEdgeClick?: (event: EdgeClickEvent) => void
+    onEdgeClick?: (event: EdgeClickEvent) => void,
+    onGroupClick?: (event: GroupClickEvent) => void
   ) {
     this.container = container;
     // Wrap onNodeClick to add popup display handling
@@ -138,6 +145,7 @@ export class GraphView implements View {
     this.onSave = onSave;
     this.editable = editable;
     this.onEdgeClick = onEdgeClick;
+    this.onGroupClick = onGroupClick;
 
     // Set container styles (ensure height)
     this.container.style.position = 'relative';
@@ -213,7 +221,12 @@ export class GraphView implements View {
     this.edgesGroup.setAttribute('class', 'edges');
     this.svg.appendChild(this.edgesGroup);
 
-    // Node group (drawn above edges)
+    // Groups group (drawn above edges, below nodes)
+    this.groupsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    this.groupsGroup.setAttribute('class', 'groups');
+    this.svg.appendChild(this.groupsGroup);
+
+    // Node group (drawn above edges and groups)
     this.nodesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     this.nodesGroup.setAttribute('class', 'nodes');
     this.svg.appendChild(this.nodesGroup);
@@ -637,6 +650,7 @@ export class GraphView implements View {
     const translate = `translate(${-offsetX}, ${-offsetY})`;
     this.nodesGroup.setAttribute('transform', translate);
     this.edgesGroup.setAttribute('transform', translate);
+    this.groupsGroup.setAttribute('transform', translate);
     this.anchorHandlesGroup.setAttribute('transform', translate);
     this.bendHandlesGroup.setAttribute('transform', translate);
     if (this.edgeLabelsGroup) {
@@ -1157,7 +1171,7 @@ export class GraphView implements View {
       const isTouchPan = e.pointerType === 'touch' && activePointers.size === 1;
       const isMousePan = e.pointerType === 'mouse' && e.buttons === 1;
       
-      if (!isButtonOrControl && !this.resizingNode && !this.draggingNode && !this.draggingAnchor && !this.draggingBend && (isTouchPan || isMousePan)) {
+      if (!isButtonOrControl && !this.resizingNode && !this.resizingGroup && !this.draggingNode && !this.draggingGroup && !this.draggingAnchor && !this.draggingBend && (isTouchPan || isMousePan)) {
         // Start panning if not already started
         if (!this.panning) {
           this.panning = {
@@ -1190,8 +1204,12 @@ export class GraphView implements View {
       
       if (this.resizingNode) {
         this.updateNodeSize(e);
+      } else if (this.resizingGroup) {
+        this.updateGroupSize(e);
       } else if (this.draggingNode) {
         this.updateNodePosition(e);
+      } else if (this.draggingGroup) {
+        this.updateGroupPosition(e);
       } else if (this.draggingAnchor) {
         this.updateAnchorPosition(e);
       } else if (this.draggingBend) {
@@ -1214,7 +1232,7 @@ export class GraphView implements View {
                                  target.closest('.relatos-control-buttons') !== null;
 
       // Handle panning (global move for panning outside SVG bounds)
-      if (!isButtonOrControl && this.panning && !this.resizingNode && !this.draggingNode && !this.draggingAnchor && !this.draggingBend) {
+      if (!isButtonOrControl && this.panning && !this.resizingNode && !this.resizingGroup && !this.draggingNode && !this.draggingGroup && !this.draggingAnchor && !this.draggingBend) {
         const isTouchPan = e.pointerType === 'touch' && activePointers.size === 1;
         const isMousePan = e.pointerType === 'mouse' && (e.buttons === 1 || e.button === 0);
         
@@ -1241,8 +1259,12 @@ export class GraphView implements View {
 
       if (this.resizingNode) {
         this.updateNodeSize(e);
+      } else if (this.resizingGroup) {
+        this.updateGroupSize(e);
       } else if (this.draggingNode) {
         this.updateNodePosition(e);
+      } else if (this.draggingGroup) {
+        this.updateGroupPosition(e);
       } else if (this.draggingAnchor) {
         this.updateAnchorPosition(e);
       } else if (this.draggingBend) {
@@ -1271,8 +1293,15 @@ export class GraphView implements View {
         this.lastPanEndTime = Date.now(); // Record pan operation end time
       }
       this.panning = null;
+      if (this.resizingNode) {
+        this.handleResizeEnd();
+      } else if (this.resizingGroup) {
+        this.handleGroupResizeEnd();
+      }
       this.resizingNode = null;
+      this.resizingGroup = null;
       this.draggingNode = null;
+      this.draggingGroup = null;
       this.draggingAnchor = null;
       this.draggingBend = null;
     });
@@ -1294,8 +1323,15 @@ export class GraphView implements View {
         this.lastPanEndTime = Date.now(); // Record pan operation end time
       }
       this.panning = null;
+      if (this.resizingNode) {
+        this.handleResizeEnd();
+      } else if (this.resizingGroup) {
+        this.handleGroupResizeEnd();
+      }
       this.resizingNode = null;
+      this.resizingGroup = null;
       this.draggingNode = null;
+      this.draggingGroup = null;
       this.draggingAnchor = null;
       this.draggingBend = null;
     });
@@ -1320,8 +1356,15 @@ export class GraphView implements View {
         this.lastPanEndTime = Date.now(); // Record pan operation end time
       }
       this.panning = null;
+      if (this.resizingNode) {
+        this.handleResizeEnd();
+      } else if (this.resizingGroup) {
+        this.handleGroupResizeEnd();
+      }
       this.resizingNode = null;
+      this.resizingGroup = null;
       this.draggingNode = null;
+      this.draggingGroup = null;
       this.draggingAnchor = null;
       this.draggingBend = null;
     });
@@ -1418,9 +1461,10 @@ export class GraphView implements View {
   /**
    * Set data
    */
-  setData(nodes: Node[], edges: Edge[]): void {
+  setData(nodes: Node[], edges: Edge[], groups?: Group[]): void {
     this.nodes = nodes;
     this.edges = edges;
+    this.groups = groups || [];
 
     // Apply auto-layout to nodes without position information
     // If coordinates (latitude/longitude) exist, place based on lat/lon,
@@ -2620,6 +2664,9 @@ export class GraphView implements View {
     node.position.x = mouseX - this.draggingNode.offsetX;
     node.position.y = mouseY - this.draggingNode.offsetY;
 
+    // Update group layouts for groups containing this node
+    this.updateGroupLayouts(node.id, undefined);
+
     // Re-render
     this.render();
     this.updateAnchorHandles();
@@ -2768,6 +2815,12 @@ export class GraphView implements View {
       clearTimeout(this.resizeRenderTimer);
       this.resizeRenderTimer = null;
     }
+    
+    // Update group layouts if a node was resized
+    if (this.resizingNode) {
+      this.updateGroupLayouts(this.resizingNode.nodeId, undefined);
+    }
+    
     // Final render and save
     this.render();
     this.debouncedSave();
@@ -3149,6 +3202,7 @@ export class GraphView implements View {
       this.onSave!({
         nodes: this.nodes,
         edges: this.edges,
+        groups: this.groups.length > 0 ? this.groups : undefined,
       });
       this.saveDebounceTimer = null;
     }, this.SAVE_DEBOUNCE_MS);
@@ -3165,6 +3219,7 @@ export class GraphView implements View {
     this.nodeElements.clear();
     this.edgeElements.clear();
     this.edgesGroup.innerHTML = '';
+    this.groupsGroup.innerHTML = '';
     this.nodesGroup.innerHTML = '';
     this.edgeLabelsGroup.innerHTML = '';
 
@@ -3302,7 +3357,10 @@ export class GraphView implements View {
       }
     }
 
-    // Render nodes (above edges)
+    // Render groups (above edges, below nodes)
+    this.renderGroups();
+
+    // Render nodes (above edges and groups)
     for (const node of this.nodes) {
       if (!node.position) {
         continue;
@@ -3408,6 +3466,486 @@ export class GraphView implements View {
       this.updateAnchorHandles();
       this.updateBendHandles();
       this.updateControlButtons();
+    }
+  }
+
+  /**
+   * Calculate group bounds from node positions and child groups
+   * For groups with child groups, include both child group layouts and direct nodes (nodes not in child groups)
+   * For leaf groups (no child groups), only use nodeIds
+   */
+  private calculateGroupBounds(nodeIds: string[], groupId?: string): { minX: number; maxX: number; minY: number; maxY: number } | null {
+    const GROUP_PADDING = 20; // Padding around nodes
+    const NESTED_GROUP_MARGIN = 30; // Margin between nested groups
+    
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    let hasValidContent = false;
+
+    // Check if this group has child groups
+    const hasChildGroups = groupId ? this.groups.some(g => g.parentId === groupId) : false;
+
+    // If this group has child groups, collect node IDs that belong to child groups
+    const childGroupNodeIds = new Set<string>();
+    if (hasChildGroups && groupId) {
+      const childGroups = this.groups.filter(g => g.parentId === groupId);
+      for (const childGroup of childGroups) {
+        // Recursively collect all node IDs from child groups and their descendants
+        const collectNodeIds = (g: Group): void => {
+          for (const nodeId of g.nodeIds) {
+            childGroupNodeIds.add(nodeId);
+          }
+          // Also collect from descendant groups
+          const descendantGroups = this.groups.filter(dg => dg.parentId === g.id);
+          for (const descendantGroup of descendantGroups) {
+            collectNodeIds(descendantGroup);
+          }
+        };
+        collectNodeIds(childGroup);
+      }
+    }
+
+    // Include direct nodes (nodes not in child groups)
+    for (const nodeId of nodeIds) {
+      // Skip nodes that belong to child groups
+      if (hasChildGroups && childGroupNodeIds.has(nodeId)) {
+        continue;
+      }
+
+      const node = this.nodes.find(n => n.id === nodeId);
+      if (!node || !node.position) {
+        continue;
+      }
+
+      hasValidContent = true;
+      const nodeStyle = node.style || {};
+      const nodeWidth = nodeStyle.width || this.DEFAULT_NODE_WIDTH;
+      const nodeHeight = nodeStyle.height || this.DEFAULT_NODE_HEIGHT;
+
+      const nodeLeft = node.position.x - nodeWidth / 2;
+      const nodeRight = node.position.x + nodeWidth / 2;
+      const nodeTop = node.position.y - nodeHeight / 2;
+      const nodeBottom = node.position.y + nodeHeight / 2;
+
+      minX = Math.min(minX, nodeLeft);
+      maxX = Math.max(maxX, nodeRight);
+      minY = Math.min(minY, nodeTop);
+      maxY = Math.max(maxY, nodeBottom);
+    }
+
+    // Include child groups (if this is a parent group)
+    if (hasChildGroups && groupId) {
+      const childGroups = this.groups.filter(g => g.parentId === groupId);
+      for (const childGroup of childGroups) {
+        const childLayout = this.getGroupLayout(childGroup);
+        if (childLayout) {
+          hasValidContent = true;
+          const childLeft = childLayout.position.x;
+          const childRight = childLayout.position.x + childLayout.size.width;
+          const childTop = childLayout.position.y;
+          const childBottom = childLayout.position.y + childLayout.size.height;
+
+          minX = Math.min(minX, childLeft);
+          maxX = Math.max(maxX, childRight);
+          minY = Math.min(minY, childTop);
+          maxY = Math.max(maxY, childBottom);
+        }
+      }
+    }
+
+    if (!hasValidContent) {
+      return null;
+    }
+
+    // Add padding: use nested margin if this group has children, otherwise use regular padding
+    const padding = hasChildGroups ? NESTED_GROUP_MARGIN : GROUP_PADDING;
+
+    return {
+      minX: minX - padding,
+      maxX: maxX + padding,
+      minY: minY - padding,
+      maxY: maxY + padding,
+    };
+  }
+
+  /**
+   * Get or calculate group layout
+   */
+  private getGroupLayout(group: Group): GroupLayout | null {
+    // If layout exists, use it
+    if (group.layout) {
+      return group.layout;
+    }
+
+    // Otherwise, calculate from node positions and child groups
+    const bounds = this.calculateGroupBounds(group.nodeIds, group.id);
+    if (!bounds) {
+      return null;
+    }
+
+    return {
+      position: {
+        x: bounds.minX,
+        y: bounds.minY,
+      },
+      size: {
+        width: bounds.maxX - bounds.minX,
+        height: bounds.maxY - bounds.minY,
+      },
+    };
+  }
+
+  /**
+   * Render groups
+   */
+  private renderGroups(): void {
+    if (this.groups.length === 0) {
+      return;
+    }
+
+    // Sort groups by hierarchy level (parent groups first)
+    const sortedGroups = [...this.groups].sort((a, b) => {
+      // Calculate hierarchy level (0 = root, 1 = child, 2 = grandchild)
+      const getLevel = (group: Group): number => {
+        if (!group.parentId) return 0;
+        const parent = this.groups.find(g => g.id === group.parentId);
+        if (!parent) return 0;
+        return 1 + getLevel(parent);
+      };
+      return getLevel(a) - getLevel(b);
+    });
+
+    for (const group of sortedGroups) {
+      // Ensure layout is initialized (calculate if not exists)
+      let layout = this.getGroupLayout(group);
+      if (!layout) {
+        // Try to calculate layout even if no nodes (might have child groups)
+        const bounds = this.calculateGroupBounds(group.nodeIds, group.id);
+        if (bounds) {
+          layout = {
+            position: { x: bounds.minX, y: bounds.minY },
+            size: { width: bounds.maxX - bounds.minX, height: bounds.maxY - bounds.minY },
+          };
+          // Store layout in group for future use
+          group.layout = layout;
+        } else {
+          continue; // Skip groups with no valid content
+        }
+      } else if (!group.layout) {
+        // Store calculated layout in group
+        group.layout = layout;
+      }
+
+      // Create group element
+      const groupElement = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      groupElement.setAttribute('data-group-id', group.id);
+      groupElement.setAttribute('class', 'group');
+
+      // Create rectangle
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', String(layout.position.x));
+      rect.setAttribute('y', String(layout.position.y));
+      rect.setAttribute('width', String(layout.size.width));
+      rect.setAttribute('height', String(layout.size.height));
+      rect.setAttribute('fill', 'rgba(200, 200, 200, 0.1)'); // Light gray background
+      rect.setAttribute('stroke', '#999'); // Gray border
+      rect.setAttribute('stroke-width', '2');
+      rect.setAttribute('stroke-dasharray', '5,5'); // Dashed border
+      rect.setAttribute('rx', '4');
+      rect.style.pointerEvents = this.mode === 'edit' ? 'auto' : 'none';
+      rect.style.cursor = this.mode === 'edit' ? 'move' : 'default';
+
+      // Create label
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', String(layout.position.x + 10));
+      text.setAttribute('y', String(layout.position.y + 20));
+      text.setAttribute('font-size', '14');
+      text.setAttribute('font-weight', 'bold');
+      text.setAttribute('fill', '#666');
+      text.textContent = group.label;
+
+      groupElement.appendChild(rect);
+      groupElement.appendChild(text);
+
+      // Add edit mode interactions
+      if (this.mode === 'edit') {
+        this.setupGroupEditInteractions(groupElement, group, rect);
+      }
+
+      // Add click event for view mode (to trigger onGroupClick)
+      if (this.mode === 'view' && this.onGroupClick) {
+        groupElement.addEventListener('click', (e: MouseEvent) => {
+          // Don't trigger if clicking on resize handles or child elements
+          const target = e.target as SVGElement;
+          if (target.getAttribute('data-resize-side')) {
+            return;
+          }
+          
+          e.stopPropagation(); // Prevent click event on empty space
+          e.preventDefault(); // Prevent default behavior
+          
+          const svgRect = this.svg.getBoundingClientRect();
+          const clickX = e.clientX - svgRect.left;
+          const clickY = e.clientY - svgRect.top;
+
+          // Call onGroupClick callback
+          this.onGroupClick!({
+            group,
+            position: { x: clickX, y: clickY },
+            originalEvent: e,
+          });
+        }, true); // Use capture phase to handle before SVG's click handler
+      }
+
+      this.groupsGroup.appendChild(groupElement);
+    }
+  }
+
+  /**
+   * Update group layouts for groups containing a node or child group
+   * @param nodeId Node ID that changed (optional)
+   * @param groupId Group ID that changed (optional)
+   * @param preserveChangedGroupLayout If true, don't recalculate layout for the changed group (preserve its current layout)
+   */
+  private updateGroupLayouts(nodeId?: string, groupId?: string, preserveChangedGroupLayout: boolean = false): void {
+    const allGroupsToUpdate = new Set<Group>();
+    const preserveLayoutGroupId = preserveChangedGroupLayout && groupId ? groupId : null;
+    
+    if (nodeId) {
+      // Find all groups containing this node (including parent groups in hierarchy)
+      const containingGroups = this.groups.filter(g => g.nodeIds.includes(nodeId));
+      containingGroups.forEach(g => allGroupsToUpdate.add(g));
+      
+      // Also include parent groups in hierarchy
+      for (const group of containingGroups) {
+        this.addParentGroupsToUpdate(group, allGroupsToUpdate);
+      }
+    }
+    
+    if (groupId) {
+      // Find the group that changed
+      const changedGroup = this.groups.find(g => g.id === groupId);
+      if (changedGroup) {
+        // Only add parent groups, not the changed group itself if we're preserving its layout
+        if (!preserveChangedGroupLayout) {
+          allGroupsToUpdate.add(changedGroup);
+        }
+        // Include all parent groups
+        this.addParentGroupsToUpdate(changedGroup, allGroupsToUpdate);
+      }
+    }
+
+    // Update layout for each group (update from bottom to top of hierarchy)
+    // Sort by hierarchy level (children first, then parents)
+    const sortedGroupsToUpdate = Array.from(allGroupsToUpdate).sort((a, b) => {
+      const getLevel = (group: Group): number => {
+        if (!group.parentId) return 0;
+        const parent = this.groups.find(g => g.id === group.parentId);
+        if (!parent) return 0;
+        return 1 + getLevel(parent);
+      };
+      return getLevel(b) - getLevel(a); // Reverse order: children first
+    });
+
+    for (const group of sortedGroupsToUpdate) {
+      // Skip if this is the group we're preserving
+      if (preserveLayoutGroupId && group.id === preserveLayoutGroupId) {
+        continue;
+      }
+      
+      const bounds = this.calculateGroupBounds(group.nodeIds, group.id);
+      if (bounds) {
+        if (!group.layout) {
+          group.layout = {
+            position: { x: 0, y: 0 },
+            size: { width: 0, height: 0 },
+          };
+        }
+        group.layout.position.x = bounds.minX;
+        group.layout.position.y = bounds.minY;
+        group.layout.size.width = bounds.maxX - bounds.minX;
+        group.layout.size.height = bounds.maxY - bounds.minY;
+      }
+    }
+  }
+
+  /**
+   * Recursively add parent groups to update set
+   */
+  private addParentGroupsToUpdate(group: Group, allGroupsToUpdate: Set<Group>): void {
+    if (group.parentId) {
+      const parent = this.groups.find(g => g.id === group.parentId);
+      if (parent) {
+        allGroupsToUpdate.add(parent);
+        // Recursively add parent's parents
+        this.addParentGroupsToUpdate(parent, allGroupsToUpdate);
+      }
+    }
+  }
+
+  /**
+   * Recursively move all descendant groups (children and all descendants) and their nodes
+   */
+  private moveDescendantGroups(groupId: string, deltaX: number, deltaY: number): void {
+    // Find all direct child groups
+    const childGroups = this.groups.filter(g => g.parentId === groupId);
+    
+    for (const childGroup of childGroups) {
+      // Move the child group
+      if (childGroup.layout) {
+        childGroup.layout.position.x += deltaX;
+        childGroup.layout.position.y += deltaY;
+      }
+      
+      // Move all nodes in the child group
+      for (const nodeId of childGroup.nodeIds) {
+        const node = this.nodes.find(n => n.id === nodeId);
+        if (node && node.position) {
+          node.position.x += deltaX;
+          node.position.y += deltaY;
+        }
+      }
+      
+      // Recursively move all descendants of this child group
+      this.moveDescendantGroups(childGroup.id, deltaX, deltaY);
+    }
+  }
+
+
+  /**
+   * Setup group edit interactions (drag to move, resize handles)
+   */
+  private setupGroupEditInteractions(groupElement: SVGGElement, group: Group, rect: SVGRectElement): void {
+    if (!group.layout) {
+      return;
+    }
+
+    // Make rect draggable
+    rect.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (this.mode !== 'edit') {
+        return;
+      }
+      
+      // Don't start drag if clicking on resize handle
+      const target = e.target as SVGElement;
+      if (target.getAttribute('data-resize-side')) {
+        return;
+      }
+
+      // Stop propagation to prevent panning
+      e.stopPropagation();
+      e.preventDefault();
+
+      // Set pointer capture for smooth dragging
+      rect.setPointerCapture(e.pointerId);
+
+      const svgCoords = this.screenToSvg(e.clientX, e.clientY);
+      const mouseX = svgCoords.x;
+      const mouseY = svgCoords.y;
+
+      // Store initial group position for delta calculation
+      if (!group.layout) {
+        return;
+      }
+      const initialGroupX = group.layout.position.x;
+      const initialGroupY = group.layout.position.y;
+
+      this.draggingGroup = {
+        groupId: group.id,
+        offsetX: mouseX - initialGroupX,
+        offsetY: mouseY - initialGroupY,
+      };
+
+      rect.style.cursor = 'grabbing';
+    });
+
+    // Add resize handles
+    this.addGroupResizeHandles(groupElement, group, rect);
+  }
+
+  /**
+   * Add resize handles to group
+   */
+  private addGroupResizeHandles(groupElement: SVGGElement, group: Group, rect: SVGRectElement): void {
+    if (!group.layout) {
+      return;
+    }
+
+    const handleSize = 12;
+    const sides: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left'];
+
+    for (const side of sides) {
+      const handle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      handle.setAttribute('r', String(handleSize / 2));
+      handle.setAttribute('fill', '#2196f3');
+      handle.setAttribute('stroke', '#fff');
+      handle.setAttribute('stroke-width', '2');
+      handle.setAttribute('data-resize-side', side);
+      handle.setAttribute('data-group-id', group.id);
+      handle.style.cursor = this.getResizeCursor(side);
+      handle.style.pointerEvents = 'auto';
+
+      // Position handle
+      const x = group.layout.position.x;
+      const y = group.layout.position.y;
+      const width = group.layout.size.width;
+      const height = group.layout.size.height;
+
+      switch (side) {
+        case 'top':
+          handle.setAttribute('cx', String(x + width / 2));
+          handle.setAttribute('cy', String(y));
+          break;
+        case 'right':
+          handle.setAttribute('cx', String(x + width));
+          handle.setAttribute('cy', String(y + height / 2));
+          break;
+        case 'bottom':
+          handle.setAttribute('cx', String(x + width / 2));
+          handle.setAttribute('cy', String(y + height));
+          break;
+        case 'left':
+          handle.setAttribute('cx', String(x));
+          handle.setAttribute('cy', String(y + height / 2));
+          break;
+      }
+
+      // Add resize interaction
+      handle.addEventListener('pointerdown', (e: PointerEvent) => {
+        if (this.mode !== 'edit') {
+          return;
+        }
+
+        // Stop propagation to prevent panning
+        e.stopPropagation();
+        e.preventDefault();
+
+        // Set pointer capture for smooth resizing
+        handle.setPointerCapture(e.pointerId);
+
+        const svgCoords = this.screenToSvg(e.clientX, e.clientY);
+        const pointerX = svgCoords.x;
+        const pointerY = svgCoords.y;
+
+        if (!group.layout) {
+          return;
+        }
+
+        this.resizingGroup = {
+          groupId: group.id,
+          side,
+          startX: pointerX,
+          startY: pointerY,
+          startWidth: group.layout.size.width,
+          startHeight: group.layout.size.height,
+          startPosX: group.layout.position.x,
+          startPosY: group.layout.position.y,
+        };
+      });
+
+      groupElement.appendChild(handle);
     }
   }
 
@@ -3584,6 +4122,182 @@ export class GraphView implements View {
       case 'right':
         return 'ew-resize';
     }
+  }
+
+  /**
+   * Update group position (during drag)
+   * Moves all nodes and child groups in the group by the same delta
+   */
+  private updateGroupPosition(e: PointerEvent): void {
+    if (!this.draggingGroup) {
+      return;
+    }
+
+    const group = this.groups.find(g => g.id === this.draggingGroup!.groupId);
+    if (!group || !group.layout) {
+      return;
+    }
+
+    // Convert screen coordinates to SVG coordinates
+    const svgCoords = this.screenToSvg(e.clientX, e.clientY);
+    const mouseX = svgCoords.x;
+    const mouseY = svgCoords.y;
+
+    // Calculate new group position
+    const newGroupX = mouseX - this.draggingGroup.offsetX;
+    const newGroupY = mouseY - this.draggingGroup.offsetY;
+
+    // Calculate delta from current position
+    const deltaX = newGroupX - group.layout.position.x;
+    const deltaY = newGroupY - group.layout.position.y;
+
+    // Move all nodes that belong directly to this group (not to child groups)
+    // Find nodes that belong to this group but not to any child group
+    const childGroupNodeIds = new Set<string>();
+    const childGroups = this.groups.filter(g => g.parentId === group.id);
+    for (const childGroup of childGroups) {
+      for (const nodeId of childGroup.nodeIds) {
+        childGroupNodeIds.add(nodeId);
+      }
+    }
+    
+    // Move only nodes that belong directly to this group
+    for (const nodeId of group.nodeIds) {
+      if (!childGroupNodeIds.has(nodeId)) {
+        const node = this.nodes.find(n => n.id === nodeId);
+        if (node && node.position) {
+          node.position.x += deltaX;
+          node.position.y += deltaY;
+        }
+      }
+    }
+
+    // Move all descendant groups (children and all descendants) by the same delta
+    this.moveDescendantGroups(group.id, deltaX, deltaY);
+
+    // Update group layout position
+    group.layout.position.x = newGroupX;
+    group.layout.position.y = newGroupY;
+
+    // Update parent groups after move (but preserve moved group's layout)
+    this.updateGroupLayouts(undefined, group.id, true);
+
+    // Re-render
+    this.render();
+    this.updateAnchorHandles();
+    this.updateBendHandles();
+    this.debouncedSave();
+  }
+
+  /**
+   * Update group size (during resize)
+   */
+  private updateGroupSize(e: PointerEvent): void {
+    if (!this.resizingGroup) {
+      return;
+    }
+
+    const group = this.groups.find(g => g.id === this.resizingGroup!.groupId);
+    if (!group || !group.layout) {
+      return;
+    }
+
+    const svgCoords = this.screenToSvg(e.clientX, e.clientY);
+    const pointerX = svgCoords.x;
+    const pointerY = svgCoords.y;
+
+    const deltaX = pointerX - this.resizingGroup.startX;
+    const deltaY = pointerY - this.resizingGroup.startY;
+
+    switch (this.resizingGroup.side) {
+      case 'right': {
+        const newWidth = Math.max(100, this.resizingGroup.startWidth + deltaX);
+        group.layout.size.width = newWidth;
+        break;
+      }
+      case 'left': {
+        const newWidth = Math.max(100, this.resizingGroup.startWidth - deltaX);
+        group.layout.size.width = newWidth;
+        group.layout.position.x = this.resizingGroup.startPosX + deltaX;
+        break;
+      }
+      case 'bottom': {
+        const newHeight = Math.max(100, this.resizingGroup.startHeight + deltaY);
+        group.layout.size.height = newHeight;
+        break;
+      }
+      case 'top': {
+        const newHeight = Math.max(100, this.resizingGroup.startHeight - deltaY);
+        group.layout.size.height = newHeight;
+        group.layout.position.y = this.resizingGroup.startPosY + deltaY;
+        break;
+      }
+    }
+
+    // Update visual representation
+    const groupElement = this.groupsGroup.querySelector(`[data-group-id="${group.id}"]`);
+    if (groupElement) {
+      const rect = groupElement.querySelector('rect');
+      if (rect) {
+        rect.setAttribute('x', String(group.layout.position.x));
+        rect.setAttribute('y', String(group.layout.position.y));
+        rect.setAttribute('width', String(group.layout.size.width));
+        rect.setAttribute('height', String(group.layout.size.height));
+      }
+
+      // Update resize handles
+      if (!group.layout) {
+        return;
+      }
+      const handles = groupElement.querySelectorAll('[data-resize-side]');
+      const layout = group.layout; // Store in local variable for type narrowing
+      handles.forEach(handle => {
+        const side = handle.getAttribute('data-resize-side');
+        const x = layout.position.x;
+        const y = layout.position.y;
+        const width = layout.size.width;
+        const height = layout.size.height;
+
+        switch (side) {
+          case 'top':
+            handle.setAttribute('cx', String(x + width / 2));
+            handle.setAttribute('cy', String(y));
+            break;
+          case 'right':
+            handle.setAttribute('cx', String(x + width));
+            handle.setAttribute('cy', String(y + height / 2));
+            break;
+          case 'bottom':
+            handle.setAttribute('cx', String(x + width / 2));
+            handle.setAttribute('cy', String(y + height));
+            break;
+          case 'left':
+            handle.setAttribute('cx', String(x));
+            handle.setAttribute('cy', String(y + height / 2));
+            break;
+        }
+      });
+
+      // Update label position
+      const text = groupElement.querySelector('text');
+      if (text) {
+        text.setAttribute('x', String(group.layout.position.x + 10));
+        text.setAttribute('y', String(group.layout.position.y + 20));
+      }
+    }
+  }
+
+  /**
+   * Handle group resize end (called on pointer up)
+   */
+  private handleGroupResizeEnd(): void {
+    // Update parent groups after resize (but preserve resized group's layout)
+    if (this.resizingGroup) {
+      this.updateGroupLayouts(undefined, this.resizingGroup.groupId, true);
+    }
+    // Final render and save
+    this.render();
+    this.debouncedSave();
   }
 
   /**
