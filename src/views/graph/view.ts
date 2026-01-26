@@ -1756,8 +1756,10 @@ export class GraphView implements View {
         });
       }
 
-      // Constraint-based collision resolution algorithm with separated x and y directions
-      this.resolveNodePositionsWithOrderConstraints(nodeInfoMap, nodeOriginalCenters);
+      // Vector-based collision resolution algorithm
+      // Maintains vector direction between nodes while adjusting distance
+      // Ensures groups (including ancestor groups) don't overlap with other groups
+      this.resolveNodePositionsWithVectorConstraints(nodeInfoMap, nodeOriginalCenters);
     }
 
     // Grid layout for nodes without lat/lon in left area (same approach as Map2D)
@@ -1798,124 +1800,280 @@ export class GraphView implements View {
   }
 
   /**
-   * Constraint-based collision resolution algorithm with separated x and y directions
-   * Fix original x and y order as constraints and adjust to avoid overlap
+   * Vector-based collision resolution algorithm
+   * Maintains vector direction between nodes while adjusting distance
+   * Ensures groups (including ancestor groups) don't overlap with other groups
    * 
    * @param nodeInfoMap All node information (including original center coordinates)
    * @param nodeOriginalCenters Original center coordinates for all nodes
    */
-  private resolveNodePositionsWithOrderConstraints(
+  private resolveNodePositionsWithVectorConstraints(
     nodeInfoMap: Map<string, { node: Node; width: number; height: number; originalCenterX: number; originalCenterY: number }>,
     nodeOriginalCenters: Map<string, { originalCenterX: number; originalCenterY: number }>
   ): void {
-    const padding = 20;
-    const maxIterations = 50;
+    const NODE_PADDING = 20;
+    const GROUP_PADDING = 30;
+    const NESTED_GROUP_MARGIN = 50;
+    const GROUP_SPACING = 60;
+    const LABEL_OFFSET_Y = 25;
+    const maxIterations = 100;
 
-    // Calculate current center coordinates of nodes that already have positions set
+    // Initialize node positions from original centers
     const currentCenters: Map<string, { centerX: number; centerY: number }> = new Map();
     const nodePositions: Map<string, { x: number; y: number; width: number; height: number }> = new Map();
 
     for (const [nodeId, nodeInfo] of nodeInfoMap) {
       const node = nodeInfo.node;
+      const originalCenter = nodeOriginalCenters.get(nodeId)!;
+      
       if (node.position) {
         // Use existing position
-        const centerX = node.position.x;
-        const centerY = node.position.y;
-        currentCenters.set(nodeId, { centerX, centerY });
-        nodePositions.set(nodeId, {
-          x: node.position.x - nodeInfo.width / 2,
-          y: node.position.y - nodeInfo.height / 2,
-          width: nodeInfo.width,
-          height: nodeInfo.height,
-        });
+        currentCenters.set(nodeId, { centerX: node.position.x, centerY: node.position.y });
       } else {
         // Use original center coordinates as initial value
-        const originalCenter = nodeOriginalCenters.get(nodeId)!;
         currentCenters.set(nodeId, {
           centerX: originalCenter.originalCenterX,
           centerY: originalCenter.originalCenterY,
         });
-        nodePositions.set(nodeId, {
-          x: originalCenter.originalCenterX - nodeInfo.width / 2,
-          y: originalCenter.originalCenterY - nodeInfo.height / 2,
-          width: nodeInfo.width,
-          height: nodeInfo.height,
-        });
       }
+      
+      const center = currentCenters.get(nodeId)!;
+      nodePositions.set(nodeId, {
+        x: center.centerX - nodeInfo.width / 2,
+        y: center.centerY - nodeInfo.height / 2,
+        width: nodeInfo.width,
+        height: nodeInfo.height,
+      });
     }
 
-    // Determine original x and y order (use as constraints)
-    const nodesByOriginalX = Array.from(nodeInfoMap.entries()).sort((a, b) => {
-      const centerA = nodeOriginalCenters.get(a[0])!;
-      const centerB = nodeOriginalCenters.get(b[0])!;
-      return centerA.originalCenterX - centerB.originalCenterX;
-    });
+    // Helper: Get all groups that contain a node (including ancestor groups)
+    const getGroupsForNode = (nodeId: string): Group[] => {
+      const groups: Group[] = [];
+      for (const group of this.groups) {
+        // Collect all node IDs in this group (including descendant groups)
+        const allNodeIds = new Set<string>();
+        const collectNodeIds = (g: Group): void => {
+          for (const id of g.nodeIds) {
+            allNodeIds.add(id);
+          }
+          const childGroups = this.groups.filter(cg => cg.parentId === g.id);
+          for (const childGroup of childGroups) {
+            collectNodeIds(childGroup);
+          }
+        };
+        collectNodeIds(group);
+        
+        if (allNodeIds.has(nodeId)) {
+          groups.push(group);
+        }
+      }
+      return groups;
+    };
 
-    const nodesByOriginalY = Array.from(nodeInfoMap.entries()).sort((a, b) => {
-      const centerA = nodeOriginalCenters.get(a[0])!;
-      const centerB = nodeOriginalCenters.get(b[0])!;
-      return centerA.originalCenterY - centerB.originalCenterY;
-    });
+    // Helper: Calculate group bounds from current node positions
+    const calculateGroupBoundsForLayout = (group: Group): { minX: number; maxX: number; minY: number; maxY: number } | null => {
+      const hasChildGroups = this.groups.some(g => g.parentId === group.id);
+      const childGroupNodeIds = new Set<string>();
+      
+      if (hasChildGroups) {
+        const childGroups = this.groups.filter(g => g.parentId === group.id);
+        for (const childGroup of childGroups) {
+          const collectNodeIds = (g: Group): void => {
+            for (const nodeId of g.nodeIds) {
+              childGroupNodeIds.add(nodeId);
+            }
+            const descendantGroups = this.groups.filter(dg => dg.parentId === g.id);
+            for (const descendantGroup of descendantGroups) {
+              collectNodeIds(descendantGroup);
+            }
+          };
+          collectNodeIds(childGroup);
+        }
+      }
 
-    // Adjust x and y directions alternately
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      let hasValidContent = false;
+
+      // Include direct nodes
+      for (const nodeId of group.nodeIds) {
+        if (hasChildGroups && childGroupNodeIds.has(nodeId)) {
+          continue;
+        }
+        const pos = nodePositions.get(nodeId);
+        if (pos) {
+          hasValidContent = true;
+          minX = Math.min(minX, pos.x);
+          maxX = Math.max(maxX, pos.x + pos.width);
+          minY = Math.min(minY, pos.y);
+          maxY = Math.max(maxY, pos.y + pos.height);
+        }
+      }
+
+      // Include child groups
+      if (hasChildGroups) {
+        const childGroups = this.groups.filter(g => g.parentId === group.id);
+        for (const childGroup of childGroups) {
+          const childBounds = calculateGroupBoundsForLayout(childGroup);
+          if (childBounds) {
+            hasValidContent = true;
+            minX = Math.min(minX, childBounds.minX);
+            maxX = Math.max(maxX, childBounds.maxX);
+            minY = Math.min(minY, childBounds.minY);
+            maxY = Math.max(maxY, childBounds.maxY);
+          }
+        }
+      }
+
+      if (!hasValidContent) {
+        return null;
+      }
+
+      const padding = hasChildGroups ? NESTED_GROUP_MARGIN : GROUP_PADDING;
+      const topPadding = padding + LABEL_OFFSET_Y;
+
+      return {
+        minX: minX - padding,
+        maxX: maxX + padding,
+        minY: minY - topPadding,
+        maxY: maxY + padding,
+      };
+    };
+
+    // Iteratively resolve collisions
     for (let iteration = 0; iteration < maxIterations; iteration++) {
       let hasCollision = false;
 
-      // Resolve x-direction collisions (left to right, maintain original x order)
-      for (let i = 0; i < nodesByOriginalX.length; i++) {
-        const [nodeId] = nodesByOriginalX[i];
-        const currentPos = nodePositions.get(nodeId)!;
-        const currentCenter = currentCenters.get(nodeId)!;
+      // Check all pairs of nodes
+      const nodeArray = Array.from(nodeInfoMap.entries());
+      for (let i = 0; i < nodeArray.length; i++) {
+        const [nodeIdA, nodeInfoA] = nodeArray[i];
+        const centerA = currentCenters.get(nodeIdA)!;
+        const posA = nodePositions.get(nodeIdA)!;
+        const groupsA = getGroupsForNode(nodeIdA);
 
-        // Check collision with left node (previous node in original x order)
-        for (let j = 0; j < i; j++) {
-          const [otherId] = nodesByOriginalX[j];
-          const otherPos = nodePositions.get(otherId)!;
+        for (let j = i + 1; j < nodeArray.length; j++) {
+          const [nodeIdB, nodeInfoB] = nodeArray[j];
+          const centerB = currentCenters.get(nodeIdB)!;
+          const posB = nodePositions.get(nodeIdB)!;
+          const groupsB = getGroupsForNode(nodeIdB);
 
-          // x-direction collision detection (left-right overlap)
-          if (
-            currentPos.x < otherPos.x + otherPos.width + padding &&
-            currentPos.x + currentPos.width + padding > otherPos.x
-          ) {
+          // Calculate original vector from A to B
+          const originalCenterA = nodeOriginalCenters.get(nodeIdA)!;
+          const originalCenterB = nodeOriginalCenters.get(nodeIdB)!;
+          const originalDx = originalCenterB.originalCenterX - originalCenterA.originalCenterX;
+          const originalDy = originalCenterB.originalCenterY - originalCenterA.originalCenterY;
+          const originalDistance = Math.sqrt(originalDx * originalDx + originalDy * originalDy);
+          
+          if (originalDistance === 0) continue; // Skip if nodes are at same original position
+          
+          const originalUnitX = originalDx / originalDistance;
+          const originalUnitY = originalDy / originalDistance;
+
+          // Check if groups overlap
+          let needsAdjustment = false;
+          let minRequiredDistance = 0;
+
+          for (const groupA of groupsA) {
+            const boundsA = calculateGroupBoundsForLayout(groupA);
+            if (!boundsA) continue;
+
+            for (const groupB of groupsB) {
+              // Skip if groups are related (one contains the other)
+              let isRelated = false;
+              if (groupA.id === groupB.id) {
+                isRelated = true;
+              } else {
+                // Check if groupA contains groupB or vice versa
+                const checkContains = (parent: Group, child: Group): boolean => {
+                  if (child.parentId === parent.id) return true;
+                  if (!child.parentId) return false;
+                  const childParent = this.groups.find(g => g.id === child.parentId);
+                  return childParent ? checkContains(parent, childParent) : false;
+                };
+                isRelated = checkContains(groupA, groupB) || checkContains(groupB, groupA);
+              }
+
+              if (isRelated) continue; // Skip related groups
+
+              const boundsB = calculateGroupBoundsForLayout(groupB);
+              if (!boundsB) continue;
+
+              // Check if groups overlap
+              const overlapsHorizontally = boundsA.minX < boundsB.maxX + GROUP_SPACING && boundsA.maxX + GROUP_SPACING > boundsB.minX;
+              const overlapsVertically = boundsA.minY < boundsB.maxY + GROUP_SPACING && boundsA.maxY + GROUP_SPACING > boundsB.minY;
+              
+              if (overlapsHorizontally && overlapsVertically) {
+                needsAdjustment = true;
+                
+                // Calculate required distance to separate groups
+                // Find the minimum distance needed to separate the groups along the vector direction
+                const centerAX = (boundsA.minX + boundsA.maxX) / 2;
+                const centerAY = (boundsA.minY + boundsA.maxY) / 2;
+                const centerBX = (boundsB.minX + boundsB.maxX) / 2;
+                const centerBY = (boundsB.minY + boundsB.maxY) / 2;
+                
+                const currentDx = centerBX - centerAX;
+                const currentDy = centerBY - centerAY;
+                const currentDistance = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
+                
+                // Calculate required separation distance
+                const widthA = boundsA.maxX - boundsA.minX;
+                const heightA = boundsA.maxY - boundsA.minY;
+                const widthB = boundsB.maxX - boundsB.minX;
+                const heightB = boundsB.maxY - boundsB.minY;
+                
+                // Project group sizes onto the vector direction
+                const projectionA = Math.abs(widthA * originalUnitX) + Math.abs(heightA * originalUnitY);
+                const projectionB = Math.abs(widthB * originalUnitX) + Math.abs(heightB * originalUnitY);
+                const requiredDistance = (projectionA + projectionB) / 2 + GROUP_SPACING;
+                
+                if (currentDistance < requiredDistance) {
+                  minRequiredDistance = Math.max(minRequiredDistance, requiredDistance);
+                }
+              }
+            }
+          }
+
+          // Adjust positions along vector direction if needed
+          if (needsAdjustment && minRequiredDistance > 0) {
             hasCollision = true;
-            // Move current node to right to maintain original x order (never swap order)
-            const requiredGap = otherPos.width / 2 + currentPos.width / 2 + padding;
-            const otherCenter = currentCenters.get(otherId)!;
-            const newCenterX = otherCenter.centerX + requiredGap;
-            currentCenter.centerX = newCenterX;
-            currentPos.x = newCenterX - currentPos.width / 2;
+            
+            const currentDx = centerB.centerX - centerA.centerX;
+            const currentDy = centerB.centerY - centerA.centerY;
+            const currentDistance = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
+            
+            if (currentDistance < minRequiredDistance) {
+              // Calculate new positions maintaining vector direction
+              const scale = minRequiredDistance / originalDistance;
+              const newDx = originalDx * scale;
+              const newDy = originalDy * scale;
+              
+              // Move both nodes to maintain their relative positions
+              // Keep nodeA's position relative to original, adjust nodeB
+              const newCenterBX = originalCenterA.originalCenterX + newDx;
+              const newCenterBY = originalCenterA.originalCenterY + newDy;
+              
+              // But we need to adjust both to maintain the vector direction from original positions
+              // Calculate adjustment needed
+              const adjustmentX = (newCenterBX - centerB.centerX) / 2;
+              const adjustmentY = (newCenterBY - centerB.centerY) / 2;
+              
+              // Adjust both nodes symmetrically
+              centerA.centerX -= adjustmentX;
+              centerA.centerY -= adjustmentY;
+              centerB.centerX += adjustmentX;
+              centerB.centerY += adjustmentY;
+              
+              // Update positions
+              posA.x = centerA.centerX - nodeInfoA.width / 2;
+              posA.y = centerA.centerY - nodeInfoA.height / 2;
+              posB.x = centerB.centerX - nodeInfoB.width / 2;
+              posB.y = centerB.centerY - nodeInfoB.height / 2;
+            }
           }
         }
       }
 
-      // Resolve y-direction collisions (top to bottom, maintain original y order)
-      for (let i = 0; i < nodesByOriginalY.length; i++) {
-        const [nodeId] = nodesByOriginalY[i];
-        const currentPos = nodePositions.get(nodeId)!;
-        const currentCenter = currentCenters.get(nodeId)!;
-
-        // Check collision with upper node (previous node in original y order)
-        for (let j = 0; j < i; j++) {
-          const [otherId] = nodesByOriginalY[j];
-          const otherPos = nodePositions.get(otherId)!;
-
-          // y-direction collision detection (top-bottom overlap)
-          if (
-            currentPos.y < otherPos.y + otherPos.height + padding &&
-            currentPos.y + currentPos.height + padding > otherPos.y
-          ) {
-            hasCollision = true;
-            // Move current node downward to maintain original y order (never swap order)
-            const requiredGap = otherPos.height / 2 + currentPos.height / 2 + padding;
-            const otherCenter = currentCenters.get(otherId)!;
-            const newCenterY = otherCenter.centerY + requiredGap;
-            currentCenter.centerY = newCenterY;
-            currentPos.y = newCenterY - currentPos.height / 2;
-          }
-        }
-      }
-
-      // Exit when all collisions are resolved
       if (!hasCollision) {
         break;
       }
@@ -1923,12 +2081,434 @@ export class GraphView implements View {
 
     // Set final positions to nodes
     for (const [nodeId, nodeInfo] of nodeInfoMap) {
-      if (!nodeInfo.node.position) {
-        const pos = nodePositions.get(nodeId)!;
-        nodeInfo.node.position = {
-          x: pos.x + pos.width / 2,
-          y: pos.y + pos.height / 2,
+      const center = currentCenters.get(nodeId)!;
+      nodeInfo.node.position = {
+        x: center.centerX,
+        y: center.centerY,
+      };
+    }
+
+    // Calculate and store group layouts
+    for (const group of this.groups) {
+      const bounds = calculateGroupBoundsForLayout(group);
+      if (bounds) {
+        group.layout = {
+          position: { x: bounds.minX, y: bounds.minY },
+          size: {
+            width: bounds.maxX - bounds.minX,
+            height: bounds.maxY - bounds.minY,
+          },
         };
+      }
+    }
+  }
+
+  /**
+   * Resolve group-group collisions for same-level groups
+   * Maintains original positional relationships (left-right, top-bottom)
+   * and prevents overlaps between groups at the same hierarchy level
+   */
+  private resolveGroupPositionsWithOrderConstraints(
+    nodeOriginalCenters: Map<string, { originalCenterX: number; originalCenterY: number }>
+  ): void {
+    const GROUP_SPACING = 60; // Minimum spacing between sibling groups (increased to prevent overlap)
+    const maxIterations = 50;
+
+    // Get all groups with their current layouts and original centers
+    const groupInfo: Array<{
+      group: Group;
+      layout: GroupLayout;
+      originalCenter: { x: number; y: number };
+      level: number;
+    }> = [];
+
+    // Helper to calculate group's original center based on its nodes
+    const getGroupOriginalCenter = (group: Group): { x: number; y: number } | null => {
+      const allNodeIds = new Set<string>();
+      
+      // Collect all node IDs in this group (including descendant groups)
+      const collectNodeIds = (g: Group): void => {
+        for (const nodeId of g.nodeIds) {
+          allNodeIds.add(nodeId);
+        }
+        const childGroups = this.groups.filter(cg => cg.parentId === g.id);
+        for (const childGroup of childGroups) {
+          collectNodeIds(childGroup);
+        }
+      };
+      collectNodeIds(group);
+      
+      if (allNodeIds.size === 0) {
+        return null;
+      }
+      
+      let sumX = 0;
+      let sumY = 0;
+      let count = 0;
+      
+      for (const nodeId of allNodeIds) {
+        const originalCenter = nodeOriginalCenters.get(nodeId);
+        if (originalCenter) {
+          sumX += originalCenter.originalCenterX;
+          sumY += originalCenter.originalCenterY;
+          count++;
+        }
+      }
+      
+      if (count === 0) {
+        return null;
+      }
+      
+      return {
+        x: sumX / count,
+        y: sumY / count,
+      };
+    };
+
+    // Calculate hierarchy level
+    const getLevel = (group: Group): number => {
+      if (!group.parentId) return 0;
+      const parent = this.groups.find(g => g.id === group.parentId);
+      if (!parent) return 0;
+      return 1 + getLevel(parent);
+    };
+
+    // Collect all groups with their layouts and original centers
+    for (const group of this.groups) {
+      const layout = this.getGroupLayout(group);
+      if (!layout) continue;
+      
+      const originalCenter = getGroupOriginalCenter(group);
+      if (!originalCenter) continue;
+      
+      groupInfo.push({
+        group,
+        layout,
+        originalCenter,
+        level: getLevel(group),
+      });
+    }
+
+    // Group by hierarchy level and parent
+    const groupsByLevel: Map<number, Map<string | null, typeof groupInfo>> = new Map();
+    for (const info of groupInfo) {
+      if (!groupsByLevel.has(info.level)) {
+        groupsByLevel.set(info.level, new Map());
+      }
+      const levelMap = groupsByLevel.get(info.level)!;
+      const parentId = info.group.parentId || null;
+      if (!levelMap.has(parentId)) {
+        levelMap.set(parentId, []);
+      }
+      levelMap.get(parentId)!.push(info);
+    }
+
+    // Resolve collisions for each level and parent group
+    for (const [level, parentMap] of groupsByLevel) {
+      for (const [parentId, groups] of parentMap) {
+        if (groups.length < 2) continue; // Need at least 2 groups to have collisions
+
+        // Sort groups by original position (maintain lat/lon order)
+        groups.sort((a, b) => {
+          const yDiff = a.originalCenter.y - b.originalCenter.y;
+          if (Math.abs(yDiff) > 10) {
+            return yDiff; // Sort by Y first if difference is significant
+          }
+          return a.originalCenter.x - b.originalCenter.x; // Then by X
+        });
+
+        // Resolve collisions iteratively
+        for (let iteration = 0; iteration < maxIterations; iteration++) {
+          let hasCollision = false;
+
+          // Resolve x-direction collisions (left to right)
+          for (let i = 1; i < groups.length; i++) {
+            const current = groups[i];
+            const currentLeft = current.layout.position.x;
+            const currentRight = currentLeft + current.layout.size.width;
+
+            // Check collision with groups to the left
+            for (let j = 0; j < i; j++) {
+              const other = groups[j];
+              const otherLeft = other.layout.position.x;
+              const otherRight = otherLeft + other.layout.size.width;
+
+              // Check if groups overlap horizontally
+              if (currentLeft < otherRight + GROUP_SPACING && currentRight + GROUP_SPACING > otherLeft) {
+                // Check if they also overlap vertically
+                const currentTop = current.layout.position.y;
+                const currentBottom = currentTop + current.layout.size.height;
+                const otherTop = other.layout.position.y;
+                const otherBottom = otherTop + other.layout.size.height;
+
+                if (currentTop < otherBottom + GROUP_SPACING && currentBottom + GROUP_SPACING > otherTop) {
+                  hasCollision = true;
+                  // Move current group to the right to maintain original x order
+                  const requiredGap = otherRight + GROUP_SPACING - currentLeft;
+                  current.layout.position.x += requiredGap;
+                  
+                  // Recalculate group bounds after movement
+                  const bounds = this.calculateGroupBounds(current.group.nodeIds, current.group.id);
+                  if (bounds) {
+                    current.layout.size = {
+                      width: bounds.maxX - bounds.minX,
+                      height: bounds.maxY - bounds.minY,
+                    };
+                  }
+                }
+              }
+            }
+          }
+
+          // Resolve y-direction collisions (top to bottom)
+          for (let i = 1; i < groups.length; i++) {
+            const current = groups[i];
+            const currentTop = current.layout.position.y;
+            const currentBottom = currentTop + current.layout.size.height;
+
+            // Check collision with groups above
+            for (let j = 0; j < i; j++) {
+              const other = groups[j];
+              const otherTop = other.layout.position.y;
+              const otherBottom = otherTop + other.layout.size.height;
+
+              // Check if groups overlap vertically
+              if (currentTop < otherBottom + GROUP_SPACING && currentBottom + GROUP_SPACING > otherTop) {
+                // Check if they also overlap horizontally
+                const currentLeft = current.layout.position.x;
+                const currentRight = currentLeft + current.layout.size.width;
+                const otherLeft = other.layout.position.x;
+                const otherRight = otherLeft + other.layout.size.width;
+
+                if (currentLeft < otherRight + GROUP_SPACING && currentRight + GROUP_SPACING > otherLeft) {
+                  hasCollision = true;
+                  // Move current group downward to maintain original y order
+                  const requiredGap = otherBottom + GROUP_SPACING - currentTop;
+                  current.layout.position.y += requiredGap;
+                  
+                  // Recalculate group bounds after movement
+                  const bounds = this.calculateGroupBounds(current.group.nodeIds, current.group.id);
+                  if (bounds) {
+                    current.layout.size = {
+                      width: bounds.maxX - bounds.minX,
+                      height: bounds.maxY - bounds.minY,
+                    };
+                  }
+                }
+              }
+            }
+          }
+
+          if (!hasCollision) {
+            break;
+          }
+        }
+
+        // Update group layouts
+        for (const info of groups) {
+          info.group.layout = info.layout;
+        }
+      }
+    }
+  }
+
+  /**
+   * Compact layout: reduce excess space while maintaining position relationships
+   * Nodes and groups maintain their relative positions (left-right, top-bottom)
+   * Same-level groups must not overlap
+   */
+  private compactLayout(
+    nodeOriginalCenters: Map<string, { originalCenterX: number; originalCenterY: number }>
+  ): void {
+    const NODE_PADDING = 20;
+    const GROUP_SPACING = 60;
+
+    // Helper to get group's original center
+    const getGroupOriginalCenter = (group: Group): { x: number; y: number } | null => {
+      const allNodeIds = new Set<string>();
+      const collectNodeIds = (g: Group): void => {
+        for (const nodeId of g.nodeIds) {
+          allNodeIds.add(nodeId);
+        }
+        const childGroups = this.groups.filter(cg => cg.parentId === g.id);
+        for (const childGroup of childGroups) {
+          collectNodeIds(childGroup);
+        }
+      };
+      collectNodeIds(group);
+      
+      if (allNodeIds.size === 0) return null;
+      
+      let sumX = 0, sumY = 0, count = 0;
+      for (const nodeId of allNodeIds) {
+        const originalCenter = nodeOriginalCenters.get(nodeId);
+        if (originalCenter) {
+          sumX += originalCenter.originalCenterX;
+          sumY += originalCenter.originalCenterY;
+          count++;
+        }
+      }
+      
+      return count > 0 ? { x: sumX / count, y: sumY / count } : null;
+    };
+
+    // Get hierarchy level
+    const getLevel = (group: Group): number => {
+      if (!group.parentId) return 0;
+      const parent = this.groups.find(g => g.id === group.parentId);
+      return parent ? 1 + getLevel(parent) : 0;
+    };
+
+    // Compact nodes horizontally (left to right)
+    const nodes = Array.from(this.nodes).filter(n => n.position);
+    nodes.sort((a, b) => {
+      const centerA = nodeOriginalCenters.get(a.id);
+      const centerB = nodeOriginalCenters.get(b.id);
+      if (!centerA || !centerB) return 0;
+      const yDiff = centerA.originalCenterY - centerB.originalCenterY;
+      if (Math.abs(yDiff) > 10) return yDiff;
+      return centerA.originalCenterX - centerB.originalCenterX;
+    });
+
+    for (let i = 1; i < nodes.length; i++) {
+      const current = nodes[i];
+      if (!current.position) continue;
+      
+      const currentStyle = current.style || {};
+      const currentWidth = currentStyle.width || this.DEFAULT_NODE_WIDTH;
+      const currentLeft = current.position.x - currentWidth / 2;
+
+      // Find rightmost position of nodes to the left
+      let maxRight = -Infinity;
+      for (let j = 0; j < i; j++) {
+        const other = nodes[j];
+        if (!other.position) continue;
+        const otherStyle = other.style || {};
+        const otherWidth = otherStyle.width || this.DEFAULT_NODE_WIDTH;
+        const otherRight = other.position.x + otherWidth / 2;
+        maxRight = Math.max(maxRight, otherRight);
+      }
+
+      if (maxRight > -Infinity) {
+        const potentialLeft = maxRight + NODE_PADDING;
+        if (currentLeft > potentialLeft) {
+          const deltaX = potentialLeft - currentLeft;
+          current.position.x += deltaX;
+        }
+      }
+    }
+
+    // Compact nodes vertically (top to bottom)
+    for (let i = 1; i < nodes.length; i++) {
+      const current = nodes[i];
+      if (!current.position) continue;
+      
+      const currentStyle = current.style || {};
+      const currentHeight = currentStyle.height || this.DEFAULT_NODE_HEIGHT;
+      const currentTop = current.position.y - currentHeight / 2;
+
+      // Find bottommost position of nodes above
+      let maxBottom = -Infinity;
+      for (let j = 0; j < i; j++) {
+        const other = nodes[j];
+        if (!other.position) continue;
+        const otherStyle = other.style || {};
+        const otherHeight = otherStyle.height || this.DEFAULT_NODE_HEIGHT;
+        const otherBottom = other.position.y + otherHeight / 2;
+        maxBottom = Math.max(maxBottom, otherBottom);
+      }
+
+      if (maxBottom > -Infinity) {
+        const potentialTop = maxBottom + NODE_PADDING;
+        if (currentTop > potentialTop) {
+          const deltaY = potentialTop - currentTop;
+          current.position.y += deltaY;
+        }
+      }
+    }
+
+    // Compact same-level groups
+    const groupsByLevel: Map<number, Map<string | null, Group[]>> = new Map();
+    for (const group of this.groups) {
+      const level = getLevel(group);
+      if (!groupsByLevel.has(level)) {
+        groupsByLevel.set(level, new Map());
+      }
+      const levelMap = groupsByLevel.get(level)!;
+      const parentId = group.parentId || null;
+      if (!levelMap.has(parentId)) {
+        levelMap.set(parentId, []);
+      }
+      levelMap.get(parentId)!.push(group);
+    }
+
+    for (const [level, parentMap] of groupsByLevel) {
+      for (const [parentId, groups] of parentMap) {
+        if (groups.length < 2) continue;
+
+        // Sort by original position
+        groups.sort((a, b) => {
+          const centerA = getGroupOriginalCenter(a);
+          const centerB = getGroupOriginalCenter(b);
+          if (!centerA || !centerB) return 0;
+          const yDiff = centerA.y - centerB.y;
+          if (Math.abs(yDiff) > 10) return yDiff;
+          return centerA.x - centerB.x;
+        });
+
+        // Compact horizontally
+        for (let i = 1; i < groups.length; i++) {
+          const current = groups[i];
+          const currentLayout = this.getGroupLayout(current);
+          if (!currentLayout) continue;
+
+          const currentLeft = currentLayout.position.x;
+
+          let maxRight = -Infinity;
+          for (let j = 0; j < i; j++) {
+            const other = groups[j];
+            const otherLayout = this.getGroupLayout(other);
+            if (!otherLayout) continue;
+            const otherRight = otherLayout.position.x + otherLayout.size.width;
+            maxRight = Math.max(maxRight, otherRight);
+          }
+
+          if (maxRight > -Infinity) {
+            const potentialLeft = maxRight + GROUP_SPACING;
+            if (currentLeft > potentialLeft) {
+              const deltaX = potentialLeft - currentLeft;
+              currentLayout.position.x += deltaX;
+              current.layout = currentLayout;
+            }
+          }
+        }
+
+        // Compact vertically
+        for (let i = 1; i < groups.length; i++) {
+          const current = groups[i];
+          const currentLayout = this.getGroupLayout(current);
+          if (!currentLayout) continue;
+
+          const currentTop = currentLayout.position.y;
+
+          let maxBottom = -Infinity;
+          for (let j = 0; j < i; j++) {
+            const other = groups[j];
+            const otherLayout = this.getGroupLayout(other);
+            if (!otherLayout) continue;
+            const otherBottom = otherLayout.position.y + otherLayout.size.height;
+            maxBottom = Math.max(maxBottom, otherBottom);
+          }
+
+          if (maxBottom > -Infinity) {
+            const potentialTop = maxBottom + GROUP_SPACING;
+            if (currentTop > potentialTop) {
+              const deltaY = potentialTop - currentTop;
+              currentLayout.position.y += deltaY;
+              current.layout = currentLayout;
+            }
+          }
+        }
       }
     }
   }
@@ -3475,8 +4055,9 @@ export class GraphView implements View {
    * For leaf groups (no child groups), only use nodeIds
    */
   private calculateGroupBounds(nodeIds: string[], groupId?: string): { minX: number; maxX: number; minY: number; maxY: number } | null {
-    const GROUP_PADDING = 20; // Padding around nodes
-    const NESTED_GROUP_MARGIN = 30; // Margin between nested groups
+    const GROUP_PADDING = 30; // Padding around nodes (increased to prevent label overlap)
+    const NESTED_GROUP_MARGIN = 50; // Margin between nested groups (increased to prevent overlap)
+    const LABEL_OFFSET_Y = 25; // Additional top padding for label (increased to prevent overlap with nodes)
     
     let minX = Infinity;
     let maxX = -Infinity;
@@ -3561,11 +4142,13 @@ export class GraphView implements View {
 
     // Add padding: use nested margin if this group has children, otherwise use regular padding
     const padding = hasChildGroups ? NESTED_GROUP_MARGIN : GROUP_PADDING;
+    // Add extra top padding for label
+    const topPadding = padding + LABEL_OFFSET_Y;
 
     return {
       minX: minX - padding,
       maxX: maxX + padding,
-      minY: minY - padding,
+      minY: minY - topPadding, // Extra top padding for label
       maxY: maxY + padding,
     };
   }
@@ -3660,7 +4243,7 @@ export class GraphView implements View {
       // Create label
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', String(layout.position.x + 10));
-      text.setAttribute('y', String(layout.position.y + 20));
+      text.setAttribute('y', String(layout.position.y + 25)); // Increased offset to prevent overlap with nodes
       text.setAttribute('font-size', '14');
       text.setAttribute('font-weight', 'bold');
       text.setAttribute('fill', '#666');
