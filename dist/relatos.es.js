@@ -2463,9 +2463,9 @@ class V {
       const i = document.createElementNS("http://www.w3.org/2000/svg", "g");
       i.setAttribute("data-group-id", e.id), i.setAttribute("class", "group");
       const o = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      o.setAttribute("x", String(s.position.x)), o.setAttribute("y", String(s.position.y)), o.setAttribute("width", String(s.size.width)), o.setAttribute("height", String(s.size.height)), o.setAttribute("fill", "rgba(200, 200, 200, 0.1)"), o.setAttribute("stroke", "#999"), o.setAttribute("stroke-width", "2"), o.setAttribute("stroke-dasharray", "5,5"), o.setAttribute("rx", "4"), o.style.pointerEvents = this.mode === "edit" ? "auto" : "none", o.style.cursor = this.mode === "edit" ? "move" : "default";
+      o.setAttribute("x", String(s.position.x)), o.setAttribute("y", String(s.position.y)), o.setAttribute("width", String(s.size.width)), o.setAttribute("height", String(s.size.height)), o.setAttribute("fill", "rgba(200, 200, 200, 0.1)"), o.setAttribute("stroke", "#999"), o.setAttribute("stroke-width", "2"), o.setAttribute("stroke-dasharray", "5,5"), o.setAttribute("rx", "4"), o.style.pointerEvents = "auto", o.style.cursor = this.mode === "edit" ? "move" : "pointer";
       const r = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      r.setAttribute("x", String(s.position.x + 10)), r.setAttribute("y", String(s.position.y + 20)), r.setAttribute("font-size", "14"), r.setAttribute("font-weight", "bold"), r.setAttribute("fill", "#666"), r.textContent = e.label, i.appendChild(o), i.appendChild(r), this.mode === "edit" && this.setupGroupEditInteractions(i, e, o), this.mode === "view" && this.onGroupClick && i.addEventListener("click", (n) => {
+      r.setAttribute("x", String(s.position.x + 10)), r.setAttribute("y", String(s.position.y + 20)), r.setAttribute("font-size", "14"), r.setAttribute("font-weight", "bold"), r.setAttribute("fill", "#666"), r.textContent = e.label, r.style.pointerEvents = "none", i.appendChild(o), i.appendChild(r), this.mode === "edit" && this.setupGroupEditInteractions(i, e, o), this.mode === "view" && this.onGroupClick && i.addEventListener("click", (n) => {
         if (n.target.getAttribute("data-resize-side"))
           return;
         n.stopPropagation(), n.preventDefault();

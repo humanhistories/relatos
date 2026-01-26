@@ -3654,8 +3654,8 @@ export class GraphView implements View {
       rect.setAttribute('stroke-width', '2');
       rect.setAttribute('stroke-dasharray', '5,5'); // Dashed border
       rect.setAttribute('rx', '4');
-      rect.style.pointerEvents = this.mode === 'edit' ? 'auto' : 'none';
-      rect.style.cursor = this.mode === 'edit' ? 'move' : 'default';
+      rect.style.pointerEvents = 'auto'; // Enable pointer events for both view and edit modes
+      rect.style.cursor = this.mode === 'edit' ? 'move' : 'pointer';
 
       // Create label
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -3665,6 +3665,7 @@ export class GraphView implements View {
       text.setAttribute('font-weight', 'bold');
       text.setAttribute('fill', '#666');
       text.textContent = group.label;
+      text.style.pointerEvents = 'none'; // Prevent text from blocking clicks on rect
 
       groupElement.appendChild(rect);
       groupElement.appendChild(text);
