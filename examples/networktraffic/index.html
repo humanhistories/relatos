@@ -20,25 +20,160 @@
       height: 100vh;
     }
 
-    h1 {
-      padding: 20px;
-      margin: 0;
-      color: #333;
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
       background-color: #fff;
       border-bottom: 1px solid #ddd;
+    }
+
+    h1 {
+      margin: 0;
+      color: #333;
+      font-size: 1.5rem;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    #reset-layout-btn {
+      padding: 8px 16px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    #reset-layout-btn:hover {
+      background-color: #e0e0e0;
+      border-color: #999;
+    }
+
+    #reset-layout-btn:active {
+      background-color: #d0d0d0;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
     }
 
     #viewer-container {
       flex: 1;
       width: 100%;
       background-color: #fff;
-      min-height: 0;
+      min-height: 200px;
+    }
+
+    .resizer {
+      height: 6px;
+      background-color: #e0e0e0;
+      cursor: ns-resize;
+      flex-shrink: 0;
+      transition: background-color 0.2s;
+    }
+
+    .resizer:hover {
+      background-color: #bbb;
+    }
+
+    .resizer.dragging {
+      background-color: #2196f3;
+    }
+
+    .layout-info-section {
+      padding: 16px 20px;
+      background-color: #fff;
+      border-top: 1px solid #ddd;
+      height: 250px;
+      min-height: 100px;
+      max-height: 50vh;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .layout-info-section h2 {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 12px;
+    }
+
+    .layout-info-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .layout-info-panel {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .layout-info-panel h3 {
+      font-size: 0.875rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .layout-info-panel pre {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 12px;
+      font-size: 11px;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      overflow-x: auto;
+      max-height: 150px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .layout-info-panel .empty-state {
+      color: #999;
+      font-style: italic;
+    }
+
+    /* Prevent text selection while dragging */
+    body.resizing {
+      user-select: none;
+      cursor: ns-resize;
     }
   </style>
 </head>
 <body>
-  <h1>Relatos Viewer Example - Network Traffic</h1>
-  <div id="viewer-container"></div>
+  <header>
+    <h1>Relatos Viewer Example - Network Traffic</h1>
+    <div class="header-controls">
+      <button id="reset-layout-btn">Reset Layout</button>
+    </div>
+  </header>
+  <div class="main-content">
+    <div id="viewer-container"></div>
+    <div class="resizer" id="resizer"></div>
+    <section class="layout-info-section" id="layout-info-section">
+      <h2>Layout Information</h2>
+      <div class="layout-info-container">
+        <div class="layout-info-panel">
+          <h3>Initial Layout (set to Relatos)</h3>
+          <pre id="initial-layout-json"><span class="empty-state">Loading...</span></pre>
+        </div>
+        <div class="layout-info-panel">
+          <h3>Saved Layout (from onSave callback)</h3>
+          <pre id="saved-layout-json"><span class="empty-state">No changes yet</span></pre>
+        </div>
+      </div>
+    </section>
+  </div>
   <script type="module" src="./main.ts"></script>
 </body>
 </html>

@@ -87,7 +87,7 @@ export class GraphView implements View {
   private hoveredEdgePairKey: string | null = null; // Track hovered edge for highlighting (view mode only)
   private tappedEdgePairKey: string | null = null; // Track tapped edge for highlighting (view mode only, persists until click elsewhere)
   private edgeLabelsGroup: SVGGElement; // Group for edge labels
-  private snapshotBeforeEdit: { nodes: Node[]; edges: Edge[] } | null = null;
+  private snapshotBeforeEdit: { nodes: Node[]; edges: Edge[]; groups: Group[] } | null = null;
   private edgeClickTimers: WeakMap<SVGPathElement, number | null> = new WeakMap(); // Track click timers per hit-path; // Snapshot before entering edit mode
   private offsetX: number = 0; // Offset for panning (x)
   private offsetY: number = 0; // Offset for panning (y)
@@ -216,15 +216,15 @@ export class GraphView implements View {
     this.createArrowMarkers();
     this.svg.appendChild(this.svgDefs);
 
-    // Edge group (drawn below nodes)
-    this.edgesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    this.edgesGroup.setAttribute('class', 'edges');
-    this.svg.appendChild(this.edgesGroup);
-
-    // Groups group (drawn above edges, below nodes)
+    // Groups group (drawn at the back, below edges and nodes)
     this.groupsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     this.groupsGroup.setAttribute('class', 'groups');
     this.svg.appendChild(this.groupsGroup);
+
+    // Edge group (drawn above groups, below nodes)
+    this.edgesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    this.edgesGroup.setAttribute('class', 'edges');
+    this.svg.appendChild(this.edgesGroup);
 
     // Node group (drawn above edges and groups)
     this.nodesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -1651,6 +1651,16 @@ export class GraphView implements View {
     const nodesWithCoords = this.nodes.filter(n => n.coordinates && n.coordinates.length === 2);
     const nodesWithoutCoords = this.nodes.filter(n => !n.coordinates || n.coordinates.length !== 2);
     const nodesNeedingPosition = this.nodes.filter(n => !n.position);
+    
+    // Check if all nodes have position and all groups have layout
+    // If so, skip auto-layout to respect user's saved layout
+    const allNodesHavePosition = this.nodes.every(n => n.position);
+    const allGroupsHaveLayout = this.groups.every(g => g.layout);
+    
+    if (allNodesHavePosition && allGroupsHaveLayout) {
+      // All layout info is provided, skip auto-layout
+      return;
+    }
 
     if (nodesNeedingPosition.length === 0 && nodesWithCoords.length === 0 && nodesWithoutCoords.length === 0) {
       return;
@@ -1818,6 +1828,17 @@ export class GraphView implements View {
     const LABEL_OFFSET_Y = 25;
     const maxIterations = 100;
 
+    // Track nodes with saved layout (these should not be moved)
+    const nodesWithSavedPosition: Set<string> = new Set();
+    
+    // Track groups with saved layout (these should use their saved bounds)
+    const groupsWithSavedLayout: Set<string> = new Set();
+    for (const group of this.groups) {
+      if (group.layout) {
+        groupsWithSavedLayout.add(group.id);
+      }
+    }
+
     // Initialize node positions from original centers
     const currentCenters: Map<string, { centerX: number; centerY: number }> = new Map();
     const nodePositions: Map<string, { x: number; y: number; width: number; height: number }> = new Map();
@@ -1827,8 +1848,9 @@ export class GraphView implements View {
       const originalCenter = nodeOriginalCenters.get(nodeId)!;
       
       if (node.position) {
-        // Use existing position
+        // Use existing position and mark as saved (should not be moved)
         currentCenters.set(nodeId, { centerX: node.position.x, centerY: node.position.y });
+        nodesWithSavedPosition.add(nodeId);
       } else {
         // Use original center coordinates as initial value
         currentCenters.set(nodeId, {
@@ -1870,8 +1892,18 @@ export class GraphView implements View {
       return groups;
     };
 
-    // Helper: Calculate group bounds from current node positions
+    // Helper: Calculate group bounds from current node positions or saved layout
     const calculateGroupBoundsForLayout = (group: Group): { minX: number; maxX: number; minY: number; maxY: number } | null => {
+      // If group has saved layout, use it directly
+      if (groupsWithSavedLayout.has(group.id) && group.layout) {
+        return {
+          minX: group.layout.position.x,
+          maxX: group.layout.position.x + group.layout.size.width,
+          minY: group.layout.position.y,
+          maxY: group.layout.position.y + group.layout.size.height,
+        };
+      }
+      
       const hasChildGroups = this.groups.some(g => g.parentId === group.id);
       const childGroupNodeIds = new Set<string>();
       
@@ -2034,7 +2066,7 @@ export class GraphView implements View {
             }
           }
 
-          // Adjust positions along vector direction if needed
+          // Adjust positions along vector direction if needed (for group collisions)
           if (needsAdjustment && minRequiredDistance > 0) {
             hasCollision = true;
             
@@ -2043,6 +2075,15 @@ export class GraphView implements View {
             const currentDistance = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
             
             if (currentDistance < minRequiredDistance) {
+              // Skip if both nodes have saved positions (respect user's saved layout)
+              const aHasSavedPos = nodesWithSavedPosition.has(nodeIdA);
+              const bHasSavedPos = nodesWithSavedPosition.has(nodeIdB);
+              
+              if (aHasSavedPos && bHasSavedPos) {
+                // Both have saved positions, don't move either
+                continue;
+              }
+              
               // Calculate new positions maintaining vector direction
               const scale = minRequiredDistance / originalDistance;
               const newDx = originalDx * scale;
@@ -2058,17 +2099,78 @@ export class GraphView implements View {
               const adjustmentX = (newCenterBX - centerB.centerX) / 2;
               const adjustmentY = (newCenterBY - centerB.centerY) / 2;
               
-              // Adjust both nodes symmetrically
-              centerA.centerX -= adjustmentX;
-              centerA.centerY -= adjustmentY;
-              centerB.centerX += adjustmentX;
-              centerB.centerY += adjustmentY;
+              // Only move nodes that don't have saved positions
+              if (!aHasSavedPos) {
+                centerA.centerX -= adjustmentX;
+                centerA.centerY -= adjustmentY;
+                posA.x = centerA.centerX - nodeInfoA.width / 2;
+                posA.y = centerA.centerY - nodeInfoA.height / 2;
+              }
+              if (!bHasSavedPos) {
+                centerB.centerX += adjustmentX;
+                centerB.centerY += adjustmentY;
+                posB.x = centerB.centerX - nodeInfoB.width / 2;
+                posB.y = centerB.centerY - nodeInfoB.height / 2;
+              }
+            }
+          }
+
+          // Direct node-to-node collision detection (for cases without groups)
+          // Check if both nodes have no groups or if groups didn't require adjustment
+          if (!needsAdjustment) {
+            // Skip if both nodes have saved positions (respect user's saved layout)
+            const aHasSavedPos = nodesWithSavedPosition.has(nodeIdA);
+            const bHasSavedPos = nodesWithSavedPosition.has(nodeIdB);
+            
+            if (aHasSavedPos && bHasSavedPos) {
+              // Both have saved positions, don't move either
+              continue;
+            }
+            
+            // Check if node rectangles overlap
+            const nodeOverlapsHorizontally = posA.x < posB.x + posB.width + NODE_PADDING && posA.x + posA.width + NODE_PADDING > posB.x;
+            const nodeOverlapsVertically = posA.y < posB.y + posB.height + NODE_PADDING && posA.y + posA.height + NODE_PADDING > posB.y;
+            
+            if (nodeOverlapsHorizontally && nodeOverlapsVertically) {
+              hasCollision = true;
               
-              // Update positions
-              posA.x = centerA.centerX - nodeInfoA.width / 2;
-              posA.y = centerA.centerY - nodeInfoA.height / 2;
-              posB.x = centerB.centerX - nodeInfoB.width / 2;
-              posB.y = centerB.centerY - nodeInfoB.height / 2;
+              // Calculate required distance to separate nodes
+              // Project node sizes onto the vector direction
+              const projectionA = Math.abs(nodeInfoA.width * originalUnitX) + Math.abs(nodeInfoA.height * originalUnitY);
+              const projectionB = Math.abs(nodeInfoB.width * originalUnitX) + Math.abs(nodeInfoB.height * originalUnitY);
+              const requiredNodeDistance = (projectionA + projectionB) / 2 + NODE_PADDING;
+              
+              const currentDx = centerB.centerX - centerA.centerX;
+              const currentDy = centerB.centerY - centerA.centerY;
+              const currentNodeDistance = Math.sqrt(currentDx * currentDx + currentDy * currentDy);
+              
+              if (currentNodeDistance < requiredNodeDistance) {
+                // Calculate new positions maintaining vector direction
+                const scale = requiredNodeDistance / originalDistance;
+                const newDx = originalDx * scale;
+                const newDy = originalDy * scale;
+                
+                const newCenterBX = originalCenterA.originalCenterX + newDx;
+                const newCenterBY = originalCenterA.originalCenterY + newDy;
+                
+                // Calculate adjustment needed
+                const adjustmentX = (newCenterBX - centerB.centerX) / 2;
+                const adjustmentY = (newCenterBY - centerB.centerY) / 2;
+                
+                // Only move nodes that don't have saved positions
+                if (!aHasSavedPos) {
+                  centerA.centerX -= adjustmentX;
+                  centerA.centerY -= adjustmentY;
+                  posA.x = centerA.centerX - nodeInfoA.width / 2;
+                  posA.y = centerA.centerY - nodeInfoA.height / 2;
+                }
+                if (!bHasSavedPos) {
+                  centerB.centerX += adjustmentX;
+                  centerB.centerY += adjustmentY;
+                  posB.x = centerB.centerX - nodeInfoB.width / 2;
+                  posB.y = centerB.centerY - nodeInfoB.height / 2;
+                }
+              }
             }
           }
         }
@@ -2079,8 +2181,12 @@ export class GraphView implements View {
       }
     }
 
-    // Set final positions to nodes
+    // Set final positions to nodes (only for nodes without saved positions)
     for (const [nodeId, nodeInfo] of nodeInfoMap) {
+      // Skip nodes with saved positions (already have correct position)
+      if (nodesWithSavedPosition.has(nodeId)) {
+        continue;
+      }
       const center = currentCenters.get(nodeId)!;
       nodeInfo.node.position = {
         x: center.centerX,
@@ -3251,7 +3357,6 @@ export class GraphView implements View {
     this.render();
     this.updateAnchorHandles();
     this.updateBendHandles();
-    this.debouncedSave();
   }
 
   /**
@@ -3401,16 +3506,15 @@ export class GraphView implements View {
       this.updateGroupLayouts(this.resizingNode.nodeId, undefined);
     }
     
-    // Final render and save
+    // Final render
     this.render();
-    this.debouncedSave();
   }
 
   /**
    * Save snapshot before entering edit mode
    */
   private saveSnapshot(): void {
-    // Deep clone nodes and edges
+    // Deep clone nodes, edges, and groups
     this.snapshotBeforeEdit = {
       nodes: this.nodes.map(n => ({
         ...n,
@@ -3425,6 +3529,14 @@ export class GraphView implements View {
         bends: e.bends ? e.bends.map(b => ({ ...b })) : undefined,
         style: e.style ? { ...e.style } : undefined,
         meta: e.meta ? { ...e.meta } : undefined,
+      })),
+      groups: this.groups.map(g => ({
+        ...g,
+        layout: g.layout ? {
+          position: { ...g.layout.position },
+          size: { ...g.layout.size },
+        } : undefined,
+        meta: g.meta ? { ...g.meta } : undefined,
       })),
     };
   }
@@ -3450,6 +3562,14 @@ export class GraphView implements View {
       bends: e.bends ? e.bends.map(b => ({ ...b })) : undefined,
       style: e.style ? { ...e.style } : undefined,
       meta: e.meta ? { ...e.meta } : undefined,
+    }));
+    this.groups = this.snapshotBeforeEdit.groups.map(g => ({
+      ...g,
+      layout: g.layout ? {
+        position: { ...g.layout.position },
+        size: { ...g.layout.size },
+      } : undefined,
+      meta: g.meta ? { ...g.meta } : undefined,
     }));
 
     this.render();
@@ -3550,7 +3670,6 @@ export class GraphView implements View {
     this.render();
     this.updateAnchorHandles();
     this.updateBendHandles();
-    this.debouncedSave();
   }
 
   /**
@@ -3595,7 +3714,6 @@ export class GraphView implements View {
     // Re-render
     this.render();
     this.updateBendHandles();
-    this.debouncedSave();
   }
 
   /**
@@ -3693,7 +3811,6 @@ export class GraphView implements View {
     // Re-render
     this.render();
     this.updateBendHandles();
-    this.debouncedSave();
   }
 
   /**
@@ -3763,7 +3880,6 @@ export class GraphView implements View {
     this.render();
     this.updateBendHandles();
     this.updateControlButtons();
-    this.debouncedSave();
   }
 
   /**
@@ -4237,7 +4353,8 @@ export class GraphView implements View {
       rect.setAttribute('stroke-width', '2');
       rect.setAttribute('stroke-dasharray', '5,5'); // Dashed border
       rect.setAttribute('rx', '4');
-      rect.style.pointerEvents = 'auto'; // Enable pointer events for both view and edit modes
+      // Edges are now drawn above groups, so pointer-events can be 'auto' for both modes
+      rect.style.pointerEvents = 'auto';
       rect.style.cursor = this.mode === 'edit' ? 'move' : 'pointer';
 
       // Create label
@@ -4770,7 +4887,6 @@ export class GraphView implements View {
     this.render();
     this.updateAnchorHandles();
     this.updateBendHandles();
-    this.debouncedSave();
   }
 
   /**
@@ -4879,9 +4995,8 @@ export class GraphView implements View {
     if (this.resizingGroup) {
       this.updateGroupLayouts(undefined, this.resizingGroup.groupId, true);
     }
-    // Final render and save
+    // Final render
     this.render();
-    this.debouncedSave();
   }
 
   /**
@@ -5100,6 +5215,8 @@ export class GraphView implements View {
       return;
     }
 
+    const wasEditMode = this.mode === 'edit';
+
     // Save snapshot before entering edit mode
     if (mode === 'edit' && this.mode === 'view') {
       this.saveSnapshot();
@@ -5110,6 +5227,15 @@ export class GraphView implements View {
     this.render();
     if (mode === 'view') {
       this.deselectEdge();
+      
+      // Save layout when exiting edit mode
+      if (wasEditMode && this.onSave) {
+        this.onSave({
+          nodes: this.nodes,
+          edges: this.edges,
+          groups: this.groups.length > 0 ? this.groups : undefined,
+        });
+      }
     }
 
     // Update edit toggle button icon
