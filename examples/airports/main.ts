@@ -381,9 +381,15 @@ if (timeInput) {
     const timeValue = timeInput.value.trim();
     if (timeValue && viewerInstance) {
       try {
-        // Set shared time for both Map2D and Globe3D
-        viewerInstance.setTime(timeValue);
+        // Set time for both Map2D and Globe3D
+        if ('setMap2dTime' in viewerInstance) {
+          (viewerInstance as any).setMap2dTime(timeValue);
+        }
+        if ('setGlobe3dTime' in viewerInstance) {
+          (viewerInstance as any).setGlobe3dTime(timeValue);
+        }
       } catch (error) {
+        console.error('Failed to set time:', error);
         alert('Invalid time format. Please use ISO 8601 format (e.g., 2025-01-17T12:00:00Z).');
       }
     }
@@ -406,10 +412,15 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
     mode: 'view',
     editable: true,
   },
-  // Shared settings for Map2D and Globe3D
+  map2d: {
     time: timeInput.value,
     enableLighting: true, // Enable day/night shading on initial load
-  // Shared tile server configuration (Map2D / Globe3D common)
+  },
+  globe3d: {
+    time: timeInput.value,
+    enableLighting: true, // Enable day/night shading on initial load
+  },
+  // 共有タイルサーバ設定（Map2D / Globe3D 共通）
   tileServers: [
     {
       // OpenStreetMap
@@ -512,6 +523,44 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
     },
   },
 });
+
+// Export to PlantUML demonstration (for debugging/development)
+// Export button in toolbar copies: useShortIds: true, includeMetadata: false, outputFormat: 'plain'
+(window as any).exportPlantUML = () => {
+  // Default export (short IDs, no metadata - same as toolbar button)
+  const plantUML = viewerInstance.exportToPlantUML({
+    useShortIds: true,
+    includeMetadata: false,
+  });
+  console.log('=== PlantUML Export (short IDs, no metadata) ===');
+  console.log(plantUML);
+  return plantUML;
+};
+
+(window as any).exportPlantUMLDeflate = () => {
+  // Export as deflate-encoded string (for PlantUML server)
+  const encoded = viewerInstance.exportToPlantUML({
+    useShortIds: true,
+    includeMetadata: false,
+    outputFormat: 'deflate',
+  });
+  const url = `http://www.plantuml.com/plantuml/svg/${encoded}`;
+  console.log('=== PlantUML Deflate Encoded ===');
+  console.log('Encoded:', encoded);
+  console.log('URL:', url);
+  return { encoded, url };
+};
+
+(window as any).exportPlantUMLFull = () => {
+  // Export with full IDs and metadata (for import compatibility)
+  const plantUML = viewerInstance.exportToPlantUML({
+    useShortIds: false,
+    includeMetadata: true,
+  });
+  console.log('=== PlantUML Export (full IDs, with metadata) ===');
+  console.log(plantUML);
+  return plantUML;
+};
 
 // Fit view to show all nodes after auto-layout
 setTimeout(() => {

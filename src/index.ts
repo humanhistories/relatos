@@ -16,6 +16,7 @@ import { GraphView } from './views/graph/view';
 import { Globe3DView } from './views/globe3d/view';
 import { Map2DView } from './views/map2d/view';
 import { injectSvgSprite } from './assets/icons/icons-embedded';
+import { exportToPlantUML, importFromPlantUML, deflateAndEncode, getPlantUMLServerUrl, type PlantUMLExportOptions } from './utils/plantuml';
 
 /**
  * Creates a RelatosViewer instance
@@ -288,6 +289,42 @@ export function createRelatosViewer(
 
     setLighting(enabled: boolean): void {
       viewContainer.setLightingEnabled(enabled);
+    },
+
+    exportToPlantUML(options?: PlantUMLExportOptions): string {
+      // Get current data from ViewContainer
+      const data = {
+        nodes: viewContainer['nodes'] as Node[],
+        edges: viewContainer['edges'] as Edge[],
+        groups: viewContainer['groups'] as Group[],
+      };
+      // Merge with default options (useShortIds: true by default)
+      const exportOptions: PlantUMLExportOptions = {
+        useShortIds: true,
+        includeMetadata: true,
+        outputFormat: 'plain',
+        ...options,
+      };
+      return exportToPlantUML(data.nodes, data.edges, data.groups, exportOptions);
+    },
+
+    importFromPlantUML(plantUMLText: string): void {
+      const data = importFromPlantUML(plantUMLText);
+      // Update all views with imported data
+      const graphView = viewContainer.getView('graph') as GraphView | undefined;
+      if (graphView) {
+        graphView.setData(data.nodes, data.edges, data.groups);
+      }
+      const map2dView = viewContainer.getView('map2d') as Map2DView | undefined;
+      if (map2dView) {
+        map2dView.setData(data.nodes, data.edges);
+      }
+      const globe3dView = viewContainer.getView('globe3d') as Globe3DView | undefined;
+      if (globe3dView) {
+        globe3dView.setData(data.nodes, data.edges);
+      }
+      // Also update ViewContainer data (for table display and export button)
+      viewContainer.setData(data.nodes, data.edges, data.groups);
     },
   };
 }

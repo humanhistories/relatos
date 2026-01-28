@@ -921,39 +921,43 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
     nodes: {
       header: `
         <tr>
+          <th>Color</th>
           <th>IP Address</th>
           <th>Country</th>
           <th>Region</th>
           <th>City</th>
           <th>District</th>
-          <th>Latitude</th>
-          <th>Longitude</th>
+          <th>Network</th>
+          <th>Type</th>
         </tr>
       `,
       format: `
+        <td><span class="color-indicator" style="background-color: {{style.color}}; border: 2px solid {{style.borderColor}};"></span></td>
         <td>{{label}}</td>
         <td>{{info.country}}</td>
         <td>{{info.region}}</td>
         <td>{{info.city}}</td>
         <td>{{info.district}}</td>
-        <td>{{info.latitude}}</td>
-        <td>{{info.longitude}}</td>
+        <td>{{info.network}}</td>
+        <td>{{info.type}}</td>
       `,
     },
     edges: {
       header: `
         <tr>
-          <th>Source IP</th>
-          <th>Destination IP</th>
-          <th>Bytes</th>
-          <th>Packets</th>
+          <th>Color</th>
+          <th>Source</th>
+          <th>Destination</th>
+          <th>Relationship</th>
+          <th>Weight</th>
         </tr>
       `,
       format: `
+        <td><span class="color-indicator" style="background-color: {{style.color}};"></span></td>
         <td>{{info.fromLabel}}</td>
         <td>{{info.toLabel}}</td>
-        <td>{{info.bytes}}</td>
-        <td>{{info.packets}}</td>
+        <td>{{info.relationship}}</td>
+        <td>{{style.weight}}</td>
       `,
     },
     groups: {

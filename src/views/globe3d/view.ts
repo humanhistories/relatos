@@ -930,6 +930,9 @@ export class Globe3DView implements View {
       return Number.isFinite(lat) && Number.isFinite(lon);
     });
 
+    // Map to store all node positions (for edge drawing)
+    const nodePositions = new Map<string, [number, number]>();
+
     // Place nodes without coordinates inside a fixed rectangle (Globe3D: lat 0..-50, lon 0..-32)
     if (nodesWithoutCoords.length > 0) {
       const RECT_MIN_LAT = -50;
@@ -966,6 +969,9 @@ export class Globe3DView implements View {
         const col = index % cols;
         const latitude = RECT_MIN_LAT + (row + 1) * latStep;
         const longitude = RECT_MIN_LON + (col + 1) * lonStep;
+
+        // Store calculated position for edge drawing
+        nodePositions.set(node.id, [latitude, longitude]);
 
         const isSelected = this.selectedNodeId === node.id;
         const nodeColor = node.style?.color || '#ffffff';
@@ -1015,6 +1021,10 @@ export class Globe3DView implements View {
     // Draw nodes that have geographic coordinates
     for (const node of nodesWithCoords) {
       const [latitude, longitude] = node.coordinates!;
+      
+      // Store position for edge drawing
+      nodePositions.set(node.id, [latitude, longitude]);
+      
       const isSelected = this.selectedNodeId === node.id;
 
       // Resolve node fill color (style.color or default white)
@@ -1069,15 +1079,16 @@ export class Globe3DView implements View {
     // Draw edges only when alwaysShowEdges is true
     if (this.alwaysShowEdges) {
       for (const edge of this.edges) {
-        const srcNode = this.nodes.find(n => n.id === edge.src);
-        const dstNode = this.nodes.find(n => n.id === edge.dst);
+        // Get positions from nodePositions map (includes both coord and non-coord nodes)
+        const srcPos = nodePositions.get(edge.src);
+        const dstPos = nodePositions.get(edge.dst);
 
-        if (!srcNode?.coordinates || !dstNode?.coordinates) {
-          continue; // Skip edges where either endpoint has no coordinates
+        if (!srcPos || !dstPos) {
+          continue; // Skip if either node position is not found
         }
 
-        const [srcLat, srcLon] = srcNode.coordinates;
-        const [dstLat, dstLon] = dstNode.coordinates;
+        const [srcLat, srcLon] = srcPos;
+        const [dstLat, dstLon] = dstPos;
 
         // Resolve edge style
         const edgeColor = edge.style?.color || '#999999';
@@ -1178,6 +1189,9 @@ export class Globe3DView implements View {
       return Number.isFinite(lat) && Number.isFinite(lon);
     });
 
+    // Map to store all node positions (for edge drawing)
+    const nodePositions = new Map<string, [number, number]>();
+
     // Place nodes without coordinates inside a fixed rectangle (Globe3D: lat 0..-50, lon 0..-32)
     if (nodesWithoutCoords.length > 0) {
       const RECT_MIN_LAT = -50;
@@ -1214,6 +1228,9 @@ export class Globe3DView implements View {
         const col = index % cols;
         const latitude = RECT_MIN_LAT + (row + 1) * latStep;
         const longitude = RECT_MIN_LON + (col + 1) * lonStep;
+
+        // Store calculated position for edge drawing
+        nodePositions.set(node.id, [latitude, longitude]);
 
         const isSelected = this.selectedNodeId === node.id;
         const nodeColor = node.style?.color || '#ffffff';
@@ -1263,6 +1280,10 @@ export class Globe3DView implements View {
     // Draw nodes that have geographic coordinates
     for (const node of nodesWithCoords) {
       const [latitude, longitude] = node.coordinates!;
+      
+      // Store position for edge drawing
+      nodePositions.set(node.id, [latitude, longitude]);
+      
       const isSelected = this.selectedNodeId === node.id;
 
       const nodeColor = node.style?.color || '#ffffff';
@@ -1311,15 +1332,16 @@ export class Globe3DView implements View {
     // Draw edges only when alwaysShowEdges is true
     if (this.alwaysShowEdges) {
       for (const edge of this.edges) {
-        const srcNode = this.nodes.find(n => n.id === edge.src);
-        const dstNode = this.nodes.find(n => n.id === edge.dst);
+        // Get positions from nodePositions map (includes both coord and non-coord nodes)
+        const srcPos = nodePositions.get(edge.src);
+        const dstPos = nodePositions.get(edge.dst);
 
-        if (!srcNode?.coordinates || !dstNode?.coordinates) {
-          continue;
+        if (!srcPos || !dstPos) {
+          continue; // Skip if either node position is not found
         }
 
-        const [srcLat, srcLon] = srcNode.coordinates;
-        const [dstLat, dstLon] = dstNode.coordinates;
+        const [srcLat, srcLon] = srcPos;
+        const [dstLat, dstLon] = dstPos;
 
         const edgeColor = edge.style?.color || '#999999';
         const edgeWeight = edge.style?.weight || 1;

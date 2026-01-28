@@ -285,4 +285,24 @@ export interface RelatosViewer {
    * Set shared lighting for Map2D and Globe3D
    */
   setLighting(enabled: boolean): void;
+
+  /**
+   * Export data to PlantUML format
+   * @param options Export options (optional)
+   * @returns PlantUML text string (or deflate-encoded string if outputFormat is 'deflate')
+   */
+  exportToPlantUML(options?: {
+    /** Use short IDs (A, B, ...) instead of full IDs. Default: true */
+    useShortIds?: boolean;
+    /** Include metadata comments for import. Default: true */
+    includeMetadata?: boolean;
+    /** Output format: 'plain' or 'deflate'. Default: 'plain' */
+    outputFormat?: 'plain' | 'deflate';
+  }): string;
+
+  /**
+   * Import data from PlantUML format
+   * @param plantUMLText PlantUML text string
+   */
+  importFromPlantUML(plantUMLText: string): void;
 }

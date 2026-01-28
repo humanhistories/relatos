@@ -73,4 +73,47 @@ export interface RelatosViewer {
    * @param enabled Whether to enable lighting
    */
   setLighting(enabled: boolean): void;
+
+  /**
+   * Export data to PlantUML format
+   * Exports all nodes, edges, and groups to PlantUML component diagram format.
+   * Layout information is not included in the export.
+   * 
+   * @param options Export options
+   * @returns PlantUML text string (or deflate-encoded string if outputFormat is 'deflate')
+   * 
+   * @example
+   * // Basic export (plain text with short IDs)
+   * const plantUML = viewer.exportToPlantUML();
+   * 
+   * // Export without short IDs (full original IDs)
+   * const plantUML = viewer.exportToPlantUML({ useShortIds: false });
+   * 
+   * // Export as deflate-encoded string (for PlantUML server)
+   * const encoded = viewer.exportToPlantUML({ outputFormat: 'deflate' });
+   * const url = `http://www.plantuml.com/plantuml/svg/${encoded}`;
+   * 
+   * // Export without metadata (cleaner output, but cannot be imported back)
+   * const plantUML = viewer.exportToPlantUML({ includeMetadata: false });
+   */
+  exportToPlantUML(options?: {
+    /** Use short IDs (A, B, ...) instead of full IDs. Default: true */
+    useShortIds?: boolean;
+    /** Include metadata comments for import. Default: true */
+    includeMetadata?: boolean;
+    /** Output format: 'plain' or 'deflate'. Default: 'plain' */
+    outputFormat?: 'plain' | 'deflate';
+  }): string;
+
+  /**
+   * Import data from PlantUML format
+   * Parses PlantUML text and updates the viewer with the imported nodes, edges, and groups.
+   * 
+   * Note: Import requires metadata comments (@relatos:node, @relatos:edge, @relatos:group)
+   * to properly restore original IDs and data. If the PlantUML was exported without metadata,
+   * import will use the PlantUML IDs and labels as-is.
+   * 
+   * @param plantUMLText PlantUML text string to import
+   */
+  importFromPlantUML(plantUMLText: string): void;
 }

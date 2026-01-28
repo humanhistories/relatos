@@ -7,6 +7,7 @@ import type { ViewType, Node, Edge } from '../types';
 import type { Group } from '../types/data';
 import type { TableOptions } from '../types/options';
 import { injectSvgSprite } from '../assets/icons/icons-embedded';
+import { exportToPlantUML, copyToClipboard, type PlantUMLExportOptions } from '../utils/plantuml';
 
 /**
  * Helper function to get icon from SVG sprite
@@ -147,6 +148,12 @@ export class ViewContainer {
   private fitCenterButton: HTMLButtonElement | null = null; // Fit and center button (all views)
   private deleteBendButton: HTMLButtonElement | null = null; // Delete bend point button (Graph only)
   private cancelEditButton: HTMLButtonElement | null = null; // Cancel edit button (Graph only)
+  private exportButton: HTMLButtonElement | null = null; // PlantUML export button (all views)
+  private plantUMLExportOptions: PlantUMLExportOptions = {
+    useShortIds: true,  // Default: use short IDs for smaller output
+    includeMetadata: true,  // Default: include metadata for full restore on import
+    outputFormat: 'plain',  // Default: plain text with short IDs
+  };
   private tableContainer: HTMLElement | null = null;
   private nodesTableContainer: HTMLElement | null = null;
   private edgesTableContainer: HTMLElement | null = null;
@@ -622,6 +629,7 @@ export class ViewContainer {
     this.createTileTypeButton();
     this.createMoonToggleButton();
     this.createFitCenterButton();
+    this.createExportButton();
     
     this.tabContainer.appendChild(this.commonControlsContainer);
   }
@@ -908,6 +916,99 @@ export class ViewContainer {
     this.commonControlsContainer.appendChild(this.fitCenterButton);
   }
 
+  /**
+   * Create export button (in common controls, all views)
+   * Exports nodes, edges, and groups to PlantUML format and copies to clipboard
+   */
+  private createExportButton(): void {
+    this.exportButton = document.createElement('button');
+    this.exportButton.innerHTML = createSvgIcon('icon-export', 16);
+    this.exportButton.setAttribute('aria-label', 'Export to PlantUML');
+    this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
+    this.exportButton.style.padding = '6px';
+    this.exportButton.style.border = '1px solid #ccc';
+    this.exportButton.style.borderRadius = '4px';
+    this.exportButton.style.backgroundColor = '#fff';
+    this.exportButton.style.cursor = 'pointer';
+    this.exportButton.style.fontSize = '16px';
+    this.exportButton.style.width = '32px';
+    this.exportButton.style.height = '32px';
+    this.exportButton.style.display = 'flex';
+    this.exportButton.style.alignItems = 'center';
+    this.exportButton.style.justifyContent = 'center';
+    this.exportButton.style.pointerEvents = 'auto';
+    this.exportButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+    this.exportButton.style.transition = '0.2s';
+    
+    // Click event: export to PlantUML and copy to clipboard
+    this.exportButton.addEventListener('click', async () => {
+      await this.exportToPlantUMLAndCopy();
+    });
+    
+    this.commonControlsContainer.appendChild(this.exportButton);
+  }
+
+  /**
+   * Export current data to PlantUML format and copy to clipboard
+   */
+  private async exportToPlantUMLAndCopy(): Promise<void> {
+    const plantUML = exportToPlantUML(this.nodes, this.edges, this.groups, this.plantUMLExportOptions);
+    const success = await copyToClipboard(plantUML);
+    
+    if (this.exportButton) {
+      if (success) {
+        // Show success feedback
+        this.exportButton.style.backgroundColor = '#c8e6c9';
+        this.exportButton.style.borderColor = '#4caf50';
+        this.exportButton.setAttribute('title', 'Copied to clipboard!');
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+          if (this.exportButton) {
+            this.exportButton.style.backgroundColor = '#fff';
+            this.exportButton.style.borderColor = '#ccc';
+            this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
+          }
+        }, 2000);
+      } else {
+        // Show error feedback
+        this.exportButton.style.backgroundColor = '#ffcdd2';
+        this.exportButton.style.borderColor = '#f44336';
+        this.exportButton.setAttribute('title', 'Failed to copy');
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+          if (this.exportButton) {
+            this.exportButton.style.backgroundColor = '#fff';
+            this.exportButton.style.borderColor = '#ccc';
+            this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
+          }
+        }, 2000);
+      }
+    }
+  }
+
+  /**
+   * Set PlantUML export options
+   */
+  setPlantUMLExportOptions(options: PlantUMLExportOptions): void {
+    this.plantUMLExportOptions = { ...this.plantUMLExportOptions, ...options };
+  }
+
+  /**
+   * Get PlantUML export options
+   */
+  getPlantUMLExportOptions(): PlantUMLExportOptions {
+    return { ...this.plantUMLExportOptions };
+  }
+
+  /**
+   * Get PlantUML export text
+   */
+  getPlantUMLExport(options?: PlantUMLExportOptions): string {
+    const exportOptions = options || this.plantUMLExportOptions;
+    return exportToPlantUML(this.nodes, this.edges, this.groups, exportOptions);
+  }
 
   /**
    * Create delete bend button (in common controls, Graph only)
@@ -1410,6 +1511,7 @@ export class ViewContainer {
     // Only include always show edges button if edges exist
     if (this.alwaysShowEdgesButton && this.hasEdges) buttons.push(this.alwaysShowEdgesButton);
     if (this.fitCenterButton) buttons.push(this.fitCenterButton);
+    if (this.exportButton) buttons.push(this.exportButton);
     
     // Clear container
     while (this.commonControlsContainer.firstChild) {
@@ -1418,19 +1520,21 @@ export class ViewContainer {
     
     // Add buttons in correct order based on view
     if (isGraph) {
-      // Graph order: Delete bend, Cancel, Edit toggle, Always show edges (if edges exist), Fit/Center
+      // Graph order: Delete bend, Cancel, Edit toggle, Always show edges (if edges exist), Fit/Center, Export
       if (this.deleteBendButton) this.commonControlsContainer.appendChild(this.deleteBendButton);
       if (this.cancelEditButton) this.commonControlsContainer.appendChild(this.cancelEditButton);
       if (this.editToggleButton) this.commonControlsContainer.appendChild(this.editToggleButton);
       if (this.alwaysShowEdgesButton && this.hasEdges) this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton);
       if (this.fitCenterButton) this.commonControlsContainer.appendChild(this.fitCenterButton);
+      if (this.exportButton) this.commonControlsContainer.appendChild(this.exportButton);
     } else if (isMap2DOrGlobe3D) {
-      // Map2D/Globe3D order: Moon toggle (Map2D only), Lighting toggle, Tile type, Always show edges (if edges exist), Fit/Center
+      // Map2D/Globe3D order: Moon toggle (Map2D only), Lighting toggle, Tile type, Always show edges (if edges exist), Fit/Center, Export
       if (this.moonToggleButton && this.currentView === 'map2d') this.commonControlsContainer.appendChild(this.moonToggleButton);
       if (this.lightingToggleButton) this.commonControlsContainer.appendChild(this.lightingToggleButton);
       if (this.tileTypeButton) this.commonControlsContainer.appendChild(this.tileTypeButton);
       if (this.alwaysShowEdgesButton && this.hasEdges) this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton);
       if (this.fitCenterButton) this.commonControlsContainer.appendChild(this.fitCenterButton);
+      if (this.exportButton) this.commonControlsContainer.appendChild(this.exportButton);
     }
   }
 
