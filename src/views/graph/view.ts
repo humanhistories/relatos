@@ -89,6 +89,9 @@ export class GraphView implements View {
   private edgeLabelsGroup: SVGGElement; // Group for edge labels
   private snapshotBeforeEdit: { nodes: Node[]; edges: Edge[]; groups: Group[] } | null = null;
   private edgeClickTimers: WeakMap<SVGPathElement, number | null> = new WeakMap(); // Track click timers per hit-path; // Snapshot before entering edit mode
+  private undoStack: { nodes: Node[]; edges: Edge[]; groups: Group[] }[] = [];
+  private redoStack: { nodes: Node[]; edges: Edge[]; groups: Group[] }[] = [];
+  private static readonly MAX_UNDO_LEVELS = 50;
   private offsetX: number = 0; // Offset for panning (x)
   private offsetY: number = 0; // Offset for panning (y)
   private zoom: number = 1; // Zoom level (scale factor)
@@ -447,7 +450,7 @@ export class GraphView implements View {
     this.fitCenterButton.style.display = 'none';
 
     // Cancel edit button (for reference only, not displayed)
-    this.cancelEditButton = this.createIconButton(createSvgIcon('icon-undo', 16), 'Cancel edit', 'Cancel edit and restore previous state', () => {
+    this.cancelEditButton = this.createIconButton(createSvgIcon('icon-close', 16), 'Cancel edit', 'Cancel edit and restore previous state', () => {
       this.restoreSnapshot();
       this.setMode('view');
     });
@@ -898,6 +901,7 @@ export class GraphView implements View {
           if (resizeNodeId) {
             const node = this.nodes.find(n => n.id === resizeNodeId);
             if (node?.position) {
+              this.pushUndoState();
               const nodeStyle = node.style || {};
               const currentWidth = nodeStyle.width || this.DEFAULT_NODE_WIDTH;
               const currentHeight = nodeStyle.height || this.DEFAULT_NODE_HEIGHT;
@@ -924,6 +928,7 @@ export class GraphView implements View {
         if (nodeId) {
           const node = this.nodes.find(n => n.id === nodeId);
           if (node?.position) {
+            this.pushUndoState();
             const svgCoords = this.screenToSvg(e.clientX, e.clientY);
             this.draggingNode = {
               nodeId,
@@ -950,6 +955,7 @@ export class GraphView implements View {
               if (pair && pair.bends) {
                 const bendIndexNum = parseInt(bendIndex, 10);
                 if (bendIndexNum >= 0 && bendIndexNum < pair.bends.length) {
+                  this.pushUndoState();
                   const bendPos = pair.bends[bendIndexNum];
                   this.draggingBend = {
                     edgeId: edgeIdFromHandle,
@@ -982,6 +988,7 @@ export class GraphView implements View {
                   const otherNodeId = handleType === 'src' ? pair.b : pair.a;
                   const otherNode = this.nodes.find(n => n.id === otherNodeId);
                   if (otherNode) {
+                    this.pushUndoState();
                     const anchor = handleType === 'src' 
                       ? (pair.srcAnchor || this.estimateAnchor(node, otherNode))
                       : (pair.dstAnchor || this.estimateAnchor(node, otherNode));
@@ -1369,9 +1376,30 @@ export class GraphView implements View {
       this.draggingBend = null;
     });
 
-    // Keyboard event (delete bend point with Delete/Backspace)
+    // Keyboard event (Undo/Redo, delete bend point with Delete/Backspace)
     this.container.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (this.mode !== 'edit' || !this.selectedEdgeId) {
+      if (this.mode !== 'edit') {
+        return;
+      }
+
+      // Undo: Ctrl+Z (Cmd+Z on Mac)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        if (this.canUndo()) {
+          this.undo();
+          e.preventDefault();
+        }
+        return;
+      }
+      // Redo: Ctrl+Shift+Z or Ctrl+Y (Cmd+Shift+Z or Cmd+Y on Mac)
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        if (this.canRedo()) {
+          this.redo();
+          e.preventDefault();
+        }
+        return;
+      }
+
+      if (!this.selectedEdgeId) {
         return;
       }
 
@@ -3143,6 +3171,8 @@ export class GraphView implements View {
       return;
     }
 
+    this.pushUndoState();
+
     // Get pair that edge belongs to
     const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
     const pairKey = `${a}||${b}`;
@@ -3577,6 +3607,132 @@ export class GraphView implements View {
   }
 
   /**
+   * Clone current nodes, edges, groups (editable state only)
+   */
+  private cloneState(): { nodes: Node[]; edges: Edge[]; groups: Group[] } {
+    return {
+      nodes: this.nodes.map(n => ({
+        ...n,
+        position: n.position ? { ...n.position } : undefined,
+        style: n.style ? { ...n.style } : undefined,
+        meta: n.meta ? { ...n.meta } : undefined,
+      })),
+      edges: this.edges.map(e => ({
+        ...e,
+        srcAnchor: e.srcAnchor ? { ...e.srcAnchor } : undefined,
+        dstAnchor: e.dstAnchor ? { ...e.dstAnchor } : undefined,
+        bends: e.bends ? e.bends.map(b => ({ ...b })) : undefined,
+        style: e.style ? { ...e.style } : undefined,
+        meta: e.meta ? { ...e.meta } : undefined,
+      })),
+      groups: this.groups.map(g => ({
+        ...g,
+        layout: g.layout ? {
+          position: { ...g.layout.position },
+          size: { ...g.layout.size },
+        } : undefined,
+        meta: g.meta ? { ...g.meta } : undefined,
+      })),
+    };
+  }
+
+  /**
+   * Push current state to undo stack (call at start of an edit)
+   */
+  private pushUndoState(): void {
+    if (this.mode !== 'edit') {
+      return;
+    }
+    const snapshot = this.cloneState();
+    this.undoStack.push(snapshot);
+    if (this.undoStack.length > GraphView.MAX_UNDO_LEVELS) {
+      this.undoStack.shift();
+    }
+    this.redoStack = [];
+    this.onGraphButtonsUpdate?.();
+  }
+
+  /**
+   * Apply a snapshot to current state
+   */
+  private applyState(snapshot: { nodes: Node[]; edges: Edge[]; groups: Group[] }): void {
+    this.nodes = snapshot.nodes.map(n => ({
+      ...n,
+      position: n.position ? { ...n.position } : undefined,
+      style: n.style ? { ...n.style } : undefined,
+      meta: n.meta ? { ...n.meta } : undefined,
+    }));
+    this.edges = snapshot.edges.map(e => ({
+      ...e,
+      srcAnchor: e.srcAnchor ? { ...e.srcAnchor } : undefined,
+      dstAnchor: e.dstAnchor ? { ...e.dstAnchor } : undefined,
+      bends: e.bends ? e.bends.map(b => ({ ...b })) : undefined,
+      style: e.style ? { ...e.style } : undefined,
+      meta: e.meta ? { ...e.meta } : undefined,
+    }));
+    this.groups = snapshot.groups.map(g => ({
+      ...g,
+      layout: g.layout ? {
+        position: { ...g.layout.position },
+        size: { ...g.layout.size },
+      } : undefined,
+      meta: g.meta ? { ...g.meta } : undefined,
+    }));
+  }
+
+  /**
+   * Undo last edit (Graph edit mode only)
+   */
+  undo(): void {
+    if (this.mode !== 'edit' || this.undoStack.length === 0) {
+      return;
+    }
+    const current = this.cloneState();
+    this.redoStack.push(current);
+    const previous = this.undoStack.pop()!;
+    this.applyState(previous);
+    this.render();
+    this.updateAnchorHandles();
+    this.updateBendHandles();
+    this.updateControlButtons();
+    this.debouncedSave();
+    this.onGraphButtonsUpdate?.();
+  }
+
+  /**
+   * Redo last undone edit (Graph edit mode only)
+   */
+  redo(): void {
+    if (this.mode !== 'edit' || this.redoStack.length === 0) {
+      return;
+    }
+    const current = this.cloneState();
+    this.undoStack.push(current);
+    const next = this.redoStack.pop()!;
+    this.applyState(next);
+    this.render();
+    this.updateAnchorHandles();
+    this.updateBendHandles();
+    this.updateControlButtons();
+    this.debouncedSave();
+    this.onGraphButtonsUpdate?.();
+  }
+
+  /**
+   * Whether undo is available (for ViewContainer button state)
+   */
+  canUndo(): boolean {
+    return this.mode === 'edit' && this.undoStack.length > 0;
+  }
+
+  /**
+   * Whether redo is available (for ViewContainer button state)
+   */
+  canRedo(): boolean {
+    return this.mode === 'edit' && this.redoStack.length > 0;
+  }
+
+  /**
    * Update anchor position (during drag)
    */
   private updateAnchorPosition(e: PointerEvent): void {
@@ -3725,6 +3881,8 @@ export class GraphView implements View {
       return;
     }
 
+    this.pushUndoState();
+
     // Get pair that the edge belongs to
     const [a, b] = edge.src < edge.dst ? [edge.src, edge.dst] : [edge.dst, edge.src];
     const pairKey = `${a}||${b}`;
@@ -3858,6 +4016,8 @@ export class GraphView implements View {
     if (!pair || !pair.bends || pair.bends.length === 0) {
       return;
     }
+
+    this.pushUndoState();
 
     // Delete last bend point
     pair.bends.pop();
@@ -4550,6 +4710,7 @@ export class GraphView implements View {
       if (!group.layout) {
         return;
       }
+      this.pushUndoState();
       const initialGroupX = group.layout.position.x;
       const initialGroupY = group.layout.position.y;
 
@@ -4634,6 +4795,7 @@ export class GraphView implements View {
           return;
         }
 
+        this.pushUndoState();
         this.resizingGroup = {
           groupId: group.id,
           side,
@@ -5220,6 +5382,8 @@ export class GraphView implements View {
     // Save snapshot before entering edit mode
     if (mode === 'edit' && this.mode === 'view') {
       this.saveSnapshot();
+      this.undoStack = [];
+      this.redoStack = [];
     }
 
     this.mode = mode;

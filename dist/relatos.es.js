@@ -1,4 +1,4 @@
-const Rn = `<!-- relatos/src/assets/icons/icons.svg -->
+const Pn = `<!-- relatos/src/assets/icons/icons.svg -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
   <!-- =========================================
        Edit (pencil) : toggle "edit relations"
@@ -185,8 +185,27 @@ const Rn = `<!-- relatos/src/assets/icons/icons.svg -->
     />
   </symbol>
 
+  <!-- Close / Cancel: circle with X (for Cancel edit button) -->
+  <symbol id="icon-close" viewBox="0 0 24 24">
+    <circle
+      cx="12"
+      cy="12"
+      r="10"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    />
+    <path
+      d="M8 8l8 8M16 8l-8 8"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+    />
+  </symbol>
+
   <!-- =========================================
-       Undo / Cancel edit / Restore previous state
+       Undo / Restore previous state
        - Universal: curved left arrow (undo)
        ========================================= -->
   <symbol id="icon-undo" viewBox="0 0 24 24">
@@ -209,6 +228,36 @@ const Rn = `<!-- relatos/src/assets/icons/icons.svg -->
 
     <path
       d="M7 7h6.5a7.5 7.5 0 0 1 0 15H6"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </symbol>
+
+  <!-- =========================================
+       Redo: curved right arrow (mirror of undo)
+       ========================================= -->
+  <symbol id="icon-redo" viewBox="0 0 24 24">
+    <path
+      d="M17 7L13.5 3.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M17 7L13.5 10.5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M17 7h-6.5a7.5 7.5 0 0 0 0 15H18"
       fill="none"
       stroke="currentColor"
       stroke-width="2"
@@ -599,39 +648,39 @@ const Rn = `<!-- relatos/src/assets/icons/icons.svg -->
 
 </svg>`;
 let xe = false;
-const ri = "relatos-icons-sprite";
+const ai = "relatos-icons-sprite";
 function Dt() {
   if (xe)
     return;
-  if (document.getElementById(ri)) {
+  if (document.getElementById(ai)) {
     xe = true;
     return;
   }
   const i = document.createElement("div");
-  i.id = ri, i.style.display = "none", i.innerHTML = Rn, document.body.appendChild(i), xe = true;
+  i.id = ai, i.style.display = "none", i.innerHTML = Pn, document.body.appendChild(i), xe = true;
 }
-const Pn = 4, ai = 0, li = 1, zn = 2;
+const zn = 4, li = 0, hi = 1, On = 2;
 function Rt(i) {
   let e = i.length;
   for (; --e >= 0; )
     i[e] = 0;
 }
-const On = 0, Vi = 1, Hn = 2, Gn = 3, Un = 258, qe = 29, te = 256, Wt = te + 1 + qe, Lt = 30, Je = 19, Zi = 2 * Wt + 1, bt = 15, Te = 16, Xn = 7, Qe = 256, ji = 16, Ki = 17, qi = 18, Ge = (
+const Hn = 0, Zi = 1, Gn = 2, Un = 3, Xn = 258, qe = 29, te = 256, Wt = te + 1 + qe, Lt = 30, Je = 19, ji = 2 * Wt + 1, bt = 15, Te = 16, Fn = 7, Qe = 256, Ki = 16, qi = 17, Ji = 18, Ge = (
   /* extra bits for each length code */
   new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0])
 ), fe = (
   /* extra bits for each distance code */
   new Uint8Array([0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13])
-), Fn = (
+), Yn = (
   /* extra bits for each bit length code */
   new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 7])
-), Ji = new Uint8Array([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]), Yn = 512, rt = new Array((Wt + 2) * 2);
-Rt(rt);
+), Qi = new Uint8Array([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]), $n = 512, at = new Array((Wt + 2) * 2);
+Rt(at);
 const Ft = new Array(Lt * 2);
 Rt(Ft);
-const Vt = new Array(Yn);
+const Vt = new Array($n);
 Rt(Vt);
-const Zt = new Array(Un - Gn + 1);
+const Zt = new Array(Xn - Un + 1);
 Rt(Zt);
 const ti = new Array(qe);
 Rt(ti);
@@ -640,35 +689,35 @@ Rt(pe);
 function ve(i, e, t, n, s) {
   this.static_tree = i, this.extra_bits = e, this.extra_base = t, this.elems = n, this.max_length = s, this.has_stree = i && i.length;
 }
-let Qi, tn, en;
+let tn, en, nn;
 function Ae(i, e) {
   this.dyn_tree = i, this.max_code = 0, this.stat_desc = e;
 }
-const nn = (i) => i < 256 ? Vt[i] : Vt[256 + (i >>> 7)], jt = (i, e) => {
+const sn = (i) => i < 256 ? Vt[i] : Vt[256 + (i >>> 7)], jt = (i, e) => {
   i.pending_buf[i.pending++] = e & 255, i.pending_buf[i.pending++] = e >>> 8 & 255;
 }, X = (i, e, t) => {
   i.bi_valid > Te - t ? (i.bi_buf |= e << i.bi_valid & 65535, jt(i, i.bi_buf), i.bi_buf = e >> Te - i.bi_valid, i.bi_valid += t - Te) : (i.bi_buf |= e << i.bi_valid & 65535, i.bi_valid += t);
-}, tt = (i, e, t) => {
+}, et = (i, e, t) => {
   X(
     i,
     t[e * 2],
     t[e * 2 + 1]
     /*.Len*/
   );
-}, sn = (i, e) => {
+}, on = (i, e) => {
   let t = 0;
   do
     t |= i & 1, i >>>= 1, t <<= 1;
   while (--e > 0);
   return t >>> 1;
-}, $n = (i) => {
+}, Wn = (i) => {
   i.bi_valid === 16 ? (jt(i, i.bi_buf), i.bi_buf = 0, i.bi_valid = 0) : i.bi_valid >= 8 && (i.pending_buf[i.pending++] = i.bi_buf & 255, i.bi_buf >>= 8, i.bi_valid -= 8);
-}, Wn = (i, e) => {
+}, Vn = (i, e) => {
   const t = e.dyn_tree, n = e.max_code, s = e.stat_desc.static_tree, o = e.stat_desc.has_stree, a = e.stat_desc.extra_bits, r = e.stat_desc.extra_base, h = e.stat_desc.max_length;
   let l, d, g, c, u, f, p = 0;
   for (c = 0; c <= bt; c++)
     i.bl_count[c] = 0;
-  for (t[i.heap[i.heap_max] * 2 + 1] = 0, l = i.heap_max + 1; l < Zi; l++)
+  for (t[i.heap[i.heap_max] * 2 + 1] = 0, l = i.heap_max + 1; l < ji; l++)
     d = i.heap[l], c = t[t[d * 2 + 1] * 2 + 1] + 1, c > h && (c = h, p++), t[d * 2 + 1] = c, !(d > n) && (i.bl_count[c]++, u = 0, d >= r && (u = a[d - r]), f = t[d * 2], i.opt_len += f * (c + u), o && (i.static_len += f * (s[d * 2 + 1] + u)));
   if (p !== 0) {
     do {
@@ -680,16 +729,16 @@ const nn = (i) => i < 256 ? Vt[i] : Vt[256 + (i >>> 7)], jt = (i, e) => {
       for (d = i.bl_count[c]; d !== 0; )
         g = i.heap[--l], !(g > n) && (t[g * 2 + 1] !== c && (i.opt_len += (c - t[g * 2 + 1]) * t[g * 2], t[g * 2 + 1] = c), d--);
   }
-}, on = (i, e, t) => {
+}, rn = (i, e, t) => {
   const n = new Array(bt + 1);
   let s = 0, o, a;
   for (o = 1; o <= bt; o++)
     s = s + t[o - 1] << 1, n[o] = s;
   for (a = 0; a <= e; a++) {
     let r = i[a * 2 + 1];
-    r !== 0 && (i[a * 2] = sn(n[r]++, r));
+    r !== 0 && (i[a * 2] = on(n[r]++, r));
   }
-}, Vn = () => {
+}, Zn = () => {
   let i, e, t, n, s;
   const o = new Array(bt + 1);
   for (t = 0, n = 0; n < qe - 1; n++)
@@ -704,17 +753,17 @@ const nn = (i) => i < 256 ? Vt[i] : Vt[256 + (i >>> 7)], jt = (i, e) => {
   for (e = 0; e <= bt; e++)
     o[e] = 0;
   for (i = 0; i <= 143; )
-    rt[i * 2 + 1] = 8, i++, o[8]++;
+    at[i * 2 + 1] = 8, i++, o[8]++;
   for (; i <= 255; )
-    rt[i * 2 + 1] = 9, i++, o[9]++;
+    at[i * 2 + 1] = 9, i++, o[9]++;
   for (; i <= 279; )
-    rt[i * 2 + 1] = 7, i++, o[7]++;
+    at[i * 2 + 1] = 7, i++, o[7]++;
   for (; i <= 287; )
-    rt[i * 2 + 1] = 8, i++, o[8]++;
-  for (on(rt, Wt + 1, o), i = 0; i < Lt; i++)
-    Ft[i * 2 + 1] = 5, Ft[i * 2] = sn(i, 5);
-  Qi = new ve(rt, Ge, te + 1, Wt, bt), tn = new ve(Ft, fe, 0, Lt, bt), en = new ve(new Array(0), Fn, 0, Je, Xn);
-}, rn = (i) => {
+    at[i * 2 + 1] = 8, i++, o[8]++;
+  for (rn(at, Wt + 1, o), i = 0; i < Lt; i++)
+    Ft[i * 2 + 1] = 5, Ft[i * 2] = on(i, 5);
+  tn = new ve(at, Ge, te + 1, Wt, bt), en = new ve(Ft, fe, 0, Lt, bt), nn = new ve(new Array(0), Yn, 0, Je, Fn);
+}, an = (i) => {
   let e;
   for (e = 0; e < Wt; e++)
     i.dyn_ltree[e * 2] = 0;
@@ -723,28 +772,28 @@ const nn = (i) => i < 256 ? Vt[i] : Vt[256 + (i >>> 7)], jt = (i, e) => {
   for (e = 0; e < Je; e++)
     i.bl_tree[e * 2] = 0;
   i.dyn_ltree[Qe * 2] = 1, i.opt_len = i.static_len = 0, i.sym_next = i.matches = 0;
-}, an = (i) => {
+}, ln = (i) => {
   i.bi_valid > 8 ? jt(i, i.bi_buf) : i.bi_valid > 0 && (i.pending_buf[i.pending++] = i.bi_buf), i.bi_buf = 0, i.bi_valid = 0;
-}, hi = (i, e, t, n) => {
+}, di = (i, e, t, n) => {
   const s = e * 2, o = t * 2;
   return i[s] < i[o] || i[s] === i[o] && n[e] <= n[t];
 }, Be = (i, e, t) => {
   const n = i.heap[t];
   let s = t << 1;
-  for (; s <= i.heap_len && (s < i.heap_len && hi(e, i.heap[s + 1], i.heap[s], i.depth) && s++, !hi(e, n, i.heap[s], i.depth)); )
+  for (; s <= i.heap_len && (s < i.heap_len && di(e, i.heap[s + 1], i.heap[s], i.depth) && s++, !di(e, n, i.heap[s], i.depth)); )
     i.heap[t] = i.heap[s], t = s, s <<= 1;
   i.heap[t] = n;
-}, di = (i, e, t) => {
+}, ci = (i, e, t) => {
   let n, s, o = 0, a, r;
   if (i.sym_next !== 0)
     do
-      n = i.pending_buf[i.sym_buf + o++] & 255, n += (i.pending_buf[i.sym_buf + o++] & 255) << 8, s = i.pending_buf[i.sym_buf + o++], n === 0 ? tt(i, s, e) : (a = Zt[s], tt(i, a + te + 1, e), r = Ge[a], r !== 0 && (s -= ti[a], X(i, s, r)), n--, a = nn(n), tt(i, a, t), r = fe[a], r !== 0 && (n -= pe[a], X(i, n, r)));
+      n = i.pending_buf[i.sym_buf + o++] & 255, n += (i.pending_buf[i.sym_buf + o++] & 255) << 8, s = i.pending_buf[i.sym_buf + o++], n === 0 ? et(i, s, e) : (a = Zt[s], et(i, a + te + 1, e), r = Ge[a], r !== 0 && (s -= ti[a], X(i, s, r)), n--, a = sn(n), et(i, a, t), r = fe[a], r !== 0 && (n -= pe[a], X(i, n, r)));
     while (o < i.sym_next);
-  tt(i, Qe, e);
+  et(i, Qe, e);
 }, Ue = (i, e) => {
   const t = e.dyn_tree, n = e.stat_desc.static_tree, s = e.stat_desc.has_stree, o = e.stat_desc.elems;
   let a, r, h = -1, l;
-  for (i.heap_len = 0, i.heap_max = Zi, a = 0; a < o; a++)
+  for (i.heap_len = 0, i.heap_max = ji, a = 0; a < o; a++)
     t[a * 2] !== 0 ? (i.heap[++i.heap_len] = h = a, i.depth[a] = 0) : t[a * 2 + 1] = 0;
   for (; i.heap_len < 2; )
     l = i.heap[++i.heap_len] = h < 2 ? ++h : 0, t[l * 2] = 1, i.depth[l] = 0, i.opt_len--, s && (i.static_len -= n[l * 2 + 1]);
@@ -779,63 +828,63 @@ const nn = (i) => i < 256 ? Vt[i] : Vt[256 + (i >>> 7)], jt = (i, e) => {
   i.heap[--i.heap_max] = i.heap[
     1
     /*SMALLEST*/
-  ], Wn(i, e), on(t, h, i.bl_count);
-}, ci = (i, e, t) => {
+  ], Vn(i, e), rn(t, h, i.bl_count);
+}, ui = (i, e, t) => {
   let n, s = -1, o, a = e[1], r = 0, h = 7, l = 4;
   for (a === 0 && (h = 138, l = 3), e[(t + 1) * 2 + 1] = 65535, n = 0; n <= t; n++)
-    o = a, a = e[(n + 1) * 2 + 1], !(++r < h && o === a) && (r < l ? i.bl_tree[o * 2] += r : o !== 0 ? (o !== s && i.bl_tree[o * 2]++, i.bl_tree[ji * 2]++) : r <= 10 ? i.bl_tree[Ki * 2]++ : i.bl_tree[qi * 2]++, r = 0, s = o, a === 0 ? (h = 138, l = 3) : o === a ? (h = 6, l = 3) : (h = 7, l = 4));
-}, ui = (i, e, t) => {
+    o = a, a = e[(n + 1) * 2 + 1], !(++r < h && o === a) && (r < l ? i.bl_tree[o * 2] += r : o !== 0 ? (o !== s && i.bl_tree[o * 2]++, i.bl_tree[Ki * 2]++) : r <= 10 ? i.bl_tree[qi * 2]++ : i.bl_tree[Ji * 2]++, r = 0, s = o, a === 0 ? (h = 138, l = 3) : o === a ? (h = 6, l = 3) : (h = 7, l = 4));
+}, gi = (i, e, t) => {
   let n, s = -1, o, a = e[1], r = 0, h = 7, l = 4;
   for (a === 0 && (h = 138, l = 3), n = 0; n <= t; n++)
     if (o = a, a = e[(n + 1) * 2 + 1], !(++r < h && o === a)) {
       if (r < l)
         do
-          tt(i, o, i.bl_tree);
+          et(i, o, i.bl_tree);
         while (--r !== 0);
-      else o !== 0 ? (o !== s && (tt(i, o, i.bl_tree), r--), tt(i, ji, i.bl_tree), X(i, r - 3, 2)) : r <= 10 ? (tt(i, Ki, i.bl_tree), X(i, r - 3, 3)) : (tt(i, qi, i.bl_tree), X(i, r - 11, 7));
+      else o !== 0 ? (o !== s && (et(i, o, i.bl_tree), r--), et(i, Ki, i.bl_tree), X(i, r - 3, 2)) : r <= 10 ? (et(i, qi, i.bl_tree), X(i, r - 3, 3)) : (et(i, Ji, i.bl_tree), X(i, r - 11, 7));
       r = 0, s = o, a === 0 ? (h = 138, l = 3) : o === a ? (h = 6, l = 3) : (h = 7, l = 4);
     }
-}, Zn = (i) => {
+}, jn = (i) => {
   let e;
-  for (ci(i, i.dyn_ltree, i.l_desc.max_code), ci(i, i.dyn_dtree, i.d_desc.max_code), Ue(i, i.bl_desc), e = Je - 1; e >= 3 && i.bl_tree[Ji[e] * 2 + 1] === 0; e--)
+  for (ui(i, i.dyn_ltree, i.l_desc.max_code), ui(i, i.dyn_dtree, i.d_desc.max_code), Ue(i, i.bl_desc), e = Je - 1; e >= 3 && i.bl_tree[Qi[e] * 2 + 1] === 0; e--)
     ;
   return i.opt_len += 3 * (e + 1) + 5 + 5 + 4, e;
-}, jn = (i, e, t, n) => {
+}, Kn = (i, e, t, n) => {
   let s;
   for (X(i, e - 257, 5), X(i, t - 1, 5), X(i, n - 4, 4), s = 0; s < n; s++)
-    X(i, i.bl_tree[Ji[s] * 2 + 1], 3);
-  ui(i, i.dyn_ltree, e - 1), ui(i, i.dyn_dtree, t - 1);
-}, Kn = (i) => {
+    X(i, i.bl_tree[Qi[s] * 2 + 1], 3);
+  gi(i, i.dyn_ltree, e - 1), gi(i, i.dyn_dtree, t - 1);
+}, qn = (i) => {
   let e = 4093624447, t;
   for (t = 0; t <= 31; t++, e >>>= 1)
     if (e & 1 && i.dyn_ltree[t * 2] !== 0)
-      return ai;
+      return li;
   if (i.dyn_ltree[18] !== 0 || i.dyn_ltree[20] !== 0 || i.dyn_ltree[26] !== 0)
-    return li;
+    return hi;
   for (t = 32; t < te; t++)
     if (i.dyn_ltree[t * 2] !== 0)
-      return li;
-  return ai;
+      return hi;
+  return li;
 };
-let gi = false;
-const qn = (i) => {
-  gi || (Vn(), gi = true), i.l_desc = new Ae(i.dyn_ltree, Qi), i.d_desc = new Ae(i.dyn_dtree, tn), i.bl_desc = new Ae(i.bl_tree, en), i.bi_buf = 0, i.bi_valid = 0, rn(i);
-}, ln = (i, e, t, n) => {
-  X(i, (On << 1) + (n ? 1 : 0), 3), an(i), jt(i, t), jt(i, ~t), t && i.pending_buf.set(i.window.subarray(e, e + t), i.pending), i.pending += t;
-}, Jn = (i) => {
-  X(i, Vi << 1, 3), tt(i, Qe, rt), $n(i);
-}, Qn = (i, e, t, n) => {
+let fi = false;
+const Jn = (i) => {
+  fi || (Zn(), fi = true), i.l_desc = new Ae(i.dyn_ltree, tn), i.d_desc = new Ae(i.dyn_dtree, en), i.bl_desc = new Ae(i.bl_tree, nn), i.bi_buf = 0, i.bi_valid = 0, an(i);
+}, hn = (i, e, t, n) => {
+  X(i, (Hn << 1) + (n ? 1 : 0), 3), ln(i), jt(i, t), jt(i, ~t), t && i.pending_buf.set(i.window.subarray(e, e + t), i.pending), i.pending += t;
+}, Qn = (i) => {
+  X(i, Zi << 1, 3), et(i, Qe, at), Wn(i);
+}, ts = (i, e, t, n) => {
   let s, o, a = 0;
-  i.level > 0 ? (i.strm.data_type === zn && (i.strm.data_type = Kn(i)), Ue(i, i.l_desc), Ue(i, i.d_desc), a = Zn(i), s = i.opt_len + 3 + 7 >>> 3, o = i.static_len + 3 + 7 >>> 3, o <= s && (s = o)) : s = o = t + 5, t + 4 <= s && e !== -1 ? ln(i, e, t, n) : i.strategy === Pn || o === s ? (X(i, (Vi << 1) + (n ? 1 : 0), 3), di(i, rt, Ft)) : (X(i, (Hn << 1) + (n ? 1 : 0), 3), jn(i, i.l_desc.max_code + 1, i.d_desc.max_code + 1, a + 1), di(i, i.dyn_ltree, i.dyn_dtree)), rn(i), n && an(i);
-}, ts = (i, e, t) => (i.pending_buf[i.sym_buf + i.sym_next++] = e, i.pending_buf[i.sym_buf + i.sym_next++] = e >> 8, i.pending_buf[i.sym_buf + i.sym_next++] = t, e === 0 ? i.dyn_ltree[t * 2]++ : (i.matches++, e--, i.dyn_ltree[(Zt[t] + te + 1) * 2]++, i.dyn_dtree[nn(e) * 2]++), i.sym_next === i.sym_end);
-var es = qn, is = ln, ns = Qn, ss = ts, os = Jn, rs = {
-  _tr_init: es,
-  _tr_stored_block: is,
-  _tr_flush_block: ns,
-  _tr_tally: ss,
-  _tr_align: os
+  i.level > 0 ? (i.strm.data_type === On && (i.strm.data_type = qn(i)), Ue(i, i.l_desc), Ue(i, i.d_desc), a = jn(i), s = i.opt_len + 3 + 7 >>> 3, o = i.static_len + 3 + 7 >>> 3, o <= s && (s = o)) : s = o = t + 5, t + 4 <= s && e !== -1 ? hn(i, e, t, n) : i.strategy === zn || o === s ? (X(i, (Zi << 1) + (n ? 1 : 0), 3), ci(i, at, Ft)) : (X(i, (Gn << 1) + (n ? 1 : 0), 3), Kn(i, i.l_desc.max_code + 1, i.d_desc.max_code + 1, a + 1), ci(i, i.dyn_ltree, i.dyn_dtree)), an(i), n && ln(i);
+}, es = (i, e, t) => (i.pending_buf[i.sym_buf + i.sym_next++] = e, i.pending_buf[i.sym_buf + i.sym_next++] = e >> 8, i.pending_buf[i.sym_buf + i.sym_next++] = t, e === 0 ? i.dyn_ltree[t * 2]++ : (i.matches++, e--, i.dyn_ltree[(Zt[t] + te + 1) * 2]++, i.dyn_dtree[sn(e) * 2]++), i.sym_next === i.sym_end);
+var is = Jn, ns = hn, ss = ts, os = es, rs = Qn, as = {
+  _tr_init: is,
+  _tr_stored_block: ns,
+  _tr_flush_block: ss,
+  _tr_tally: os,
+  _tr_align: rs
 };
-const as = (i, e, t, n) => {
+const ls = (i, e, t, n) => {
   let s = i & 65535 | 0, o = i >>> 16 & 65535 | 0, a = 0;
   for (; t !== 0; ) {
     a = t > 2e3 ? 2e3 : t, t -= a;
@@ -846,8 +895,8 @@ const as = (i, e, t, n) => {
   }
   return s | o << 16 | 0;
 };
-var Kt = as;
-const ls = () => {
+var Kt = ls;
+const hs = () => {
   let i, e = [];
   for (var t = 0; t < 256; t++) {
     i = t;
@@ -856,14 +905,14 @@ const ls = () => {
     e[t] = i;
   }
   return e;
-}, hs = new Uint32Array(ls()), ds = (i, e, t, n) => {
-  const s = hs, o = n + t;
+}, ds = new Uint32Array(hs()), cs = (i, e, t, n) => {
+  const s = ds, o = n + t;
   i ^= -1;
   for (let a = n; a < o; a++)
     i = i >>> 8 ^ s[(i ^ e[a]) & 255];
   return i ^ -1;
 };
-var O = ds, Ct = {
+var O = cs, Ct = {
   2: "need dictionary",
   /* Z_NEED_DICT       2  */
   1: "stream end",
@@ -922,30 +971,30 @@ var O = ds, Ct = {
   Z_DEFLATED: 8
   //Z_NULL:                 null // Use -1 or null inline, depending on var type
 };
-const { _tr_init: cs, _tr_stored_block: Xe, _tr_flush_block: us, _tr_tally: ft, _tr_align: gs } = rs, {
+const { _tr_init: us, _tr_stored_block: Xe, _tr_flush_block: gs, _tr_tally: ft, _tr_align: fs } = as, {
   Z_NO_FLUSH: pt,
-  Z_PARTIAL_FLUSH: fs,
-  Z_FULL_FLUSH: ps,
+  Z_PARTIAL_FLUSH: ps,
+  Z_FULL_FLUSH: ys,
   Z_FINISH: W,
-  Z_BLOCK: fi,
+  Z_BLOCK: pi,
   Z_OK: H,
-  Z_STREAM_END: pi,
-  Z_STREAM_ERROR: et,
-  Z_DATA_ERROR: ys,
+  Z_STREAM_END: yi,
+  Z_STREAM_ERROR: it,
+  Z_DATA_ERROR: ms,
   Z_BUF_ERROR: Se,
-  Z_DEFAULT_COMPRESSION: ms,
-  Z_FILTERED: ws,
+  Z_DEFAULT_COMPRESSION: ws,
+  Z_FILTERED: bs,
   Z_HUFFMAN_ONLY: le,
-  Z_RLE: bs,
-  Z_FIXED: _s,
-  Z_DEFAULT_STRATEGY: Es,
-  Z_UNKNOWN: Cs,
+  Z_RLE: _s,
+  Z_FIXED: Es,
+  Z_DEFAULT_STRATEGY: Cs,
+  Z_UNKNOWN: xs,
   Z_DEFLATED: we
-} = ee, xs = 9, Ts = 15, vs = 8, As = 29, Bs = 256, Fe = Bs + 1 + As, Ss = 30, ks = 19, Ls = 2 * Fe + 1, Is = 15, I = 3, gt = 258, it = gt + I + 1, Ms = 32, It = 42, ei = 57, Ye = 69, $e = 73, We = 91, Ve = 103, _t = 113, Gt = 666, U = 1, Pt = 2, xt = 3, zt = 4, Ns = 3, Et = (i, e) => (i.msg = Ct[e], e), yi = (i) => i * 2 - (i > 4 ? 9 : 0), ut = (i) => {
+} = ee, Ts = 9, vs = 15, As = 8, Bs = 29, Ss = 256, Fe = Ss + 1 + Bs, ks = 30, Ls = 19, Ms = 2 * Fe + 1, Is = 15, M = 3, gt = 258, nt = gt + M + 1, Ns = 32, Mt = 42, ei = 57, Ye = 69, $e = 73, We = 91, Ve = 103, _t = 113, Gt = 666, U = 1, Pt = 2, xt = 3, zt = 4, Ds = 3, Et = (i, e) => (i.msg = Ct[e], e), mi = (i) => i * 2 - (i > 4 ? 9 : 0), ut = (i) => {
   let e = i.length;
   for (; --e >= 0; )
     i[e] = 0;
-}, Ds = (i) => {
+}, Rs = (i) => {
   let e, t, n, s = i.w_size;
   e = i.hash_size, n = e;
   do
@@ -956,23 +1005,23 @@ const { _tr_init: cs, _tr_stored_block: Xe, _tr_flush_block: us, _tr_tally: ft, 
     t = i.prev[--n], i.prev[n] = t >= s ? t - s : 0;
   while (--e);
 };
-let Rs = (i, e, t) => (e << i.hash_shift ^ t) & i.hash_mask, yt = Rs;
+let Ps = (i, e, t) => (e << i.hash_shift ^ t) & i.hash_mask, yt = Ps;
 const Y = (i) => {
   const e = i.state;
   let t = e.pending;
   t > i.avail_out && (t = i.avail_out), t !== 0 && (i.output.set(e.pending_buf.subarray(e.pending_out, e.pending_out + t), i.next_out), i.next_out += t, e.pending_out += t, i.total_out += t, i.avail_out -= t, e.pending -= t, e.pending === 0 && (e.pending_out = 0));
 }, $ = (i, e) => {
-  us(i, i.block_start >= 0 ? i.block_start : -1, i.strstart - i.block_start, e), i.block_start = i.strstart, Y(i.strm);
-}, M = (i, e) => {
+  gs(i, i.block_start >= 0 ? i.block_start : -1, i.strstart - i.block_start, e), i.block_start = i.strstart, Y(i.strm);
+}, I = (i, e) => {
   i.pending_buf[i.pending++] = e;
 }, Ot = (i, e) => {
   i.pending_buf[i.pending++] = e >>> 8 & 255, i.pending_buf[i.pending++] = e & 255;
 }, Ze = (i, e, t, n) => {
   let s = i.avail_in;
   return s > n && (s = n), s === 0 ? 0 : (i.avail_in -= s, e.set(i.input.subarray(i.next_in, i.next_in + s), t), i.state.wrap === 1 ? i.adler = Kt(i.adler, e, s, t) : i.state.wrap === 2 && (i.adler = O(i.adler, e, s, t)), i.next_in += s, i.total_in += s, s);
-}, hn = (i, e) => {
+}, dn = (i, e) => {
   let t = i.max_chain_length, n = i.strstart, s, o, a = i.prev_length, r = i.nice_match;
-  const h = i.strstart > i.w_size - it ? i.strstart - (i.w_size - it) : 0, l = i.window, d = i.w_mask, g = i.prev, c = i.strstart + gt;
+  const h = i.strstart > i.w_size - nt ? i.strstart - (i.w_size - nt) : 0, l = i.window, d = i.w_mask, g = i.prev, c = i.strstart + gt;
   let u = l[n + a - 1], f = l[n + a];
   i.prev_length >= i.good_match && (t >>= 2), r > i.lookahead && (r = i.lookahead);
   do
@@ -989,17 +1038,17 @@ const Y = (i) => {
     }
   while ((e = g[e & d]) > h && --t !== 0);
   return a <= i.lookahead ? a : i.lookahead;
-}, Mt = (i) => {
+}, It = (i) => {
   const e = i.w_size;
   let t, n, s;
   do {
-    if (n = i.window_size - i.lookahead - i.strstart, i.strstart >= e + (e - it) && (i.window.set(i.window.subarray(e, e + e - n), 0), i.match_start -= e, i.strstart -= e, i.block_start -= e, i.insert > i.strstart && (i.insert = i.strstart), Ds(i), n += e), i.strm.avail_in === 0)
+    if (n = i.window_size - i.lookahead - i.strstart, i.strstart >= e + (e - nt) && (i.window.set(i.window.subarray(e, e + e - n), 0), i.match_start -= e, i.strstart -= e, i.block_start -= e, i.insert > i.strstart && (i.insert = i.strstart), Rs(i), n += e), i.strm.avail_in === 0)
       break;
-    if (t = Ze(i.strm, i.window, i.strstart + i.lookahead, n), i.lookahead += t, i.lookahead + i.insert >= I)
-      for (s = i.strstart - i.insert, i.ins_h = i.window[s], i.ins_h = yt(i, i.ins_h, i.window[s + 1]); i.insert && (i.ins_h = yt(i, i.ins_h, i.window[s + I - 1]), i.prev[s & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = s, s++, i.insert--, !(i.lookahead + i.insert < I)); )
+    if (t = Ze(i.strm, i.window, i.strstart + i.lookahead, n), i.lookahead += t, i.lookahead + i.insert >= M)
+      for (s = i.strstart - i.insert, i.ins_h = i.window[s], i.ins_h = yt(i, i.ins_h, i.window[s + 1]); i.insert && (i.ins_h = yt(i, i.ins_h, i.window[s + M - 1]), i.prev[s & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = s, s++, i.insert--, !(i.lookahead + i.insert < M)); )
         ;
-  } while (i.lookahead < it && i.strm.avail_in !== 0);
-}, dn = (i, e) => {
+  } while (i.lookahead < nt && i.strm.avail_in !== 0);
+}, cn = (i, e) => {
   let t = i.pending_buf_size - 5 > i.w_size ? i.w_size : i.pending_buf_size - 5, n, s, o, a = 0, r = i.strm.avail_in;
   do {
     if (n = 65535, o = i.bi_valid + 42 >> 3, i.strm.avail_out < o || (o = i.strm.avail_out - o, s = i.strstart - i.block_start, n > s + i.strm.avail_in && (n = s + i.strm.avail_in), n > o && (n = o), n < t && (n === 0 && e !== W || e === pt || n !== s + i.strm.avail_in)))
@@ -1010,17 +1059,17 @@ const Y = (i) => {
 }, ke = (i, e) => {
   let t, n;
   for (; ; ) {
-    if (i.lookahead < it) {
-      if (Mt(i), i.lookahead < it && e === pt)
+    if (i.lookahead < nt) {
+      if (It(i), i.lookahead < nt && e === pt)
         return U;
       if (i.lookahead === 0)
         break;
     }
-    if (t = 0, i.lookahead >= I && (i.ins_h = yt(i, i.ins_h, i.window[i.strstart + I - 1]), t = i.prev[i.strstart & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = i.strstart), t !== 0 && i.strstart - t <= i.w_size - it && (i.match_length = hn(i, t)), i.match_length >= I)
-      if (n = ft(i, i.strstart - i.match_start, i.match_length - I), i.lookahead -= i.match_length, i.match_length <= i.max_lazy_match && i.lookahead >= I) {
+    if (t = 0, i.lookahead >= M && (i.ins_h = yt(i, i.ins_h, i.window[i.strstart + M - 1]), t = i.prev[i.strstart & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = i.strstart), t !== 0 && i.strstart - t <= i.w_size - nt && (i.match_length = dn(i, t)), i.match_length >= M)
+      if (n = ft(i, i.strstart - i.match_start, i.match_length - M), i.lookahead -= i.match_length, i.match_length <= i.max_lazy_match && i.lookahead >= M) {
         i.match_length--;
         do
-          i.strstart++, i.ins_h = yt(i, i.ins_h, i.window[i.strstart + I - 1]), t = i.prev[i.strstart & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = i.strstart;
+          i.strstart++, i.ins_h = yt(i, i.ins_h, i.window[i.strstart + M - 1]), t = i.prev[i.strstart & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = i.strstart;
         while (--i.match_length !== 0);
         i.strstart++;
       } else
@@ -1030,22 +1079,22 @@ const Y = (i) => {
     if (n && ($(i, false), i.strm.avail_out === 0))
       return U;
   }
-  return i.insert = i.strstart < I - 1 ? i.strstart : I - 1, e === W ? ($(i, true), i.strm.avail_out === 0 ? xt : zt) : i.sym_next && ($(i, false), i.strm.avail_out === 0) ? U : Pt;
+  return i.insert = i.strstart < M - 1 ? i.strstart : M - 1, e === W ? ($(i, true), i.strm.avail_out === 0 ? xt : zt) : i.sym_next && ($(i, false), i.strm.avail_out === 0) ? U : Pt;
 }, St = (i, e) => {
   let t, n, s;
   for (; ; ) {
-    if (i.lookahead < it) {
-      if (Mt(i), i.lookahead < it && e === pt)
+    if (i.lookahead < nt) {
+      if (It(i), i.lookahead < nt && e === pt)
         return U;
       if (i.lookahead === 0)
         break;
     }
-    if (t = 0, i.lookahead >= I && (i.ins_h = yt(i, i.ins_h, i.window[i.strstart + I - 1]), t = i.prev[i.strstart & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = i.strstart), i.prev_length = i.match_length, i.prev_match = i.match_start, i.match_length = I - 1, t !== 0 && i.prev_length < i.max_lazy_match && i.strstart - t <= i.w_size - it && (i.match_length = hn(i, t), i.match_length <= 5 && (i.strategy === ws || i.match_length === I && i.strstart - i.match_start > 4096) && (i.match_length = I - 1)), i.prev_length >= I && i.match_length <= i.prev_length) {
-      s = i.strstart + i.lookahead - I, n = ft(i, i.strstart - 1 - i.prev_match, i.prev_length - I), i.lookahead -= i.prev_length - 1, i.prev_length -= 2;
+    if (t = 0, i.lookahead >= M && (i.ins_h = yt(i, i.ins_h, i.window[i.strstart + M - 1]), t = i.prev[i.strstart & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = i.strstart), i.prev_length = i.match_length, i.prev_match = i.match_start, i.match_length = M - 1, t !== 0 && i.prev_length < i.max_lazy_match && i.strstart - t <= i.w_size - nt && (i.match_length = dn(i, t), i.match_length <= 5 && (i.strategy === bs || i.match_length === M && i.strstart - i.match_start > 4096) && (i.match_length = M - 1)), i.prev_length >= M && i.match_length <= i.prev_length) {
+      s = i.strstart + i.lookahead - M, n = ft(i, i.strstart - 1 - i.prev_match, i.prev_length - M), i.lookahead -= i.prev_length - 1, i.prev_length -= 2;
       do
-        ++i.strstart <= s && (i.ins_h = yt(i, i.ins_h, i.window[i.strstart + I - 1]), t = i.prev[i.strstart & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = i.strstart);
+        ++i.strstart <= s && (i.ins_h = yt(i, i.ins_h, i.window[i.strstart + M - 1]), t = i.prev[i.strstart & i.w_mask] = i.head[i.ins_h], i.head[i.ins_h] = i.strstart);
       while (--i.prev_length !== 0);
-      if (i.match_available = 0, i.match_length = I - 1, i.strstart++, n && ($(i, false), i.strm.avail_out === 0))
+      if (i.match_available = 0, i.match_length = M - 1, i.strstart++, n && ($(i, false), i.strm.avail_out === 0))
         return U;
     } else if (i.match_available) {
       if (n = ft(i, 0, i.window[i.strstart - 1]), n && $(i, false), i.strstart++, i.lookahead--, i.strm.avail_out === 0)
@@ -1053,32 +1102,32 @@ const Y = (i) => {
     } else
       i.match_available = 1, i.strstart++, i.lookahead--;
   }
-  return i.match_available && (n = ft(i, 0, i.window[i.strstart - 1]), i.match_available = 0), i.insert = i.strstart < I - 1 ? i.strstart : I - 1, e === W ? ($(i, true), i.strm.avail_out === 0 ? xt : zt) : i.sym_next && ($(i, false), i.strm.avail_out === 0) ? U : Pt;
-}, Ps = (i, e) => {
+  return i.match_available && (n = ft(i, 0, i.window[i.strstart - 1]), i.match_available = 0), i.insert = i.strstart < M - 1 ? i.strstart : M - 1, e === W ? ($(i, true), i.strm.avail_out === 0 ? xt : zt) : i.sym_next && ($(i, false), i.strm.avail_out === 0) ? U : Pt;
+}, zs = (i, e) => {
   let t, n, s, o;
   const a = i.window;
   for (; ; ) {
     if (i.lookahead <= gt) {
-      if (Mt(i), i.lookahead <= gt && e === pt)
+      if (It(i), i.lookahead <= gt && e === pt)
         return U;
       if (i.lookahead === 0)
         break;
     }
-    if (i.match_length = 0, i.lookahead >= I && i.strstart > 0 && (s = i.strstart - 1, n = a[s], n === a[++s] && n === a[++s] && n === a[++s])) {
+    if (i.match_length = 0, i.lookahead >= M && i.strstart > 0 && (s = i.strstart - 1, n = a[s], n === a[++s] && n === a[++s] && n === a[++s])) {
       o = i.strstart + gt;
       do
         ;
       while (n === a[++s] && n === a[++s] && n === a[++s] && n === a[++s] && n === a[++s] && n === a[++s] && n === a[++s] && n === a[++s] && s < o);
       i.match_length = gt - (o - s), i.match_length > i.lookahead && (i.match_length = i.lookahead);
     }
-    if (i.match_length >= I ? (t = ft(i, 1, i.match_length - I), i.lookahead -= i.match_length, i.strstart += i.match_length, i.match_length = 0) : (t = ft(i, 0, i.window[i.strstart]), i.lookahead--, i.strstart++), t && ($(i, false), i.strm.avail_out === 0))
+    if (i.match_length >= M ? (t = ft(i, 1, i.match_length - M), i.lookahead -= i.match_length, i.strstart += i.match_length, i.match_length = 0) : (t = ft(i, 0, i.window[i.strstart]), i.lookahead--, i.strstart++), t && ($(i, false), i.strm.avail_out === 0))
       return U;
   }
   return i.insert = 0, e === W ? ($(i, true), i.strm.avail_out === 0 ? xt : zt) : i.sym_next && ($(i, false), i.strm.avail_out === 0) ? U : Pt;
-}, zs = (i, e) => {
+}, Os = (i, e) => {
   let t;
   for (; ; ) {
-    if (i.lookahead === 0 && (Mt(i), i.lookahead === 0)) {
+    if (i.lookahead === 0 && (It(i), i.lookahead === 0)) {
       if (e === pt)
         return U;
       break;
@@ -1093,7 +1142,7 @@ function Q(i, e, t, n, s) {
 }
 const Ut = [
   /*      good lazy nice chain */
-  new Q(0, 0, 0, 0, dn),
+  new Q(0, 0, 0, 0, cn),
   /* 0 store only */
   new Q(4, 4, 8, 4, ke),
   /* 1 max speed, no lazy matches */
@@ -1113,67 +1162,67 @@ const Ut = [
   /* 8 */
   new Q(32, 258, 258, 4096, St)
   /* 9 max compression */
-], Os = (i) => {
-  i.window_size = 2 * i.w_size, ut(i.head), i.max_lazy_match = Ut[i.level].max_lazy, i.good_match = Ut[i.level].good_length, i.nice_match = Ut[i.level].nice_length, i.max_chain_length = Ut[i.level].max_chain, i.strstart = 0, i.block_start = 0, i.lookahead = 0, i.insert = 0, i.match_length = i.prev_length = I - 1, i.match_available = 0, i.ins_h = 0;
+], Hs = (i) => {
+  i.window_size = 2 * i.w_size, ut(i.head), i.max_lazy_match = Ut[i.level].max_lazy, i.good_match = Ut[i.level].good_length, i.nice_match = Ut[i.level].nice_length, i.max_chain_length = Ut[i.level].max_chain, i.strstart = 0, i.block_start = 0, i.lookahead = 0, i.insert = 0, i.match_length = i.prev_length = M - 1, i.match_available = 0, i.ins_h = 0;
 };
-function Hs() {
-  this.strm = null, this.status = 0, this.pending_buf = null, this.pending_buf_size = 0, this.pending_out = 0, this.pending = 0, this.wrap = 0, this.gzhead = null, this.gzindex = 0, this.method = we, this.last_flush = -1, this.w_size = 0, this.w_bits = 0, this.w_mask = 0, this.window = null, this.window_size = 0, this.prev = null, this.head = null, this.ins_h = 0, this.hash_size = 0, this.hash_bits = 0, this.hash_mask = 0, this.hash_shift = 0, this.block_start = 0, this.match_length = 0, this.prev_match = 0, this.match_available = 0, this.strstart = 0, this.match_start = 0, this.lookahead = 0, this.prev_length = 0, this.max_chain_length = 0, this.max_lazy_match = 0, this.level = 0, this.strategy = 0, this.good_match = 0, this.nice_match = 0, this.dyn_ltree = new Uint16Array(Ls * 2), this.dyn_dtree = new Uint16Array((2 * Ss + 1) * 2), this.bl_tree = new Uint16Array((2 * ks + 1) * 2), ut(this.dyn_ltree), ut(this.dyn_dtree), ut(this.bl_tree), this.l_desc = null, this.d_desc = null, this.bl_desc = null, this.bl_count = new Uint16Array(Is + 1), this.heap = new Uint16Array(2 * Fe + 1), ut(this.heap), this.heap_len = 0, this.heap_max = 0, this.depth = new Uint16Array(2 * Fe + 1), ut(this.depth), this.sym_buf = 0, this.lit_bufsize = 0, this.sym_next = 0, this.sym_end = 0, this.opt_len = 0, this.static_len = 0, this.matches = 0, this.insert = 0, this.bi_buf = 0, this.bi_valid = 0;
+function Gs() {
+  this.strm = null, this.status = 0, this.pending_buf = null, this.pending_buf_size = 0, this.pending_out = 0, this.pending = 0, this.wrap = 0, this.gzhead = null, this.gzindex = 0, this.method = we, this.last_flush = -1, this.w_size = 0, this.w_bits = 0, this.w_mask = 0, this.window = null, this.window_size = 0, this.prev = null, this.head = null, this.ins_h = 0, this.hash_size = 0, this.hash_bits = 0, this.hash_mask = 0, this.hash_shift = 0, this.block_start = 0, this.match_length = 0, this.prev_match = 0, this.match_available = 0, this.strstart = 0, this.match_start = 0, this.lookahead = 0, this.prev_length = 0, this.max_chain_length = 0, this.max_lazy_match = 0, this.level = 0, this.strategy = 0, this.good_match = 0, this.nice_match = 0, this.dyn_ltree = new Uint16Array(Ms * 2), this.dyn_dtree = new Uint16Array((2 * ks + 1) * 2), this.bl_tree = new Uint16Array((2 * Ls + 1) * 2), ut(this.dyn_ltree), ut(this.dyn_dtree), ut(this.bl_tree), this.l_desc = null, this.d_desc = null, this.bl_desc = null, this.bl_count = new Uint16Array(Is + 1), this.heap = new Uint16Array(2 * Fe + 1), ut(this.heap), this.heap_len = 0, this.heap_max = 0, this.depth = new Uint16Array(2 * Fe + 1), ut(this.depth), this.sym_buf = 0, this.lit_bufsize = 0, this.sym_next = 0, this.sym_end = 0, this.opt_len = 0, this.static_len = 0, this.matches = 0, this.insert = 0, this.bi_buf = 0, this.bi_valid = 0;
 }
 const ie = (i) => {
   if (!i)
     return 1;
   const e = i.state;
-  return !e || e.strm !== i || e.status !== It && //#ifdef GZIP
+  return !e || e.strm !== i || e.status !== Mt && //#ifdef GZIP
   e.status !== ei && //#endif
   e.status !== Ye && e.status !== $e && e.status !== We && e.status !== Ve && e.status !== _t && e.status !== Gt ? 1 : 0;
-}, cn = (i) => {
+}, un = (i) => {
   if (ie(i))
-    return Et(i, et);
-  i.total_in = i.total_out = 0, i.data_type = Cs;
+    return Et(i, it);
+  i.total_in = i.total_out = 0, i.data_type = xs;
   const e = i.state;
   return e.pending = 0, e.pending_out = 0, e.wrap < 0 && (e.wrap = -e.wrap), e.status = //#ifdef GZIP
   e.wrap === 2 ? ei : (
     //#endif
-    e.wrap ? It : _t
-  ), i.adler = e.wrap === 2 ? 0 : 1, e.last_flush = -2, cs(e), H;
-}, un = (i) => {
-  const e = cn(i);
-  return e === H && Os(i.state), e;
-}, Gs = (i, e) => ie(i) || i.state.wrap !== 2 ? et : (i.state.gzhead = e, H), gn = (i, e, t, n, s, o) => {
+    e.wrap ? Mt : _t
+  ), i.adler = e.wrap === 2 ? 0 : 1, e.last_flush = -2, us(e), H;
+}, gn = (i) => {
+  const e = un(i);
+  return e === H && Hs(i.state), e;
+}, Us = (i, e) => ie(i) || i.state.wrap !== 2 ? it : (i.state.gzhead = e, H), fn = (i, e, t, n, s, o) => {
   if (!i)
-    return et;
+    return it;
   let a = 1;
-  if (e === ms && (e = 6), n < 0 ? (a = 0, n = -n) : n > 15 && (a = 2, n -= 16), s < 1 || s > xs || t !== we || n < 8 || n > 15 || e < 0 || e > 9 || o < 0 || o > _s || n === 8 && a !== 1)
-    return Et(i, et);
+  if (e === ws && (e = 6), n < 0 ? (a = 0, n = -n) : n > 15 && (a = 2, n -= 16), s < 1 || s > Ts || t !== we || n < 8 || n > 15 || e < 0 || e > 9 || o < 0 || o > Es || n === 8 && a !== 1)
+    return Et(i, it);
   n === 8 && (n = 9);
-  const r = new Hs();
-  return i.state = r, r.strm = i, r.status = It, r.wrap = a, r.gzhead = null, r.w_bits = n, r.w_size = 1 << r.w_bits, r.w_mask = r.w_size - 1, r.hash_bits = s + 7, r.hash_size = 1 << r.hash_bits, r.hash_mask = r.hash_size - 1, r.hash_shift = ~~((r.hash_bits + I - 1) / I), r.window = new Uint8Array(r.w_size * 2), r.head = new Uint16Array(r.hash_size), r.prev = new Uint16Array(r.w_size), r.lit_bufsize = 1 << s + 6, r.pending_buf_size = r.lit_bufsize * 4, r.pending_buf = new Uint8Array(r.pending_buf_size), r.sym_buf = r.lit_bufsize, r.sym_end = (r.lit_bufsize - 1) * 3, r.level = e, r.strategy = o, r.method = t, un(i);
-}, Us = (i, e) => gn(i, e, we, Ts, vs, Es), Xs = (i, e) => {
-  if (ie(i) || e > fi || e < 0)
-    return i ? Et(i, et) : et;
+  const r = new Gs();
+  return i.state = r, r.strm = i, r.status = Mt, r.wrap = a, r.gzhead = null, r.w_bits = n, r.w_size = 1 << r.w_bits, r.w_mask = r.w_size - 1, r.hash_bits = s + 7, r.hash_size = 1 << r.hash_bits, r.hash_mask = r.hash_size - 1, r.hash_shift = ~~((r.hash_bits + M - 1) / M), r.window = new Uint8Array(r.w_size * 2), r.head = new Uint16Array(r.hash_size), r.prev = new Uint16Array(r.w_size), r.lit_bufsize = 1 << s + 6, r.pending_buf_size = r.lit_bufsize * 4, r.pending_buf = new Uint8Array(r.pending_buf_size), r.sym_buf = r.lit_bufsize, r.sym_end = (r.lit_bufsize - 1) * 3, r.level = e, r.strategy = o, r.method = t, gn(i);
+}, Xs = (i, e) => fn(i, e, we, vs, As, Cs), Fs = (i, e) => {
+  if (ie(i) || e > pi || e < 0)
+    return i ? Et(i, it) : it;
   const t = i.state;
   if (!i.output || i.avail_in !== 0 && !i.input || t.status === Gt && e !== W)
-    return Et(i, i.avail_out === 0 ? Se : et);
+    return Et(i, i.avail_out === 0 ? Se : it);
   const n = t.last_flush;
   if (t.last_flush = e, t.pending !== 0) {
     if (Y(i), i.avail_out === 0)
       return t.last_flush = -1, H;
-  } else if (i.avail_in === 0 && yi(e) <= yi(n) && e !== W)
+  } else if (i.avail_in === 0 && mi(e) <= mi(n) && e !== W)
     return Et(i, Se);
   if (t.status === Gt && i.avail_in !== 0)
     return Et(i, Se);
-  if (t.status === It && t.wrap === 0 && (t.status = _t), t.status === It) {
+  if (t.status === Mt && t.wrap === 0 && (t.status = _t), t.status === Mt) {
     let s = we + (t.w_bits - 8 << 4) << 8, o = -1;
-    if (t.strategy >= le || t.level < 2 ? o = 0 : t.level < 6 ? o = 1 : t.level === 6 ? o = 2 : o = 3, s |= o << 6, t.strstart !== 0 && (s |= Ms), s += 31 - s % 31, Ot(t, s), t.strstart !== 0 && (Ot(t, i.adler >>> 16), Ot(t, i.adler & 65535)), i.adler = 1, t.status = _t, Y(i), t.pending !== 0)
+    if (t.strategy >= le || t.level < 2 ? o = 0 : t.level < 6 ? o = 1 : t.level === 6 ? o = 2 : o = 3, s |= o << 6, t.strstart !== 0 && (s |= Ns), s += 31 - s % 31, Ot(t, s), t.strstart !== 0 && (Ot(t, i.adler >>> 16), Ot(t, i.adler & 65535)), i.adler = 1, t.status = _t, Y(i), t.pending !== 0)
       return t.last_flush = -1, H;
   }
   if (t.status === ei) {
-    if (i.adler = 0, M(t, 31), M(t, 139), M(t, 8), t.gzhead)
-      M(
+    if (i.adler = 0, I(t, 31), I(t, 139), I(t, 8), t.gzhead)
+      I(
         t,
         (t.gzhead.text ? 1 : 0) + (t.gzhead.hcrc ? 2 : 0) + (t.gzhead.extra ? 4 : 0) + (t.gzhead.name ? 8 : 0) + (t.gzhead.comment ? 16 : 0)
-      ), M(t, t.gzhead.time & 255), M(t, t.gzhead.time >> 8 & 255), M(t, t.gzhead.time >> 16 & 255), M(t, t.gzhead.time >> 24 & 255), M(t, t.level === 9 ? 2 : t.strategy >= le || t.level < 2 ? 4 : 0), M(t, t.gzhead.os & 255), t.gzhead.extra && t.gzhead.extra.length && (M(t, t.gzhead.extra.length & 255), M(t, t.gzhead.extra.length >> 8 & 255)), t.gzhead.hcrc && (i.adler = O(i.adler, t.pending_buf, t.pending, 0)), t.gzindex = 0, t.status = Ye;
-    else if (M(t, 0), M(t, 0), M(t, 0), M(t, 0), M(t, 0), M(t, t.level === 9 ? 2 : t.strategy >= le || t.level < 2 ? 4 : 0), M(t, Ns), t.status = _t, Y(i), t.pending !== 0)
+      ), I(t, t.gzhead.time & 255), I(t, t.gzhead.time >> 8 & 255), I(t, t.gzhead.time >> 16 & 255), I(t, t.gzhead.time >> 24 & 255), I(t, t.level === 9 ? 2 : t.strategy >= le || t.level < 2 ? 4 : 0), I(t, t.gzhead.os & 255), t.gzhead.extra && t.gzhead.extra.length && (I(t, t.gzhead.extra.length & 255), I(t, t.gzhead.extra.length >> 8 & 255)), t.gzhead.hcrc && (i.adler = O(i.adler, t.pending_buf, t.pending, 0)), t.gzindex = 0, t.status = Ye;
+    else if (I(t, 0), I(t, 0), I(t, 0), I(t, 0), I(t, 0), I(t, t.level === 9 ? 2 : t.strategy >= le || t.level < 2 ? 4 : 0), I(t, Ds), t.status = _t, Y(i), t.pending !== 0)
       return t.last_flush = -1, H;
   }
   if (t.status === Ye) {
@@ -1199,7 +1248,7 @@ const ie = (i) => {
             return t.last_flush = -1, H;
           s = 0;
         }
-        t.gzindex < t.gzhead.name.length ? o = t.gzhead.name.charCodeAt(t.gzindex++) & 255 : o = 0, M(t, o);
+        t.gzindex < t.gzhead.name.length ? o = t.gzhead.name.charCodeAt(t.gzindex++) & 255 : o = 0, I(t, o);
       } while (o !== 0);
       t.gzhead.hcrc && t.pending > s && (i.adler = O(i.adler, t.pending_buf, t.pending - s, s)), t.gzindex = 0;
     }
@@ -1214,7 +1263,7 @@ const ie = (i) => {
             return t.last_flush = -1, H;
           s = 0;
         }
-        t.gzindex < t.gzhead.comment.length ? o = t.gzhead.comment.charCodeAt(t.gzindex++) & 255 : o = 0, M(t, o);
+        t.gzindex < t.gzhead.comment.length ? o = t.gzhead.comment.charCodeAt(t.gzindex++) & 255 : o = 0, I(t, o);
       } while (o !== 0);
       t.gzhead.hcrc && t.pending > s && (i.adler = O(i.adler, t.pending_buf, t.pending - s, s));
     }
@@ -1224,59 +1273,59 @@ const ie = (i) => {
     if (t.gzhead.hcrc) {
       if (t.pending + 2 > t.pending_buf_size && (Y(i), t.pending !== 0))
         return t.last_flush = -1, H;
-      M(t, i.adler & 255), M(t, i.adler >> 8 & 255), i.adler = 0;
+      I(t, i.adler & 255), I(t, i.adler >> 8 & 255), i.adler = 0;
     }
     if (t.status = _t, Y(i), t.pending !== 0)
       return t.last_flush = -1, H;
   }
   if (i.avail_in !== 0 || t.lookahead !== 0 || e !== pt && t.status !== Gt) {
-    let s = t.level === 0 ? dn(t, e) : t.strategy === le ? zs(t, e) : t.strategy === bs ? Ps(t, e) : Ut[t.level].func(t, e);
+    let s = t.level === 0 ? cn(t, e) : t.strategy === le ? Os(t, e) : t.strategy === _s ? zs(t, e) : Ut[t.level].func(t, e);
     if ((s === xt || s === zt) && (t.status = Gt), s === U || s === xt)
       return i.avail_out === 0 && (t.last_flush = -1), H;
-    if (s === Pt && (e === fs ? gs(t) : e !== fi && (Xe(t, 0, 0, false), e === ps && (ut(t.head), t.lookahead === 0 && (t.strstart = 0, t.block_start = 0, t.insert = 0))), Y(i), i.avail_out === 0))
+    if (s === Pt && (e === ps ? fs(t) : e !== pi && (Xe(t, 0, 0, false), e === ys && (ut(t.head), t.lookahead === 0 && (t.strstart = 0, t.block_start = 0, t.insert = 0))), Y(i), i.avail_out === 0))
       return t.last_flush = -1, H;
   }
-  return e !== W ? H : t.wrap <= 0 ? pi : (t.wrap === 2 ? (M(t, i.adler & 255), M(t, i.adler >> 8 & 255), M(t, i.adler >> 16 & 255), M(t, i.adler >> 24 & 255), M(t, i.total_in & 255), M(t, i.total_in >> 8 & 255), M(t, i.total_in >> 16 & 255), M(t, i.total_in >> 24 & 255)) : (Ot(t, i.adler >>> 16), Ot(t, i.adler & 65535)), Y(i), t.wrap > 0 && (t.wrap = -t.wrap), t.pending !== 0 ? H : pi);
-}, Fs = (i) => {
+  return e !== W ? H : t.wrap <= 0 ? yi : (t.wrap === 2 ? (I(t, i.adler & 255), I(t, i.adler >> 8 & 255), I(t, i.adler >> 16 & 255), I(t, i.adler >> 24 & 255), I(t, i.total_in & 255), I(t, i.total_in >> 8 & 255), I(t, i.total_in >> 16 & 255), I(t, i.total_in >> 24 & 255)) : (Ot(t, i.adler >>> 16), Ot(t, i.adler & 65535)), Y(i), t.wrap > 0 && (t.wrap = -t.wrap), t.pending !== 0 ? H : yi);
+}, Ys = (i) => {
   if (ie(i))
-    return et;
+    return it;
   const e = i.state.status;
-  return i.state = null, e === _t ? Et(i, ys) : H;
-}, Ys = (i, e) => {
+  return i.state = null, e === _t ? Et(i, ms) : H;
+}, $s = (i, e) => {
   let t = e.length;
   if (ie(i))
-    return et;
+    return it;
   const n = i.state, s = n.wrap;
-  if (s === 2 || s === 1 && n.status !== It || n.lookahead)
-    return et;
+  if (s === 2 || s === 1 && n.status !== Mt || n.lookahead)
+    return it;
   if (s === 1 && (i.adler = Kt(i.adler, e, t, 0)), n.wrap = 0, t >= n.w_size) {
     s === 0 && (ut(n.head), n.strstart = 0, n.block_start = 0, n.insert = 0);
     let h = new Uint8Array(n.w_size);
     h.set(e.subarray(t - n.w_size, t), 0), e = h, t = n.w_size;
   }
   const o = i.avail_in, a = i.next_in, r = i.input;
-  for (i.avail_in = t, i.next_in = 0, i.input = e, Mt(n); n.lookahead >= I; ) {
-    let h = n.strstart, l = n.lookahead - (I - 1);
+  for (i.avail_in = t, i.next_in = 0, i.input = e, It(n); n.lookahead >= M; ) {
+    let h = n.strstart, l = n.lookahead - (M - 1);
     do
-      n.ins_h = yt(n, n.ins_h, n.window[h + I - 1]), n.prev[h & n.w_mask] = n.head[n.ins_h], n.head[n.ins_h] = h, h++;
+      n.ins_h = yt(n, n.ins_h, n.window[h + M - 1]), n.prev[h & n.w_mask] = n.head[n.ins_h], n.head[n.ins_h] = h, h++;
     while (--l);
-    n.strstart = h, n.lookahead = I - 1, Mt(n);
+    n.strstart = h, n.lookahead = M - 1, It(n);
   }
-  return n.strstart += n.lookahead, n.block_start = n.strstart, n.insert = n.lookahead, n.lookahead = 0, n.match_length = n.prev_length = I - 1, n.match_available = 0, i.next_in = a, i.input = r, i.avail_in = o, n.wrap = s, H;
+  return n.strstart += n.lookahead, n.block_start = n.strstart, n.insert = n.lookahead, n.lookahead = 0, n.match_length = n.prev_length = M - 1, n.match_available = 0, i.next_in = a, i.input = r, i.avail_in = o, n.wrap = s, H;
 };
-var $s = Us, Ws = gn, Vs = un, Zs = cn, js = Gs, Ks = Xs, qs = Fs, Js = Ys, Qs = "pako deflate (from Nodeca project)", Yt = {
-  deflateInit: $s,
-  deflateInit2: Ws,
-  deflateReset: Vs,
-  deflateResetKeep: Zs,
-  deflateSetHeader: js,
-  deflate: Ks,
-  deflateEnd: qs,
-  deflateSetDictionary: Js,
-  deflateInfo: Qs
+var Ws = Xs, Vs = fn, Zs = gn, js = un, Ks = Us, qs = Fs, Js = Ys, Qs = $s, to = "pako deflate (from Nodeca project)", Yt = {
+  deflateInit: Ws,
+  deflateInit2: Vs,
+  deflateReset: Zs,
+  deflateResetKeep: js,
+  deflateSetHeader: Ks,
+  deflate: qs,
+  deflateEnd: Js,
+  deflateSetDictionary: Qs,
+  deflateInfo: to
 };
-const to = (i, e) => Object.prototype.hasOwnProperty.call(i, e);
-var eo = function(i) {
+const eo = (i, e) => Object.prototype.hasOwnProperty.call(i, e);
+var io = function(i) {
   const e = Array.prototype.slice.call(arguments, 1);
   for (; e.length; ) {
     const t = e.shift();
@@ -1284,11 +1333,11 @@ var eo = function(i) {
       if (typeof t != "object")
         throw new TypeError(t + "must be non-object");
       for (const n in t)
-        to(t, n) && (i[n] = t[n]);
+        eo(t, n) && (i[n] = t[n]);
     }
   }
   return i;
-}, io = (i) => {
+}, no = (i) => {
   let e = 0;
   for (let n = 0, s = i.length; n < s; n++)
     e += i[n].length;
@@ -1299,20 +1348,20 @@ var eo = function(i) {
   }
   return t;
 }, be = {
-  assign: eo,
-  flattenChunks: io
+  assign: io,
+  flattenChunks: no
 };
-let fn = true;
+let pn = true;
 try {
   String.fromCharCode.apply(null, new Uint8Array(1));
 } catch {
-  fn = false;
+  pn = false;
 }
 const qt = new Uint8Array(256);
 for (let i = 0; i < 256; i++)
   qt[i] = i >= 252 ? 6 : i >= 248 ? 5 : i >= 240 ? 4 : i >= 224 ? 3 : i >= 192 ? 2 : 1;
 qt[254] = qt[254] = 1;
-var no = (i) => {
+var so = (i) => {
   if (typeof TextEncoder == "function" && TextEncoder.prototype.encode)
     return new TextEncoder().encode(i);
   let e, t, n, s, o, a = i.length, r = 0;
@@ -1322,15 +1371,15 @@ var no = (i) => {
     t = i.charCodeAt(s), (t & 64512) === 55296 && s + 1 < a && (n = i.charCodeAt(s + 1), (n & 64512) === 56320 && (t = 65536 + (t - 55296 << 10) + (n - 56320), s++)), t < 128 ? e[o++] = t : t < 2048 ? (e[o++] = 192 | t >>> 6, e[o++] = 128 | t & 63) : t < 65536 ? (e[o++] = 224 | t >>> 12, e[o++] = 128 | t >>> 6 & 63, e[o++] = 128 | t & 63) : (e[o++] = 240 | t >>> 18, e[o++] = 128 | t >>> 12 & 63, e[o++] = 128 | t >>> 6 & 63, e[o++] = 128 | t & 63);
   return e;
 };
-const so = (i, e) => {
-  if (e < 65534 && i.subarray && fn)
+const oo = (i, e) => {
+  if (e < 65534 && i.subarray && pn)
     return String.fromCharCode.apply(null, i.length === e ? i : i.subarray(0, e));
   let t = "";
   for (let n = 0; n < e; n++)
     t += String.fromCharCode(i[n]);
   return t;
 };
-var oo = (i, e) => {
+var ro = (i, e) => {
   const t = e || i.length;
   if (typeof TextDecoder == "function" && TextDecoder.prototype.decode)
     return new TextDecoder().decode(i.subarray(0, e));
@@ -1355,44 +1404,44 @@ var oo = (i, e) => {
     }
     a < 65536 ? o[s++] = a : (a -= 65536, o[s++] = 55296 | a >> 10 & 1023, o[s++] = 56320 | a & 1023);
   }
-  return so(o, s);
-}, ro = (i, e) => {
+  return oo(o, s);
+}, ao = (i, e) => {
   e = e || i.length, e > i.length && (e = i.length);
   let t = e - 1;
   for (; t >= 0 && (i[t] & 192) === 128; )
     t--;
   return t < 0 || t === 0 ? e : t + qt[i[t]] > e ? t : e;
 }, Jt = {
-  string2buf: no,
-  buf2string: oo,
-  utf8border: ro
+  string2buf: so,
+  buf2string: ro,
+  utf8border: ao
 };
-function ao() {
+function lo() {
   this.input = null, this.next_in = 0, this.avail_in = 0, this.total_in = 0, this.output = null, this.next_out = 0, this.avail_out = 0, this.total_out = 0, this.msg = "", this.state = null, this.data_type = 2, this.adler = 0;
 }
-var pn = ao;
-const yn = Object.prototype.toString, {
-  Z_NO_FLUSH: lo,
-  Z_SYNC_FLUSH: ho,
-  Z_FULL_FLUSH: co,
-  Z_FINISH: uo,
+var yn = lo;
+const mn = Object.prototype.toString, {
+  Z_NO_FLUSH: ho,
+  Z_SYNC_FLUSH: co,
+  Z_FULL_FLUSH: uo,
+  Z_FINISH: go,
   Z_OK: ye,
-  Z_STREAM_END: go,
-  Z_DEFAULT_COMPRESSION: fo,
-  Z_DEFAULT_STRATEGY: po,
-  Z_DEFLATED: yo
+  Z_STREAM_END: fo,
+  Z_DEFAULT_COMPRESSION: po,
+  Z_DEFAULT_STRATEGY: yo,
+  Z_DEFLATED: mo
 } = ee;
 function ne(i) {
   this.options = be.assign({
-    level: fo,
-    method: yo,
+    level: po,
+    method: mo,
     chunkSize: 16384,
     windowBits: 15,
     memLevel: 8,
-    strategy: po
+    strategy: yo
   }, i || {});
   let e = this.options;
-  e.raw && e.windowBits > 0 ? e.windowBits = -e.windowBits : e.gzip && e.windowBits > 0 && e.windowBits < 16 && (e.windowBits += 16), this.err = 0, this.msg = "", this.ended = false, this.chunks = [], this.strm = new pn(), this.strm.avail_out = 0;
+  e.raw && e.windowBits > 0 ? e.windowBits = -e.windowBits : e.gzip && e.windowBits > 0 && e.windowBits < 16 && (e.windowBits += 16), this.err = 0, this.msg = "", this.ended = false, this.chunks = [], this.strm = new yn(), this.strm.avail_out = 0;
   let t = Yt.deflateInit2(
     this.strm,
     e.level,
@@ -1405,7 +1454,7 @@ function ne(i) {
     throw new Error(Ct[t]);
   if (e.header && Yt.deflateSetHeader(this.strm, e.header), e.dictionary) {
     let n;
-    if (typeof e.dictionary == "string" ? n = Jt.string2buf(e.dictionary) : yn.call(e.dictionary) === "[object ArrayBuffer]" ? n = new Uint8Array(e.dictionary) : n = e.dictionary, t = Yt.deflateSetDictionary(this.strm, n), t !== ye)
+    if (typeof e.dictionary == "string" ? n = Jt.string2buf(e.dictionary) : mn.call(e.dictionary) === "[object ArrayBuffer]" ? n = new Uint8Array(e.dictionary) : n = e.dictionary, t = Yt.deflateSetDictionary(this.strm, n), t !== ye)
       throw new Error(Ct[t]);
     this._dict_set = true;
   }
@@ -1415,12 +1464,12 @@ ne.prototype.push = function(i, e) {
   let s, o;
   if (this.ended)
     return false;
-  for (e === ~~e ? o = e : o = e === true ? uo : lo, typeof i == "string" ? t.input = Jt.string2buf(i) : yn.call(i) === "[object ArrayBuffer]" ? t.input = new Uint8Array(i) : t.input = i, t.next_in = 0, t.avail_in = t.input.length; ; ) {
-    if (t.avail_out === 0 && (t.output = new Uint8Array(n), t.next_out = 0, t.avail_out = n), (o === ho || o === co) && t.avail_out <= 6) {
+  for (e === ~~e ? o = e : o = e === true ? go : ho, typeof i == "string" ? t.input = Jt.string2buf(i) : mn.call(i) === "[object ArrayBuffer]" ? t.input = new Uint8Array(i) : t.input = i, t.next_in = 0, t.avail_in = t.input.length; ; ) {
+    if (t.avail_out === 0 && (t.output = new Uint8Array(n), t.next_out = 0, t.avail_out = n), (o === co || o === uo) && t.avail_out <= 6) {
       this.onData(t.output.subarray(0, t.next_out)), t.avail_out = 0;
       continue;
     }
-    if (s = Yt.deflate(t, o), s === go)
+    if (s = Yt.deflate(t, o), s === fo)
       return t.next_out > 0 && this.onData(t.output.subarray(0, t.next_out)), s = Yt.deflateEnd(this.strm), this.onEnd(s), this.ended = true, s === ye;
     if (t.avail_out === 0) {
       this.onData(t.output);
@@ -1446,20 +1495,20 @@ function ii(i, e) {
     throw t.msg || Ct[t.err];
   return t.result;
 }
-function mo(i, e) {
+function wo(i, e) {
   return e = e || {}, e.raw = true, ii(i, e);
 }
-function wo(i, e) {
+function bo(i, e) {
   return e = e || {}, e.gzip = true, ii(i, e);
 }
-var bo = ne, _o = ii, Eo = mo, Co = wo, xo = {
-  Deflate: bo,
-  deflate: _o,
-  deflateRaw: Eo,
-  gzip: Co
+var _o = ne, Eo = ii, Co = wo, xo = bo, To = {
+  Deflate: _o,
+  deflate: Eo,
+  deflateRaw: Co,
+  gzip: xo
 };
-const he = 16209, To = 16191;
-var vo = function(e, t) {
+const he = 16209, vo = 16191;
+var Ao = function(e, t) {
   let n, s, o, a, r, h, l, d, g, c, u, f, p, y, w, m, b, _, E, C, v, B, T, x;
   const A = e.state;
   n = e.next_in, T = e.input, s = n + (e.avail_in - 5), o = e.next_out, x = e.output, a = o - (t - e.avail_out), r = o + (e.avail_out - 257), h = A.dmax, l = A.wsize, d = A.whave, g = A.wnext, c = A.window, u = A.hold, f = A.bits, p = A.lencode, y = A.distcode, w = (1 << A.lenbits) - 1, m = (1 << A.distbits) - 1;
@@ -1536,7 +1585,7 @@ var vo = function(e, t) {
             b = p[(b & 65535) + (u & (1 << _) - 1)];
             continue e;
           } else if (_ & 32) {
-            A.mode = To;
+            A.mode = vo;
             break t;
           } else {
             e.msg = "invalid literal/length code", A.mode = he;
@@ -1547,7 +1596,7 @@ var vo = function(e, t) {
     } while (n < s && o < r);
   E = f >> 3, n -= E, f -= E << 3, u &= (1 << f) - 1, e.next_in = n, e.next_out = o, e.avail_in = n < s ? 5 + (s - n) : 5 - (n - s), e.avail_out = o < r ? 257 + (r - o) : 257 - (o - r), A.hold = u, A.bits = f;
 };
-const kt = 15, mi = 852, wi = 592, bi = 0, Le = 1, _i = 2, Ao = new Uint16Array([
+const kt = 15, wi = 852, bi = 592, _i = 0, Le = 1, Ei = 2, Bo = new Uint16Array([
   /* Length codes 257..285 base */
   3,
   4,
@@ -1580,7 +1629,7 @@ const kt = 15, mi = 852, wi = 592, bi = 0, Le = 1, _i = 2, Ao = new Uint16Array(
   258,
   0,
   0
-]), Bo = new Uint8Array([
+]), So = new Uint8Array([
   /* Length codes 257..285 extra */
   16,
   16,
@@ -1613,7 +1662,7 @@ const kt = 15, mi = 852, wi = 592, bi = 0, Le = 1, _i = 2, Ao = new Uint16Array(
   16,
   72,
   78
-]), So = new Uint16Array([
+]), ko = new Uint16Array([
   /* Distance codes 0..29 base */
   1,
   2,
@@ -1647,7 +1696,7 @@ const kt = 15, mi = 852, wi = 592, bi = 0, Le = 1, _i = 2, Ao = new Uint16Array(
   24577,
   0,
   0
-]), ko = new Uint8Array([
+]), Lo = new Uint8Array([
   /* Distance codes 0..29 extra */
   16,
   16,
@@ -1681,7 +1730,7 @@ const kt = 15, mi = 852, wi = 592, bi = 0, Le = 1, _i = 2, Ao = new Uint16Array(
   29,
   64,
   64
-]), Lo = (i, e, t, n, s, o, a, r) => {
+]), Mo = (i, e, t, n, s, o, a, r) => {
   const h = r.bits;
   let l = 0, d = 0, g = 0, c = 0, u = 0, f = 0, p = 0, y = 0, w = 0, m = 0, b, _, E, C, v, B = null, T;
   const x = new Uint16Array(kt + 1), A = new Uint16Array(kt + 1);
@@ -1699,13 +1748,13 @@ const kt = 15, mi = 852, wi = 592, bi = 0, Le = 1, _i = 2, Ao = new Uint16Array(
   for (u < g && (u = g), y = 1, l = 1; l <= kt; l++)
     if (y <<= 1, y -= x[l], y < 0)
       return -1;
-  if (y > 0 && (i === bi || c !== 1))
+  if (y > 0 && (i === _i || c !== 1))
     return -1;
   for (A[1] = 0, l = 1; l < kt; l++)
     A[l + 1] = A[l] + x[l];
   for (d = 0; d < n; d++)
     e[t + d] !== 0 && (a[A[e[t + d]]++] = d);
-  if (i === bi ? (B = L = a, T = 20) : i === Le ? (B = Ao, L = Bo, T = 257) : (B = So, L = ko, T = 0), m = 0, d = 0, l = g, v = o, f = u, p = 0, E = -1, w = 1 << u, C = w - 1, i === Le && w > mi || i === _i && w > wi)
+  if (i === _i ? (B = L = a, T = 20) : i === Le ? (B = Bo, L = So, T = 257) : (B = ko, L = Lo, T = 0), m = 0, d = 0, l = g, v = o, f = u, p = 0, E = -1, w = 1 << u, C = w - 1, i === Le && w > wi || i === Ei && w > bi)
     return 1;
   for (; ; ) {
     S = l - p, a[d] + 1 < T ? (k = 0, N = a[d]) : a[d] >= T ? (k = L[a[d] - T], N = B[a[d] - T]) : (k = 96, N = 0), b = 1 << l - p, _ = 1 << f, g = _;
@@ -1722,62 +1771,62 @@ const kt = 15, mi = 852, wi = 592, bi = 0, Le = 1, _i = 2, Ao = new Uint16Array(
     if (l > u && (m & C) !== E) {
       for (p === 0 && (p = u), v += g, f = l - p, y = 1 << f; f + p < c && (y -= x[f + p], !(y <= 0)); )
         f++, y <<= 1;
-      if (w += 1 << f, i === Le && w > mi || i === _i && w > wi)
+      if (w += 1 << f, i === Le && w > wi || i === Ei && w > bi)
         return 1;
       E = m & C, s[E] = u << 24 | f << 16 | v - o | 0;
     }
   }
   return m !== 0 && (s[v + m] = l - p << 24 | 64 << 16 | 0), r.bits = u, 0;
 };
-var $t = Lo;
-const Io = 0, mn = 1, wn = 2, {
-  Z_FINISH: Ei,
-  Z_BLOCK: Mo,
+var $t = Mo;
+const Io = 0, wn = 1, bn = 2, {
+  Z_FINISH: Ci,
+  Z_BLOCK: No,
   Z_TREES: de,
   Z_OK: Tt,
-  Z_STREAM_END: No,
-  Z_NEED_DICT: Do,
+  Z_STREAM_END: Do,
+  Z_NEED_DICT: Ro,
   Z_STREAM_ERROR: V,
-  Z_DATA_ERROR: bn,
-  Z_MEM_ERROR: _n,
-  Z_BUF_ERROR: Ro,
-  Z_DEFLATED: Ci
-} = ee, _e = 16180, xi = 16181, Ti = 16182, vi = 16183, Ai = 16184, Bi = 16185, Si = 16186, ki = 16187, Li = 16188, Ii = 16189, me = 16190, ot = 16191, Ie = 16192, Mi = 16193, Me = 16194, Ni = 16195, Di = 16196, Ri = 16197, Pi = 16198, ce = 16199, ue = 16200, zi = 16201, Oi = 16202, Hi = 16203, Gi = 16204, Ui = 16205, Ne = 16206, Xi = 16207, Fi = 16208, D = 16209, En = 16210, Cn = 16211, Po = 852, zo = 592, Oo = 15, Ho = Oo, Yi = (i) => (i >>> 24 & 255) + (i >>> 8 & 65280) + ((i & 65280) << 8) + ((i & 255) << 24);
-function Go() {
+  Z_DATA_ERROR: _n,
+  Z_MEM_ERROR: En,
+  Z_BUF_ERROR: Po,
+  Z_DEFLATED: xi
+} = ee, _e = 16180, Ti = 16181, vi = 16182, Ai = 16183, Bi = 16184, Si = 16185, ki = 16186, Li = 16187, Mi = 16188, Ii = 16189, me = 16190, rt = 16191, Me = 16192, Ni = 16193, Ie = 16194, Di = 16195, Ri = 16196, Pi = 16197, zi = 16198, ce = 16199, ue = 16200, Oi = 16201, Hi = 16202, Gi = 16203, Ui = 16204, Xi = 16205, Ne = 16206, Fi = 16207, Yi = 16208, D = 16209, Cn = 16210, xn = 16211, zo = 852, Oo = 592, Ho = 15, Go = Ho, $i = (i) => (i >>> 24 & 255) + (i >>> 8 & 65280) + ((i & 65280) << 8) + ((i & 255) << 24);
+function Uo() {
   this.strm = null, this.mode = 0, this.last = false, this.wrap = 0, this.havedict = false, this.flags = 0, this.dmax = 0, this.check = 0, this.total = 0, this.head = null, this.wbits = 0, this.wsize = 0, this.whave = 0, this.wnext = 0, this.window = null, this.hold = 0, this.bits = 0, this.length = 0, this.offset = 0, this.extra = 0, this.lencode = null, this.distcode = null, this.lenbits = 0, this.distbits = 0, this.ncode = 0, this.nlen = 0, this.ndist = 0, this.have = 0, this.next = null, this.lens = new Uint16Array(320), this.work = new Uint16Array(288), this.lendyn = null, this.distdyn = null, this.sane = 0, this.back = 0, this.was = 0;
 }
 const vt = (i) => {
   if (!i)
     return 1;
   const e = i.state;
-  return !e || e.strm !== i || e.mode < _e || e.mode > Cn ? 1 : 0;
-}, xn = (i) => {
-  if (vt(i))
-    return V;
-  const e = i.state;
-  return i.total_in = i.total_out = e.total = 0, i.msg = "", e.wrap && (i.adler = e.wrap & 1), e.mode = _e, e.last = 0, e.havedict = 0, e.flags = -1, e.dmax = 32768, e.head = null, e.hold = 0, e.bits = 0, e.lencode = e.lendyn = new Int32Array(Po), e.distcode = e.distdyn = new Int32Array(zo), e.sane = 1, e.back = -1, Tt;
+  return !e || e.strm !== i || e.mode < _e || e.mode > xn ? 1 : 0;
 }, Tn = (i) => {
   if (vt(i))
     return V;
   const e = i.state;
-  return e.wsize = 0, e.whave = 0, e.wnext = 0, xn(i);
-}, vn = (i, e) => {
+  return i.total_in = i.total_out = e.total = 0, i.msg = "", e.wrap && (i.adler = e.wrap & 1), e.mode = _e, e.last = 0, e.havedict = 0, e.flags = -1, e.dmax = 32768, e.head = null, e.hold = 0, e.bits = 0, e.lencode = e.lendyn = new Int32Array(zo), e.distcode = e.distdyn = new Int32Array(Oo), e.sane = 1, e.back = -1, Tt;
+}, vn = (i) => {
+  if (vt(i))
+    return V;
+  const e = i.state;
+  return e.wsize = 0, e.whave = 0, e.wnext = 0, Tn(i);
+}, An = (i, e) => {
   let t;
   if (vt(i))
     return V;
   const n = i.state;
-  return e < 0 ? (t = 0, e = -e) : (t = (e >> 4) + 5, e < 48 && (e &= 15)), e && (e < 8 || e > 15) ? V : (n.window !== null && n.wbits !== e && (n.window = null), n.wrap = t, n.wbits = e, Tn(i));
-}, An = (i, e) => {
+  return e < 0 ? (t = 0, e = -e) : (t = (e >> 4) + 5, e < 48 && (e &= 15)), e && (e < 8 || e > 15) ? V : (n.window !== null && n.wbits !== e && (n.window = null), n.wrap = t, n.wbits = e, vn(i));
+}, Bn = (i, e) => {
   if (!i)
     return V;
-  const t = new Go();
+  const t = new Uo();
   i.state = t, t.strm = i, t.window = null, t.mode = _e;
-  const n = vn(i, e);
+  const n = An(i, e);
   return n !== Tt && (i.state = null), n;
-}, Uo = (i) => An(i, Ho);
-let $i = true, De, Re;
-const Xo = (i) => {
-  if ($i) {
+}, Xo = (i) => Bn(i, Go);
+let Wi = true, De, Re;
+const Fo = (i) => {
+  if (Wi) {
     De = new Int32Array(512), Re = new Int32Array(32);
     let e = 0;
     for (; e < 144; )
@@ -1788,16 +1837,16 @@ const Xo = (i) => {
       i.lens[e++] = 7;
     for (; e < 288; )
       i.lens[e++] = 8;
-    for ($t(mn, i.lens, 0, 288, De, 0, i.work, { bits: 9 }), e = 0; e < 32; )
+    for ($t(wn, i.lens, 0, 288, De, 0, i.work, { bits: 9 }), e = 0; e < 32; )
       i.lens[e++] = 5;
-    $t(wn, i.lens, 0, 32, Re, 0, i.work, { bits: 5 }), $i = false;
+    $t(bn, i.lens, 0, 32, Re, 0, i.work, { bits: 5 }), Wi = false;
   }
   i.lencode = De, i.lenbits = 9, i.distcode = Re, i.distbits = 5;
-}, Bn = (i, e, t, n) => {
+}, Sn = (i, e, t, n) => {
   let s;
   const o = i.state;
   return o.window === null && (o.wsize = 1 << o.wbits, o.wnext = 0, o.whave = 0, o.window = new Uint8Array(o.wsize)), n >= o.wsize ? (o.window.set(e.subarray(t - o.wsize, t), 0), o.wnext = 0, o.whave = o.wsize) : (s = o.wsize - o.wnext, s > n && (s = n), o.window.set(e.subarray(t - n, t - n + s), o.wnext), n -= s, n ? (o.window.set(e.subarray(t - n, t), 0), o.wnext = n, o.whave = o.wsize) : (o.wnext += s, o.wnext === o.wsize && (o.wnext = 0), o.whave < o.wsize && (o.whave += s))), 0;
-}, Fo = (i, e) => {
+}, Yo = (i, e) => {
   let t, n, s, o, a, r, h, l, d, g, c, u, f, p, y = 0, w, m, b, _, E, C, v, B;
   const T = new Uint8Array(4);
   let x, A;
@@ -1807,13 +1856,13 @@ const Xo = (i) => {
   );
   if (vt(i) || !i.output || !i.input && i.avail_in !== 0)
     return V;
-  t = i.state, t.mode === ot && (t.mode = Ie), a = i.next_out, s = i.output, h = i.avail_out, o = i.next_in, n = i.input, r = i.avail_in, l = t.hold, d = t.bits, g = r, c = h, B = Tt;
+  t = i.state, t.mode === rt && (t.mode = Me), a = i.next_out, s = i.output, h = i.avail_out, o = i.next_in, n = i.input, r = i.avail_in, l = t.hold, d = t.bits, g = r, c = h, B = Tt;
   t:
     for (; ; )
       switch (t.mode) {
         case _e:
           if (t.wrap === 0) {
-            t.mode = Ie;
+            t.mode = Me;
             break;
           }
           for (; d < 16; ) {
@@ -1822,7 +1871,7 @@ const Xo = (i) => {
             r--, l += n[o++] << d, d += 8;
           }
           if (t.wrap & 2 && l === 35615) {
-            t.wbits === 0 && (t.wbits = 15), t.check = 0, T[0] = l & 255, T[1] = l >>> 8 & 255, t.check = O(t.check, T, 2, 0), l = 0, d = 0, t.mode = xi;
+            t.wbits === 0 && (t.wbits = 15), t.check = 0, T[0] = l & 255, T[1] = l >>> 8 & 255, t.check = O(t.check, T, 2, 0), l = 0, d = 0, t.mode = Ti;
             break;
           }
           if (t.head && (t.head.done = false), !(t.wrap & 1) || /* check if zlib header allowed */
@@ -1830,7 +1879,7 @@ const Xo = (i) => {
             i.msg = "incorrect header check", t.mode = D;
             break;
           }
-          if ((l & 15) !== Ci) {
+          if ((l & 15) !== xi) {
             i.msg = "unknown compression method", t.mode = D;
             break;
           }
@@ -1838,15 +1887,15 @@ const Xo = (i) => {
             i.msg = "invalid window size", t.mode = D;
             break;
           }
-          t.dmax = 1 << t.wbits, t.flags = 0, i.adler = t.check = 1, t.mode = l & 512 ? Ii : ot, l = 0, d = 0;
+          t.dmax = 1 << t.wbits, t.flags = 0, i.adler = t.check = 1, t.mode = l & 512 ? Ii : rt, l = 0, d = 0;
           break;
-        case xi:
+        case Ti:
           for (; d < 16; ) {
             if (r === 0)
               break t;
             r--, l += n[o++] << d, d += 8;
           }
-          if (t.flags = l, (t.flags & 255) !== Ci) {
+          if (t.flags = l, (t.flags & 255) !== xi) {
             i.msg = "unknown compression method", t.mode = D;
             break;
           }
@@ -1854,25 +1903,25 @@ const Xo = (i) => {
             i.msg = "unknown header flags set", t.mode = D;
             break;
           }
-          t.head && (t.head.text = l >> 8 & 1), t.flags & 512 && t.wrap & 4 && (T[0] = l & 255, T[1] = l >>> 8 & 255, t.check = O(t.check, T, 2, 0)), l = 0, d = 0, t.mode = Ti;
+          t.head && (t.head.text = l >> 8 & 1), t.flags & 512 && t.wrap & 4 && (T[0] = l & 255, T[1] = l >>> 8 & 255, t.check = O(t.check, T, 2, 0)), l = 0, d = 0, t.mode = vi;
         /* falls through */
-        case Ti:
+        case vi:
           for (; d < 32; ) {
             if (r === 0)
               break t;
             r--, l += n[o++] << d, d += 8;
           }
-          t.head && (t.head.time = l), t.flags & 512 && t.wrap & 4 && (T[0] = l & 255, T[1] = l >>> 8 & 255, T[2] = l >>> 16 & 255, T[3] = l >>> 24 & 255, t.check = O(t.check, T, 4, 0)), l = 0, d = 0, t.mode = vi;
+          t.head && (t.head.time = l), t.flags & 512 && t.wrap & 4 && (T[0] = l & 255, T[1] = l >>> 8 & 255, T[2] = l >>> 16 & 255, T[3] = l >>> 24 & 255, t.check = O(t.check, T, 4, 0)), l = 0, d = 0, t.mode = Ai;
         /* falls through */
-        case vi:
+        case Ai:
           for (; d < 16; ) {
             if (r === 0)
               break t;
             r--, l += n[o++] << d, d += 8;
           }
-          t.head && (t.head.xflags = l & 255, t.head.os = l >> 8), t.flags & 512 && t.wrap & 4 && (T[0] = l & 255, T[1] = l >>> 8 & 255, t.check = O(t.check, T, 2, 0)), l = 0, d = 0, t.mode = Ai;
+          t.head && (t.head.xflags = l & 255, t.head.os = l >> 8), t.flags & 512 && t.wrap & 4 && (T[0] = l & 255, T[1] = l >>> 8 & 255, t.check = O(t.check, T, 2, 0)), l = 0, d = 0, t.mode = Bi;
         /* falls through */
-        case Ai:
+        case Bi:
           if (t.flags & 1024) {
             for (; d < 16; ) {
               if (r === 0)
@@ -1881,9 +1930,9 @@ const Xo = (i) => {
             }
             t.length = l, t.head && (t.head.extra_len = l), t.flags & 512 && t.wrap & 4 && (T[0] = l & 255, T[1] = l >>> 8 & 255, t.check = O(t.check, T, 2, 0)), l = 0, d = 0;
           } else t.head && (t.head.extra = null);
-          t.mode = Bi;
+          t.mode = Si;
         /* falls through */
-        case Bi:
+        case Si:
           if (t.flags & 1024 && (u = t.length, u > r && (u = r), u && (t.head && (v = t.head.extra_len - t.length, t.head.extra || (t.head.extra = new Uint8Array(t.head.extra_len)), t.head.extra.set(
             n.subarray(
               o,
@@ -1895,9 +1944,9 @@ const Xo = (i) => {
             v
           )), t.flags & 512 && t.wrap & 4 && (t.check = O(t.check, n, u, o)), r -= u, o += u, t.length -= u), t.length))
             break t;
-          t.length = 0, t.mode = Si;
+          t.length = 0, t.mode = ki;
         /* falls through */
-        case Si:
+        case ki:
           if (t.flags & 2048) {
             if (r === 0)
               break t;
@@ -1908,9 +1957,9 @@ const Xo = (i) => {
             if (t.flags & 512 && t.wrap & 4 && (t.check = O(t.check, n, u, o)), r -= u, o += u, v)
               break t;
           } else t.head && (t.head.name = null);
-          t.length = 0, t.mode = ki;
+          t.length = 0, t.mode = Li;
         /* falls through */
-        case ki:
+        case Li:
           if (t.flags & 4096) {
             if (r === 0)
               break t;
@@ -1921,9 +1970,9 @@ const Xo = (i) => {
             if (t.flags & 512 && t.wrap & 4 && (t.check = O(t.check, n, u, o)), r -= u, o += u, v)
               break t;
           } else t.head && (t.head.comment = null);
-          t.mode = Li;
+          t.mode = Mi;
         /* falls through */
-        case Li:
+        case Mi:
           if (t.flags & 512) {
             for (; d < 16; ) {
               if (r === 0)
@@ -1936,7 +1985,7 @@ const Xo = (i) => {
             }
             l = 0, d = 0;
           }
-          t.head && (t.head.hcrc = t.flags >> 9 & 1, t.head.done = true), i.adler = t.check = 0, t.mode = ot;
+          t.head && (t.head.hcrc = t.flags >> 9 & 1, t.head.done = true), i.adler = t.check = 0, t.mode = rt;
           break;
         case Ii:
           for (; d < 32; ) {
@@ -1944,18 +1993,18 @@ const Xo = (i) => {
               break t;
             r--, l += n[o++] << d, d += 8;
           }
-          i.adler = t.check = Yi(l), l = 0, d = 0, t.mode = me;
+          i.adler = t.check = $i(l), l = 0, d = 0, t.mode = me;
         /* falls through */
         case me:
           if (t.havedict === 0)
-            return i.next_out = a, i.avail_out = h, i.next_in = o, i.avail_in = r, t.hold = l, t.bits = d, Do;
-          i.adler = t.check = 1, t.mode = ot;
+            return i.next_out = a, i.avail_out = h, i.next_in = o, i.avail_in = r, t.hold = l, t.bits = d, Ro;
+          i.adler = t.check = 1, t.mode = rt;
         /* falls through */
-        case ot:
-          if (e === Mo || e === de)
+        case rt:
+          if (e === No || e === de)
             break t;
         /* falls through */
-        case Ie:
+        case Me:
           if (t.last) {
             l >>>= d & 7, d -= d & 7, t.mode = Ne;
             break;
@@ -1967,23 +2016,23 @@ const Xo = (i) => {
           }
           switch (t.last = l & 1, l >>>= 1, d -= 1, l & 3) {
             case 0:
-              t.mode = Mi;
+              t.mode = Ni;
               break;
             case 1:
-              if (Xo(t), t.mode = ce, e === de) {
+              if (Fo(t), t.mode = ce, e === de) {
                 l >>>= 2, d -= 2;
                 break t;
               }
               break;
             case 2:
-              t.mode = Di;
+              t.mode = Ri;
               break;
             case 3:
               i.msg = "invalid block type", t.mode = D;
           }
           l >>>= 2, d -= 2;
           break;
-        case Mi:
+        case Ni:
           for (l >>>= d & 7, d -= d & 7; d < 32; ) {
             if (r === 0)
               break t;
@@ -1993,22 +2042,22 @@ const Xo = (i) => {
             i.msg = "invalid stored block lengths", t.mode = D;
             break;
           }
-          if (t.length = l & 65535, l = 0, d = 0, t.mode = Me, e === de)
+          if (t.length = l & 65535, l = 0, d = 0, t.mode = Ie, e === de)
             break t;
         /* falls through */
-        case Me:
-          t.mode = Ni;
+        case Ie:
+          t.mode = Di;
         /* falls through */
-        case Ni:
+        case Di:
           if (u = t.length, u) {
             if (u > r && (u = r), u > h && (u = h), u === 0)
               break t;
             s.set(n.subarray(o, o + u), a), r -= u, o += u, h -= u, a += u, t.length -= u;
             break;
           }
-          t.mode = ot;
+          t.mode = rt;
           break;
-        case Di:
+        case Ri:
           for (; d < 14; ) {
             if (r === 0)
               break t;
@@ -2018,9 +2067,9 @@ const Xo = (i) => {
             i.msg = "too many length or distance symbols", t.mode = D;
             break;
           }
-          t.have = 0, t.mode = Ri;
+          t.have = 0, t.mode = Pi;
         /* falls through */
-        case Ri:
+        case Pi:
           for (; t.have < t.ncode; ) {
             for (; d < 3; ) {
               if (r === 0)
@@ -2035,9 +2084,9 @@ const Xo = (i) => {
             i.msg = "invalid code lengths set", t.mode = D;
             break;
           }
-          t.have = 0, t.mode = Pi;
+          t.have = 0, t.mode = zi;
         /* falls through */
-        case Pi:
+        case zi:
           for (; t.have < t.nlen + t.ndist; ) {
             for (; y = t.lencode[l & (1 << t.lenbits) - 1], w = y >>> 24, m = y >>> 16 & 255, b = y & 65535, !(w <= d); ) {
               if (r === 0)
@@ -2087,11 +2136,11 @@ const Xo = (i) => {
             i.msg = "invalid code -- missing end-of-block", t.mode = D;
             break;
           }
-          if (t.lenbits = 9, x = { bits: t.lenbits }, B = $t(mn, t.lens, 0, t.nlen, t.lencode, 0, t.work, x), t.lenbits = x.bits, B) {
+          if (t.lenbits = 9, x = { bits: t.lenbits }, B = $t(wn, t.lens, 0, t.nlen, t.lencode, 0, t.work, x), t.lenbits = x.bits, B) {
             i.msg = "invalid literal/lengths set", t.mode = D;
             break;
           }
-          if (t.distbits = 6, t.distcode = t.distdyn, x = { bits: t.distbits }, B = $t(wn, t.lens, t.nlen, t.ndist, t.distcode, 0, t.work, x), t.distbits = x.bits, B) {
+          if (t.distbits = 6, t.distcode = t.distdyn, x = { bits: t.distbits }, B = $t(bn, t.lens, t.nlen, t.ndist, t.distcode, 0, t.work, x), t.distbits = x.bits, B) {
             i.msg = "invalid distances set", t.mode = D;
             break;
           }
@@ -2103,7 +2152,7 @@ const Xo = (i) => {
         /* falls through */
         case ue:
           if (r >= 6 && h >= 258) {
-            i.next_out = a, i.avail_out = h, i.next_in = o, i.avail_in = r, t.hold = l, t.bits = d, vo(i, c), a = i.next_out, s = i.output, h = i.avail_out, o = i.next_in, n = i.input, r = i.avail_in, l = t.hold, d = t.bits, t.mode === ot && (t.back = -1);
+            i.next_out = a, i.avail_out = h, i.next_in = o, i.avail_in = r, t.hold = l, t.bits = d, Ao(i, c), a = i.next_out, s = i.output, h = i.avail_out, o = i.next_in, n = i.input, r = i.avail_in, l = t.hold, d = t.bits, t.mode === rt && (t.back = -1);
             break;
           }
           for (t.back = 0; y = t.lencode[l & (1 << t.lenbits) - 1], w = y >>> 24, m = y >>> 16 & 255, b = y & 65535, !(w <= d); ) {
@@ -2120,20 +2169,20 @@ const Xo = (i) => {
             l >>>= _, d -= _, t.back += _;
           }
           if (l >>>= w, d -= w, t.back += w, t.length = b, m === 0) {
-            t.mode = Ui;
+            t.mode = Xi;
             break;
           }
           if (m & 32) {
-            t.back = -1, t.mode = ot;
+            t.back = -1, t.mode = rt;
             break;
           }
           if (m & 64) {
             i.msg = "invalid literal/length code", t.mode = D;
             break;
           }
-          t.extra = m & 15, t.mode = zi;
+          t.extra = m & 15, t.mode = Oi;
         /* falls through */
-        case zi:
+        case Oi:
           if (t.extra) {
             for (A = t.extra; d < A; ) {
               if (r === 0)
@@ -2142,9 +2191,9 @@ const Xo = (i) => {
             }
             t.length += l & (1 << t.extra) - 1, l >>>= t.extra, d -= t.extra, t.back += t.extra;
           }
-          t.was = t.length, t.mode = Oi;
+          t.was = t.length, t.mode = Hi;
         /* falls through */
-        case Oi:
+        case Hi:
           for (; y = t.distcode[l & (1 << t.distbits) - 1], w = y >>> 24, m = y >>> 16 & 255, b = y & 65535, !(w <= d); ) {
             if (r === 0)
               break t;
@@ -2162,9 +2211,9 @@ const Xo = (i) => {
             i.msg = "invalid distance code", t.mode = D;
             break;
           }
-          t.offset = b, t.extra = m & 15, t.mode = Hi;
+          t.offset = b, t.extra = m & 15, t.mode = Gi;
         /* falls through */
-        case Hi:
+        case Gi:
           if (t.extra) {
             for (A = t.extra; d < A; ) {
               if (r === 0)
@@ -2177,9 +2226,9 @@ const Xo = (i) => {
             i.msg = "invalid distance too far back", t.mode = D;
             break;
           }
-          t.mode = Gi;
+          t.mode = Ui;
         /* falls through */
-        case Gi:
+        case Ui:
           if (h === 0)
             break t;
           if (u = c - h, t.offset > u) {
@@ -2196,7 +2245,7 @@ const Xo = (i) => {
           while (--u);
           t.length === 0 && (t.mode = ue);
           break;
-        case Ui:
+        case Xi:
           if (h === 0)
             break t;
           s[a++] = t.length, h--, t.mode = ue;
@@ -2209,15 +2258,15 @@ const Xo = (i) => {
               r--, l |= n[o++] << d, d += 8;
             }
             if (c -= h, i.total_out += c, t.total += c, t.wrap & 4 && c && (i.adler = t.check = /*UPDATE_CHECK(state.check, put - _out, _out);*/
-            t.flags ? O(t.check, s, c, a - c) : Kt(t.check, s, c, a - c)), c = h, t.wrap & 4 && (t.flags ? l : Yi(l)) !== t.check) {
+            t.flags ? O(t.check, s, c, a - c) : Kt(t.check, s, c, a - c)), c = h, t.wrap & 4 && (t.flags ? l : $i(l)) !== t.check) {
               i.msg = "incorrect data check", t.mode = D;
               break;
             }
             l = 0, d = 0;
           }
-          t.mode = Xi;
+          t.mode = Fi;
         /* falls through */
-        case Xi:
+        case Fi:
           if (t.wrap && t.flags) {
             for (; d < 32; ) {
               if (r === 0)
@@ -2230,63 +2279,63 @@ const Xo = (i) => {
             }
             l = 0, d = 0;
           }
-          t.mode = Fi;
+          t.mode = Yi;
         /* falls through */
-        case Fi:
-          B = No;
+        case Yi:
+          B = Do;
           break t;
         case D:
-          B = bn;
+          B = _n;
           break t;
-        case En:
-          return _n;
         case Cn:
+          return En;
+        case xn:
         /* falls through */
         default:
           return V;
       }
-  return i.next_out = a, i.avail_out = h, i.next_in = o, i.avail_in = r, t.hold = l, t.bits = d, (t.wsize || c !== i.avail_out && t.mode < D && (t.mode < Ne || e !== Ei)) && Bn(i, i.output, i.next_out, c - i.avail_out), g -= i.avail_in, c -= i.avail_out, i.total_in += g, i.total_out += c, t.total += c, t.wrap & 4 && c && (i.adler = t.check = /*UPDATE_CHECK(state.check, strm.next_out - _out, _out);*/
-  t.flags ? O(t.check, s, c, i.next_out - c) : Kt(t.check, s, c, i.next_out - c)), i.data_type = t.bits + (t.last ? 64 : 0) + (t.mode === ot ? 128 : 0) + (t.mode === ce || t.mode === Me ? 256 : 0), (g === 0 && c === 0 || e === Ei) && B === Tt && (B = Ro), B;
-}, Yo = (i) => {
+  return i.next_out = a, i.avail_out = h, i.next_in = o, i.avail_in = r, t.hold = l, t.bits = d, (t.wsize || c !== i.avail_out && t.mode < D && (t.mode < Ne || e !== Ci)) && Sn(i, i.output, i.next_out, c - i.avail_out), g -= i.avail_in, c -= i.avail_out, i.total_in += g, i.total_out += c, t.total += c, t.wrap & 4 && c && (i.adler = t.check = /*UPDATE_CHECK(state.check, strm.next_out - _out, _out);*/
+  t.flags ? O(t.check, s, c, i.next_out - c) : Kt(t.check, s, c, i.next_out - c)), i.data_type = t.bits + (t.last ? 64 : 0) + (t.mode === rt ? 128 : 0) + (t.mode === ce || t.mode === Ie ? 256 : 0), (g === 0 && c === 0 || e === Ci) && B === Tt && (B = Po), B;
+}, $o = (i) => {
   if (vt(i))
     return V;
   let e = i.state;
   return e.window && (e.window = null), i.state = null, Tt;
-}, $o = (i, e) => {
+}, Wo = (i, e) => {
   if (vt(i))
     return V;
   const t = i.state;
   return (t.wrap & 2) === 0 ? V : (t.head = e, e.done = false, Tt);
-}, Wo = (i, e) => {
+}, Vo = (i, e) => {
   const t = e.length;
   let n, s, o;
-  return vt(i) || (n = i.state, n.wrap !== 0 && n.mode !== me) ? V : n.mode === me && (s = 1, s = Kt(s, e, t, 0), s !== n.check) ? bn : (o = Bn(i, e, t, t), o ? (n.mode = En, _n) : (n.havedict = 1, Tt));
+  return vt(i) || (n = i.state, n.wrap !== 0 && n.mode !== me) ? V : n.mode === me && (s = 1, s = Kt(s, e, t, 0), s !== n.check) ? _n : (o = Sn(i, e, t, t), o ? (n.mode = Cn, En) : (n.havedict = 1, Tt));
 };
-var Vo = Tn, Zo = vn, jo = xn, Ko = Uo, qo = An, Jo = Fo, Qo = Yo, tr = $o, er = Wo, ir = "pako inflate (from Nodeca project)", at = {
-  inflateReset: Vo,
-  inflateReset2: Zo,
-  inflateResetKeep: jo,
-  inflateInit: Ko,
-  inflateInit2: qo,
-  inflate: Jo,
-  inflateEnd: Qo,
-  inflateGetHeader: tr,
-  inflateSetDictionary: er,
-  inflateInfo: ir
+var Zo = vn, jo = An, Ko = Tn, qo = Xo, Jo = Bn, Qo = Yo, tr = $o, er = Wo, ir = Vo, nr = "pako inflate (from Nodeca project)", lt = {
+  inflateReset: Zo,
+  inflateReset2: jo,
+  inflateResetKeep: Ko,
+  inflateInit: qo,
+  inflateInit2: Jo,
+  inflate: Qo,
+  inflateEnd: tr,
+  inflateGetHeader: er,
+  inflateSetDictionary: ir,
+  inflateInfo: nr
 };
-function nr() {
+function sr() {
   this.text = 0, this.time = 0, this.xflags = 0, this.os = 0, this.extra = null, this.extra_len = 0, this.name = "", this.comment = "", this.hcrc = 0, this.done = false;
 }
-var sr = nr;
-const Sn = Object.prototype.toString, {
-  Z_NO_FLUSH: or,
-  Z_FINISH: rr,
+var or = sr;
+const kn = Object.prototype.toString, {
+  Z_NO_FLUSH: rr,
+  Z_FINISH: ar,
   Z_OK: Qt,
   Z_STREAM_END: Pe,
   Z_NEED_DICT: ze,
-  Z_STREAM_ERROR: ar,
-  Z_DATA_ERROR: Wi,
-  Z_MEM_ERROR: lr
+  Z_STREAM_ERROR: lr,
+  Z_DATA_ERROR: Vi,
+  Z_MEM_ERROR: hr
 } = ee;
 function se(i) {
   this.options = be.assign({
@@ -2295,28 +2344,28 @@ function se(i) {
     to: ""
   }, i || {});
   const e = this.options;
-  e.raw && e.windowBits >= 0 && e.windowBits < 16 && (e.windowBits = -e.windowBits, e.windowBits === 0 && (e.windowBits = -15)), e.windowBits >= 0 && e.windowBits < 16 && !(i && i.windowBits) && (e.windowBits += 32), e.windowBits > 15 && e.windowBits < 48 && (e.windowBits & 15) === 0 && (e.windowBits |= 15), this.err = 0, this.msg = "", this.ended = false, this.chunks = [], this.strm = new pn(), this.strm.avail_out = 0;
-  let t = at.inflateInit2(
+  e.raw && e.windowBits >= 0 && e.windowBits < 16 && (e.windowBits = -e.windowBits, e.windowBits === 0 && (e.windowBits = -15)), e.windowBits >= 0 && e.windowBits < 16 && !(i && i.windowBits) && (e.windowBits += 32), e.windowBits > 15 && e.windowBits < 48 && (e.windowBits & 15) === 0 && (e.windowBits |= 15), this.err = 0, this.msg = "", this.ended = false, this.chunks = [], this.strm = new yn(), this.strm.avail_out = 0;
+  let t = lt.inflateInit2(
     this.strm,
     e.windowBits
   );
   if (t !== Qt)
     throw new Error(Ct[t]);
-  if (this.header = new sr(), at.inflateGetHeader(this.strm, this.header), e.dictionary && (typeof e.dictionary == "string" ? e.dictionary = Jt.string2buf(e.dictionary) : Sn.call(e.dictionary) === "[object ArrayBuffer]" && (e.dictionary = new Uint8Array(e.dictionary)), e.raw && (t = at.inflateSetDictionary(this.strm, e.dictionary), t !== Qt)))
+  if (this.header = new or(), lt.inflateGetHeader(this.strm, this.header), e.dictionary && (typeof e.dictionary == "string" ? e.dictionary = Jt.string2buf(e.dictionary) : kn.call(e.dictionary) === "[object ArrayBuffer]" && (e.dictionary = new Uint8Array(e.dictionary)), e.raw && (t = lt.inflateSetDictionary(this.strm, e.dictionary), t !== Qt)))
     throw new Error(Ct[t]);
 }
 se.prototype.push = function(i, e) {
   const t = this.strm, n = this.options.chunkSize, s = this.options.dictionary;
   let o, a, r;
   if (this.ended) return false;
-  for (e === ~~e ? a = e : a = e === true ? rr : or, Sn.call(i) === "[object ArrayBuffer]" ? t.input = new Uint8Array(i) : t.input = i, t.next_in = 0, t.avail_in = t.input.length; ; ) {
-    for (t.avail_out === 0 && (t.output = new Uint8Array(n), t.next_out = 0, t.avail_out = n), o = at.inflate(t, a), o === ze && s && (o = at.inflateSetDictionary(t, s), o === Qt ? o = at.inflate(t, a) : o === Wi && (o = ze)); t.avail_in > 0 && o === Pe && t.state.wrap > 0 && i[t.next_in] !== 0; )
-      at.inflateReset(t), o = at.inflate(t, a);
+  for (e === ~~e ? a = e : a = e === true ? ar : rr, kn.call(i) === "[object ArrayBuffer]" ? t.input = new Uint8Array(i) : t.input = i, t.next_in = 0, t.avail_in = t.input.length; ; ) {
+    for (t.avail_out === 0 && (t.output = new Uint8Array(n), t.next_out = 0, t.avail_out = n), o = lt.inflate(t, a), o === ze && s && (o = lt.inflateSetDictionary(t, s), o === Qt ? o = lt.inflate(t, a) : o === Vi && (o = ze)); t.avail_in > 0 && o === Pe && t.state.wrap > 0 && i[t.next_in] !== 0; )
+      lt.inflateReset(t), o = lt.inflate(t, a);
     switch (o) {
-      case ar:
-      case Wi:
-      case ze:
       case lr:
+      case Vi:
+      case ze:
+      case hr:
         return this.onEnd(o), this.ended = true, false;
     }
     if (r = t.avail_out, t.next_out && (t.avail_out === 0 || o === Pe))
@@ -2327,7 +2376,7 @@ se.prototype.push = function(i, e) {
         this.onData(t.output.length === t.next_out ? t.output : t.output.subarray(0, t.next_out));
     if (!(o === Qt && r === 0)) {
       if (o === Pe)
-        return o = at.inflateEnd(this.strm), this.onEnd(o), this.ended = true, true;
+        return o = lt.inflateEnd(this.strm), this.onEnd(o), this.ended = true, true;
       if (t.avail_in === 0) break;
     }
   }
@@ -2344,31 +2393,31 @@ function ni(i, e) {
   if (t.push(i), t.err) throw t.msg || Ct[t.err];
   return t.result;
 }
-function hr(i, e) {
+function dr(i, e) {
   return e = e || {}, e.raw = true, ni(i, e);
 }
-var dr = se, cr = ni, ur = hr, gr = ni, fr = {
-  Inflate: dr,
-  inflate: cr,
-  inflateRaw: ur,
-  ungzip: gr
+var cr = se, ur = ni, gr = dr, fr = ni, pr = {
+  Inflate: cr,
+  inflate: ur,
+  inflateRaw: gr,
+  ungzip: fr
 };
-const { Deflate: pr, deflate: yr, deflateRaw: mr, gzip: wr } = xo, { Inflate: br, inflate: _r, inflateRaw: Er, ungzip: Cr } = fr;
-var xr = pr, Tr = yr, vr = mr, Ar = wr, Br = br, Sr = _r, kr = Er, Lr = Cr, Ir = ee, kn = {
-  Deflate: xr,
-  deflate: Tr,
-  deflateRaw: vr,
-  gzip: Ar,
-  Inflate: Br,
-  inflate: Sr,
-  inflateRaw: kr,
-  ungzip: Lr,
+const { Deflate: yr, deflate: mr, deflateRaw: wr, gzip: br } = To, { Inflate: _r, inflate: Er, inflateRaw: Cr, ungzip: xr } = pr;
+var Tr = yr, vr = mr, Ar = wr, Br = br, Sr = _r, kr = Er, Lr = Cr, Mr = xr, Ir = ee, Ln = {
+  Deflate: Tr,
+  deflate: vr,
+  deflateRaw: Ar,
+  gzip: Br,
+  Inflate: Sr,
+  inflate: kr,
+  inflateRaw: Lr,
+  ungzip: Mr,
   constants: Ir
 };
 function je(i) {
   return i <= 26 ? String.fromCharCode(64 + i) : i % 26 === 0 ? je(Math.floor(i / 26) - 1) + "Z" : je(Math.floor(i / 26)) + String.fromCharCode(64 + i % 26);
 }
-class Mr {
+class Nr {
   constructor() {
     this.count = 0, this.idMap = /* @__PURE__ */ new Map(), this.reverseMap = /* @__PURE__ */ new Map();
   }
@@ -2407,8 +2456,8 @@ function Oe(i, e, t) {
   const n = i >> 2, s = (i & 3) << 4 | e >> 4, o = (e & 15) << 2 | t >> 6, a = t & 63;
   return ge(n & 63) + ge(s & 63) + ge(o & 63) + ge(a & 63);
 }
-function Nr(i) {
-  const t = new TextEncoder().encode(i), n = kn.deflateRaw(t, { level: 9 });
+function Dr(i) {
+  const t = new TextEncoder().encode(i), n = Ln.deflateRaw(t, { level: 9 });
   let s = "";
   for (let o = 0; o < n.length; o += 3)
     o + 2 === n.length ? s += Oe(n[o], n[o + 1], 0) : o + 1 === n.length ? s += Oe(n[o], 0, 0) : s += Oe(n[o], n[o + 1], n[o + 2]);
@@ -2423,7 +2472,7 @@ function ta(i) {
         return null;
       e.push(a << 2 | r >> 4), o + 2 < i.length && h >= 0 && e.push((r & 15) << 4 | h >> 2), o + 3 < i.length && l >= 0 && e.push((h & 3) << 6 | l);
     }
-    const t = new Uint8Array(e), n = kn.inflateRaw(t);
+    const t = new Uint8Array(e), n = Ln.inflateRaw(t);
     return new TextDecoder("utf-8").decode(n);
   } catch (e) {
     return console.error("Deflate decompression failed:", e), null;
@@ -2465,7 +2514,7 @@ const He = {
   rectangle: "rectangle",
   hexagon: "hexagon"
 };
-function Dr(i) {
+function Rr(i) {
   return i && He[i.toLowerCase()] || He.default;
 }
 function Nt(i) {
@@ -2474,7 +2523,7 @@ function Nt(i) {
 function si(i) {
   return i.replace(/"/g, '\\"');
 }
-function Rr(i) {
+function Pr(i) {
   const e = /* @__PURE__ */ new Map();
   for (const t of i) {
     const n = t.parentId || null;
@@ -2482,7 +2531,7 @@ function Rr(i) {
   }
   return e;
 }
-function Pr(i, e) {
+function zr(i, e) {
   if (!e) return "";
   const t = {
     id: i.id
@@ -2495,14 +2544,14 @@ function Pr(i, e) {
   }
   return `' @relatos:node ${JSON.stringify(t)}`;
 }
-function zr(i, e) {
+function Or(i, e) {
   if (!e) return "";
   const t = {
     id: i.id
   };
   return i.parentId && (t.parentId = i.parentId), i.nodeIds && i.nodeIds.length > 0 && (t.nodeIds = i.nodeIds), i.meta && Object.keys(i.meta).length > 0 && (t.meta = i.meta), `' @relatos:group ${JSON.stringify(t)}`;
 }
-function Or(i, e) {
+function Hr(i, e) {
   if (!e) return "";
   const t = {
     id: i.id,
@@ -2517,7 +2566,7 @@ function Or(i, e) {
   }
   return `' @relatos:edge ${JSON.stringify(t)}`;
 }
-function Hr(i) {
+function Gr(i) {
   const e = i;
   if (!e.style) return "";
   const t = [];
@@ -2531,18 +2580,18 @@ function Hr(i) {
   }
   return t.length > 0 ? ` ${t.join("")}` : "";
 }
-function Ln(i, e = "", t = null, n = true) {
-  const s = Dr(i.type), o = t ? t.getShortId(i.id) : Nt(i.id), a = si(i.label), r = Hr(i), h = Pr(i, n);
+function Mn(i, e = "", t = null, n = true) {
+  const s = Rr(i.type), o = t ? t.getShortId(i.id) : Nt(i.id), a = si(i.label), r = Gr(i), h = zr(i, n);
   return h ? `${e}${h}
 ${e}${s} "${a}" as ${o}${r}` : `${e}${s} "${a}" as ${o}${r}`;
 }
 function In(i, e, t, n, s, o = "", a = null, r = true) {
-  const h = [], l = a ? a.getShortId(i.id) : Nt(i.id), d = si(i.label), g = zr(i, r);
+  const h = [], l = a ? a.getShortId(i.id) : Nt(i.id), d = si(i.label), g = Or(i, r);
   g && h.push(`${o}${g}`), h.push(`${o}package "${d}" as ${l} {`);
   const c = o + "  ", u = new Set(i.nodeIds || []);
   for (const p of u) {
     const y = t.find((w) => w.id === p);
-    y && (h.push(Ln(y, c, a, r)), s.add(p));
+    y && (h.push(Mn(y, c, a, r)), s.add(p));
   }
   const f = n.get(i.id) || [];
   for (const p of f)
@@ -2550,7 +2599,7 @@ function In(i, e, t, n, s, o = "", a = null, r = true) {
   return h.push(`${o}}`), h.join(`
 `);
 }
-function Gr(i) {
+function Ur(i) {
   const e = i;
   if (!e.style) return "-->";
   const t = [];
@@ -2564,20 +2613,20 @@ function Gr(i) {
   }
   return t.length > 0 ? `-[${t.join(",")}]->` : "-->";
 }
-function Ur(i, e = null, t = true) {
-  const n = e ? e.getShortId(i.src) : Nt(i.src), s = e ? e.getShortId(i.dst) : Nt(i.dst), o = i.relType ? ` : ${si(i.relType)}` : "", a = Gr(i), r = Or(i, t);
+function Xr(i, e = null, t = true) {
+  const n = e ? e.getShortId(i.src) : Nt(i.src), s = e ? e.getShortId(i.dst) : Nt(i.dst), o = i.relType ? ` : ${si(i.relType)}` : "", a = Ur(i), r = Hr(i, t);
   return r ? `${r}
 ${n} ${a} ${s}${o}` : `${n} ${a} ${s}${o}`;
 }
 function Ke(i, e, t, n) {
   const s = (n == null ? void 0 : n.useShortIds) ?? false, o = (n == null ? void 0 : n.includeMetadata) ?? true, a = (n == null ? void 0 : n.outputFormat) ?? "plain";
   n == null ? void 0 : n.serverUrlPrefix;
-  const r = s ? new Mr() : null, h = [];
+  const r = s ? new Nr() : null, h = [];
   h.push("@startuml"), h.push(""), h.push("skinparam backgroundColor #efefef"), h.push("skinparam componentStyle uml2"), h.push("left to right direction"), h.push("");
   const l = /* @__PURE__ */ new Set();
   if (t && t.length > 0) {
     o && (h.push("' === GROUPS ==="), h.push(""));
-    const c = Rr(t), u = c.get(null) || [];
+    const c = Pr(t), u = c.get(null) || [];
     for (const f of u)
       h.push(In(f, t, i, c, l, "", r, o)), h.push("");
   }
@@ -2585,19 +2634,19 @@ function Ke(i, e, t, n) {
   if (d.length > 0) {
     o && (h.push("' === STANDALONE NODES ==="), h.push(""));
     for (const c of d)
-      h.push(Ln(c, "", r, o)), h.push("");
+      h.push(Mn(c, "", r, o)), h.push("");
   }
   if (e.length > 0) {
     o && (h.push("' === EDGES ==="), h.push(""));
     for (const c of e)
-      h.push(Ur(c, r, o)), h.push("");
+      h.push(Xr(c, r, o)), h.push("");
   }
   h.push("@enduml");
   const g = h.join(`
 `);
-  return a === "deflate" ? Nr(g) : g;
+  return a === "deflate" ? Dr(g) : g;
 }
-function Xr(i) {
+function Fr(i) {
   const e = i.match(/^'\s*@relatos:(\w+)\s+(.+)$/);
   if (!e) return null;
   try {
@@ -2607,7 +2656,7 @@ function Xr(i) {
     return null;
   }
 }
-function Fr(i) {
+function Yr(i) {
   const e = i.match(/^\s*(\w+)\s+"([^"]+)"\s+as\s+(\w+)(?:\s+(#[^;\s]+(?:;line:[^;\s]+)?))?\s*$/);
   if (!e) return null;
   const t = {
@@ -2626,14 +2675,14 @@ function Fr(i) {
   }
   return t;
 }
-function Yr(i) {
+function $r(i) {
   const e = i.match(/^\s*(?:package|rectangle)\s+"([^"]+)"\s+as\s+(\w+)\s*\{?\s*$/);
   return e ? {
     label: e[1].replace(/\\"/g, '"'),
     id: e[2]
   } : null;
 }
-function $r(i) {
+function Wr(i) {
   const e = { src: "", dst: "" }, t = i.match(/^\s*(\w+)\s+-\[([^\]]+)\]->\s+(\w+)(?:\s+:\s+(.+?))?\s*$/);
   if (t) {
     e.src = t[1], e.dst = t[3], t[4] && (e.label = t[4].replace(/\\"/g, '"'));
@@ -2653,7 +2702,7 @@ function $r(i) {
     dst: s[2]
   } : null;
 }
-function Wr(i) {
+function Vr(i) {
   const e = [], t = [], n = [], s = /* @__PURE__ */ new Map(), o = /* @__PURE__ */ new Map(), a = /* @__PURE__ */ new Map(), r = /* @__PURE__ */ new Map(), h = /* @__PURE__ */ new Map(), l = [];
   let d = null;
   const g = i.split(`
@@ -2662,7 +2711,7 @@ function Wr(i) {
     const u = g[c].trim();
     if (!u || u.startsWith("'") && !u.includes("@relatos:") || u === "@startuml" || u === "@enduml" || u.startsWith("skinparam") || u.startsWith("left to right"))
       continue;
-    const f = Xr(u);
+    const f = Fr(u);
     if (f) {
       d = f;
       const m = f.data.id;
@@ -2673,7 +2722,7 @@ function Wr(i) {
       l.pop(), d = null;
       continue;
     }
-    const p = Yr(u);
+    const p = $r(u);
     if (p) {
       const m = (d == null ? void 0 : d.type) === "group" ? d.data : a.get(p.id), b = (m == null ? void 0 : m.id) || p.id;
       h.set(p.id, b);
@@ -2687,7 +2736,7 @@ function Wr(i) {
       n.push(_), l.push(p.id), d = null;
       continue;
     }
-    const y = Fr(u);
+    const y = Yr(u);
     if (y) {
       const m = (d == null ? void 0 : d.type) === "node" ? d.data : s.get(y.id), b = (m == null ? void 0 : m.id) || y.id;
       r.set(y.id, b);
@@ -2702,7 +2751,7 @@ function Wr(i) {
       (m == null ? void 0 : m.style) && typeof m.style == "object" ? _.style = m.style : y.style && (_.style = y.style), e.push(_), d = null;
       continue;
     }
-    const w = $r(u);
+    const w = Wr(u);
     if (w) {
       const m = r.get(w.src) || w.src, b = r.get(w.dst) || w.dst, _ = `${w.src}_${w.dst}`, E = (d == null ? void 0 : d.type) === "edge" ? d.data : null, C = {
         id: (E == null ? void 0 : E.id) || _,
@@ -2718,7 +2767,7 @@ function Wr(i) {
   }
   return { nodes: e, edges: t, groups: n };
 }
-async function Vr(i) {
+async function Zr(i) {
   try {
     if (navigator.clipboard && window.isSecureContext)
       return await navigator.clipboard.writeText(i), true;
@@ -2732,14 +2781,14 @@ async function Vr(i) {
     return console.error("Failed to copy to clipboard:", e), false;
   }
 }
-function ct(i, e = 16) {
+function tt(i, e = 16) {
   return Dt(), `<svg width="${e}" height="${e}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${i}"></use>
   </svg>`;
 }
-class Zr {
+class jr {
   constructor(e, t) {
-    this.currentView = null, this.views = /* @__PURE__ */ new Map(), this.tabButtons = /* @__PURE__ */ new Map(), this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.lightingToggleButton = null, this.tileTypeButton = null, this.moonToggleButton = null, this.fitCenterButton = null, this.deleteBendButton = null, this.cancelEditButton = null, this.exportButton = null, this.plantUMLExportOptions = {
+    this.currentView = null, this.views = /* @__PURE__ */ new Map(), this.tabButtons = /* @__PURE__ */ new Map(), this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.lightingToggleButton = null, this.tileTypeButton = null, this.moonToggleButton = null, this.fitCenterButton = null, this.deleteBendButton = null, this.undoButton = null, this.redoButton = null, this.cancelEditButton = null, this.exportButton = null, this.plantUMLExportOptions = {
       useShortIds: true,
       // Default: use short IDs for smaller output
       includeMetadata: true,
@@ -2934,7 +2983,7 @@ class Zr {
    * Create common control buttons container (shared across views)
    */
   createCommonControlsContainer() {
-    this.commonControlsContainer = document.createElement("div"), this.commonControlsContainer.style.display = "flex", this.commonControlsContainer.style.gap = "4px", this.commonControlsContainer.style.marginLeft = "auto", this.commonControlsContainer.style.pointerEvents = "none", this.createCancelEditButton(), this.createEditToggleButton(), this.createAlwaysShowEdgesButton(), this.createDeleteBendButton(), this.createLightingToggleButton(), this.createTileTypeButton(), this.createMoonToggleButton(), this.createFitCenterButton(), this.createExportButton(), this.tabContainer.appendChild(this.commonControlsContainer);
+    this.commonControlsContainer = document.createElement("div"), this.commonControlsContainer.style.display = "flex", this.commonControlsContainer.style.gap = "4px", this.commonControlsContainer.style.marginLeft = "auto", this.commonControlsContainer.style.pointerEvents = "none", this.createCancelEditButton(), this.createUndoButton(), this.createRedoButton(), this.createEditToggleButton(), this.createAlwaysShowEdgesButton(), this.createDeleteBendButton(), this.createLightingToggleButton(), this.createTileTypeButton(), this.createMoonToggleButton(), this.createFitCenterButton(), this.createExportButton(), this.tabContainer.appendChild(this.commonControlsContainer);
   }
   /**
    * Create edit toggle button (in common controls)
@@ -2946,7 +2995,7 @@ class Zr {
    * Create always show edges button (in common controls)
    */
   createAlwaysShowEdgesButton() {
-    this.alwaysShowEdgesButton = document.createElement("button"), this.alwaysShowEdgesButton.className = "relatos-always-show-edges-toggle", this.alwaysShowEdgesButton.innerHTML = ct("icon-relations", 16), this.alwaysShowEdgesButton.setAttribute("aria-label", "Toggle edges"), this.alwaysShowEdgesButton.setAttribute("title", "Toggle edges"), this.alwaysShowEdgesButton.style.padding = "6px", this.alwaysShowEdgesButton.style.border = "1px solid #ccc", this.alwaysShowEdgesButton.style.borderRadius = "4px", this.alwaysShowEdgesButton.style.backgroundColor = "#fff", this.alwaysShowEdgesButton.style.cursor = "pointer", this.alwaysShowEdgesButton.style.fontSize = "16px", this.alwaysShowEdgesButton.style.width = "32px", this.alwaysShowEdgesButton.style.height = "32px", this.alwaysShowEdgesButton.style.display = "flex", this.alwaysShowEdgesButton.style.alignItems = "center", this.alwaysShowEdgesButton.style.justifyContent = "center", this.alwaysShowEdgesButton.style.pointerEvents = "auto", this.alwaysShowEdgesButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.alwaysShowEdgesButton.style.transition = "0.2s", this.alwaysShowEdgesButton.style.color = "#000000", this.alwaysShowEdgesButton.addEventListener("click", () => {
+    this.alwaysShowEdgesButton = document.createElement("button"), this.alwaysShowEdgesButton.className = "relatos-always-show-edges-toggle", this.alwaysShowEdgesButton.innerHTML = tt("icon-relations", 16), this.alwaysShowEdgesButton.setAttribute("aria-label", "Toggle edges"), this.alwaysShowEdgesButton.setAttribute("title", "Toggle edges"), this.alwaysShowEdgesButton.style.padding = "6px", this.alwaysShowEdgesButton.style.border = "1px solid #ccc", this.alwaysShowEdgesButton.style.borderRadius = "4px", this.alwaysShowEdgesButton.style.backgroundColor = "#fff", this.alwaysShowEdgesButton.style.cursor = "pointer", this.alwaysShowEdgesButton.style.fontSize = "16px", this.alwaysShowEdgesButton.style.width = "32px", this.alwaysShowEdgesButton.style.height = "32px", this.alwaysShowEdgesButton.style.display = "flex", this.alwaysShowEdgesButton.style.alignItems = "center", this.alwaysShowEdgesButton.style.justifyContent = "center", this.alwaysShowEdgesButton.style.pointerEvents = "auto", this.alwaysShowEdgesButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.alwaysShowEdgesButton.style.transition = "0.2s", this.alwaysShowEdgesButton.style.color = "#000000", this.alwaysShowEdgesButton.addEventListener("click", () => {
       if (!this.currentView)
         return;
       const e = this.views.get(this.currentView);
@@ -2960,7 +3009,7 @@ class Zr {
    * Create lighting toggle button (in common controls)
    */
   createLightingToggleButton() {
-    this.lightingToggleButton = document.createElement("button"), this.lightingToggleButton.innerHTML = ct("icon-sun", 16), this.lightingToggleButton.setAttribute("aria-label", "Toggle lighting"), this.lightingToggleButton.setAttribute("title", "Toggle lighting"), this.lightingToggleButton.style.padding = "6px", this.lightingToggleButton.style.border = "1px solid #ccc", this.lightingToggleButton.style.borderRadius = "4px", this.lightingToggleButton.style.backgroundColor = "#fff", this.lightingToggleButton.style.cursor = "pointer", this.lightingToggleButton.style.fontSize = "16px", this.lightingToggleButton.style.width = "32px", this.lightingToggleButton.style.height = "32px", this.lightingToggleButton.style.display = "none", this.lightingToggleButton.style.alignItems = "center", this.lightingToggleButton.style.justifyContent = "center", this.lightingToggleButton.style.pointerEvents = "auto", this.lightingToggleButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.lightingToggleButton.style.transition = "0.2s", this.lightingToggleButton.addEventListener("click", () => {
+    this.lightingToggleButton = document.createElement("button"), this.lightingToggleButton.innerHTML = tt("icon-sun", 16), this.lightingToggleButton.setAttribute("aria-label", "Toggle lighting"), this.lightingToggleButton.setAttribute("title", "Toggle lighting"), this.lightingToggleButton.style.padding = "6px", this.lightingToggleButton.style.border = "1px solid #ccc", this.lightingToggleButton.style.borderRadius = "4px", this.lightingToggleButton.style.backgroundColor = "#fff", this.lightingToggleButton.style.cursor = "pointer", this.lightingToggleButton.style.fontSize = "16px", this.lightingToggleButton.style.width = "32px", this.lightingToggleButton.style.height = "32px", this.lightingToggleButton.style.display = "none", this.lightingToggleButton.style.alignItems = "center", this.lightingToggleButton.style.justifyContent = "center", this.lightingToggleButton.style.pointerEvents = "auto", this.lightingToggleButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.lightingToggleButton.style.transition = "0.2s", this.lightingToggleButton.addEventListener("click", () => {
       if (!this.currentView)
         return;
       const e = this.views.get(this.currentView);
@@ -2974,7 +3023,7 @@ class Zr {
    * Create tile type button (in common controls)
    */
   createTileTypeButton() {
-    this.tileTypeButton = document.createElement("button"), this.tileTypeButton.innerHTML = ct("icon-map-tiles", 16), this.tileTypeButton.setAttribute("aria-label", "Switch tile type"), this.tileTypeButton.setAttribute("title", "Switch tile type"), this.tileTypeButton.style.padding = "6px", this.tileTypeButton.style.border = "1px solid #ccc", this.tileTypeButton.style.borderRadius = "4px", this.tileTypeButton.style.backgroundColor = "#fff", this.tileTypeButton.style.cursor = "pointer", this.tileTypeButton.style.fontSize = "16px", this.tileTypeButton.style.width = "32px", this.tileTypeButton.style.height = "32px", this.tileTypeButton.style.display = "none", this.tileTypeButton.style.alignItems = "center", this.tileTypeButton.style.justifyContent = "center", this.tileTypeButton.style.pointerEvents = "auto", this.tileTypeButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.tileTypeButton.style.transition = "0.2s", this.tileTypeButton.addEventListener("click", () => {
+    this.tileTypeButton = document.createElement("button"), this.tileTypeButton.innerHTML = tt("icon-map-tiles", 16), this.tileTypeButton.setAttribute("aria-label", "Switch tile type"), this.tileTypeButton.setAttribute("title", "Switch tile type"), this.tileTypeButton.style.padding = "6px", this.tileTypeButton.style.border = "1px solid #ccc", this.tileTypeButton.style.borderRadius = "4px", this.tileTypeButton.style.backgroundColor = "#fff", this.tileTypeButton.style.cursor = "pointer", this.tileTypeButton.style.fontSize = "16px", this.tileTypeButton.style.width = "32px", this.tileTypeButton.style.height = "32px", this.tileTypeButton.style.display = "none", this.tileTypeButton.style.alignItems = "center", this.tileTypeButton.style.justifyContent = "center", this.tileTypeButton.style.pointerEvents = "auto", this.tileTypeButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.tileTypeButton.style.transition = "0.2s", this.tileTypeButton.addEventListener("click", () => {
       if (!this.currentView)
         return;
       let e = 0;
@@ -3025,7 +3074,7 @@ class Zr {
    * Create fit center button (in common controls)
    */
   createFitCenterButton() {
-    this.fitCenterButton = document.createElement("button"), this.fitCenterButton.innerHTML = ct("icon-home", 16), this.fitCenterButton.setAttribute("aria-label", "Fit and center"), this.fitCenterButton.setAttribute("title", "Fit and center"), this.fitCenterButton.style.padding = "6px", this.fitCenterButton.style.border = "1px solid #ccc", this.fitCenterButton.style.borderRadius = "4px", this.fitCenterButton.style.backgroundColor = "#fff", this.fitCenterButton.style.cursor = "pointer", this.fitCenterButton.style.fontSize = "16px", this.fitCenterButton.style.width = "32px", this.fitCenterButton.style.height = "32px", this.fitCenterButton.style.display = "flex", this.fitCenterButton.style.alignItems = "center", this.fitCenterButton.style.justifyContent = "center", this.fitCenterButton.style.pointerEvents = "auto", this.fitCenterButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.fitCenterButton.style.transition = "0.2s", this.fitCenterButton.addEventListener("click", () => {
+    this.fitCenterButton = document.createElement("button"), this.fitCenterButton.innerHTML = tt("icon-home", 16), this.fitCenterButton.setAttribute("aria-label", "Fit and center"), this.fitCenterButton.setAttribute("title", "Fit and center"), this.fitCenterButton.style.padding = "6px", this.fitCenterButton.style.border = "1px solid #ccc", this.fitCenterButton.style.borderRadius = "4px", this.fitCenterButton.style.backgroundColor = "#fff", this.fitCenterButton.style.cursor = "pointer", this.fitCenterButton.style.fontSize = "16px", this.fitCenterButton.style.width = "32px", this.fitCenterButton.style.height = "32px", this.fitCenterButton.style.display = "flex", this.fitCenterButton.style.alignItems = "center", this.fitCenterButton.style.justifyContent = "center", this.fitCenterButton.style.pointerEvents = "auto", this.fitCenterButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.fitCenterButton.style.transition = "0.2s", this.fitCenterButton.addEventListener("click", () => {
       if (!this.currentView)
         return;
       const e = this.views.get(this.currentView);
@@ -3037,7 +3086,7 @@ class Zr {
    * Exports nodes, edges, and groups to PlantUML format and copies to clipboard
    */
   createExportButton() {
-    this.exportButton = document.createElement("button"), this.exportButton.innerHTML = ct("icon-export", 16), this.exportButton.setAttribute("aria-label", "Export to PlantUML"), this.exportButton.setAttribute("title", "Export to PlantUML (copy to clipboard)"), this.exportButton.style.padding = "6px", this.exportButton.style.border = "1px solid #ccc", this.exportButton.style.borderRadius = "4px", this.exportButton.style.backgroundColor = "#fff", this.exportButton.style.cursor = "pointer", this.exportButton.style.fontSize = "16px", this.exportButton.style.width = "32px", this.exportButton.style.height = "32px", this.exportButton.style.display = "flex", this.exportButton.style.alignItems = "center", this.exportButton.style.justifyContent = "center", this.exportButton.style.pointerEvents = "auto", this.exportButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.exportButton.style.transition = "0.2s", this.exportButton.addEventListener("click", async () => {
+    this.exportButton = document.createElement("button"), this.exportButton.innerHTML = tt("icon-export", 16), this.exportButton.setAttribute("aria-label", "Export to PlantUML"), this.exportButton.setAttribute("title", "Export to PlantUML (copy to clipboard)"), this.exportButton.style.padding = "6px", this.exportButton.style.border = "1px solid #ccc", this.exportButton.style.borderRadius = "4px", this.exportButton.style.backgroundColor = "#fff", this.exportButton.style.cursor = "pointer", this.exportButton.style.fontSize = "16px", this.exportButton.style.width = "32px", this.exportButton.style.height = "32px", this.exportButton.style.display = "flex", this.exportButton.style.alignItems = "center", this.exportButton.style.justifyContent = "center", this.exportButton.style.pointerEvents = "auto", this.exportButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.exportButton.style.transition = "0.2s", this.exportButton.addEventListener("click", async () => {
       await this.exportToPlantUMLAndCopy();
     }), this.commonControlsContainer.appendChild(this.exportButton);
   }
@@ -3048,7 +3097,7 @@ class Zr {
     try {
       const e = Ke(this.nodes, this.edges, this.groups, this.plantUMLExportOptions);
       console.log("Exported PlantUML length:", e.length);
-      const t = await Vr(e);
+      const t = await Zr(e);
       this.exportButton && (t ? (this.exportButton.style.backgroundColor = "#c8e6c9", this.exportButton.style.borderColor = "#4caf50", this.exportButton.setAttribute("title", "Copied to clipboard!"), setTimeout(() => {
         this.exportButton && (this.exportButton.style.backgroundColor = "#fff", this.exportButton.style.borderColor = "#ccc", this.exportButton.setAttribute("title", "Export to PlantUML (copy to clipboard)"));
       }, 2e3)) : (this.exportButton.style.backgroundColor = "#ffcdd2", this.exportButton.style.borderColor = "#f44336", this.exportButton.setAttribute("title", "Failed to copy"), setTimeout(() => {
@@ -3083,7 +3132,7 @@ class Zr {
    * Create delete bend button (in common controls, Graph only)
    */
   createDeleteBendButton() {
-    this.deleteBendButton = document.createElement("button"), this.deleteBendButton.innerHTML = ct("icon-trash", 16), this.deleteBendButton.setAttribute("aria-label", "Delete bend point"), this.deleteBendButton.setAttribute("title", "Delete bend point"), this.deleteBendButton.style.padding = "6px", this.deleteBendButton.style.border = "1px solid #ccc", this.deleteBendButton.style.borderRadius = "4px", this.deleteBendButton.style.backgroundColor = "#fff", this.deleteBendButton.style.cursor = "pointer", this.deleteBendButton.style.fontSize = "16px", this.deleteBendButton.style.width = "32px", this.deleteBendButton.style.height = "32px", this.deleteBendButton.style.display = "none", this.deleteBendButton.style.alignItems = "center", this.deleteBendButton.style.justifyContent = "center", this.deleteBendButton.style.pointerEvents = "auto", this.deleteBendButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.deleteBendButton.style.transition = "0.2s", this.deleteBendButton.addEventListener("click", () => {
+    this.deleteBendButton = document.createElement("button"), this.deleteBendButton.innerHTML = tt("icon-trash", 16), this.deleteBendButton.setAttribute("aria-label", "Delete bend point"), this.deleteBendButton.setAttribute("title", "Delete bend point"), this.deleteBendButton.style.padding = "6px", this.deleteBendButton.style.border = "1px solid #ccc", this.deleteBendButton.style.borderRadius = "4px", this.deleteBendButton.style.backgroundColor = "#fff", this.deleteBendButton.style.cursor = "pointer", this.deleteBendButton.style.fontSize = "16px", this.deleteBendButton.style.width = "32px", this.deleteBendButton.style.height = "32px", this.deleteBendButton.style.display = "none", this.deleteBendButton.style.alignItems = "center", this.deleteBendButton.style.justifyContent = "center", this.deleteBendButton.style.pointerEvents = "auto", this.deleteBendButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.deleteBendButton.style.transition = "0.2s", this.deleteBendButton.addEventListener("click", () => {
       if (!this.currentView)
         return;
       const e = this.views.get(this.currentView);
@@ -3094,12 +3143,32 @@ class Zr {
    * Create cancel edit button (in common controls, Graph only)
    */
   createCancelEditButton() {
-    this.cancelEditButton = document.createElement("button"), this.cancelEditButton.innerHTML = ct("icon-undo", 16), this.cancelEditButton.setAttribute("aria-label", "Cancel edit"), this.cancelEditButton.setAttribute("title", "Cancel edit and restore previous state"), this.cancelEditButton.style.padding = "6px", this.cancelEditButton.style.border = "1px solid #ccc", this.cancelEditButton.style.borderRadius = "4px", this.cancelEditButton.style.backgroundColor = "#fff", this.cancelEditButton.style.cursor = "pointer", this.cancelEditButton.style.fontSize = "16px", this.cancelEditButton.style.width = "32px", this.cancelEditButton.style.height = "32px", this.cancelEditButton.style.display = "none", this.cancelEditButton.style.alignItems = "center", this.cancelEditButton.style.justifyContent = "center", this.cancelEditButton.style.pointerEvents = "auto", this.cancelEditButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.cancelEditButton.style.transition = "0.2s", this.cancelEditButton.addEventListener("click", () => {
+    this.cancelEditButton = document.createElement("button"), this.cancelEditButton.innerHTML = tt("icon-close", 16), this.cancelEditButton.setAttribute("aria-label", "Cancel edit"), this.cancelEditButton.setAttribute("title", "Cancel edit and restore previous state"), this.cancelEditButton.style.padding = "6px", this.cancelEditButton.style.border = "1px solid #ccc", this.cancelEditButton.style.borderRadius = "4px", this.cancelEditButton.style.backgroundColor = "#fff", this.cancelEditButton.style.cursor = "pointer", this.cancelEditButton.style.fontSize = "16px", this.cancelEditButton.style.width = "32px", this.cancelEditButton.style.height = "32px", this.cancelEditButton.style.display = "none", this.cancelEditButton.style.alignItems = "center", this.cancelEditButton.style.justifyContent = "center", this.cancelEditButton.style.pointerEvents = "auto", this.cancelEditButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.cancelEditButton.style.transition = "0.2s", this.cancelEditButton.addEventListener("click", () => {
       if (!this.currentView)
         return;
       const e = this.views.get(this.currentView);
       (e == null ? void 0 : e.cancelEdit) && e.cancelEdit();
     }), this.commonControlsContainer.appendChild(this.cancelEditButton);
+  }
+  /**
+   * Create undo button (Graph edit mode only)
+   */
+  createUndoButton() {
+    this.undoButton = document.createElement("button"), this.undoButton.innerHTML = tt("icon-undo", 16), this.undoButton.setAttribute("aria-label", "Undo"), this.undoButton.setAttribute("title", "Undo (Ctrl+Z)"), this.undoButton.style.padding = "6px", this.undoButton.style.border = "1px solid #ccc", this.undoButton.style.borderRadius = "4px", this.undoButton.style.backgroundColor = "#fff", this.undoButton.style.cursor = "pointer", this.undoButton.style.fontSize = "16px", this.undoButton.style.width = "32px", this.undoButton.style.height = "32px", this.undoButton.style.display = "none", this.undoButton.style.alignItems = "center", this.undoButton.style.justifyContent = "center", this.undoButton.style.pointerEvents = "auto", this.undoButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.undoButton.style.transition = "0.2s", this.undoButton.addEventListener("click", () => {
+      if (!this.currentView) return;
+      const e = this.views.get(this.currentView);
+      (e == null ? void 0 : e.undo) && e.undo();
+    }), this.commonControlsContainer.appendChild(this.undoButton);
+  }
+  /**
+   * Create redo button (Graph edit mode only)
+   */
+  createRedoButton() {
+    this.redoButton = document.createElement("button"), this.redoButton.innerHTML = tt("icon-redo", 16), this.redoButton.setAttribute("aria-label", "Redo"), this.redoButton.setAttribute("title", "Redo (Ctrl+Shift+Z)"), this.redoButton.style.padding = "6px", this.redoButton.style.border = "1px solid #ccc", this.redoButton.style.borderRadius = "4px", this.redoButton.style.backgroundColor = "#fff", this.redoButton.style.cursor = "pointer", this.redoButton.style.fontSize = "16px", this.redoButton.style.width = "32px", this.redoButton.style.height = "32px", this.redoButton.style.display = "none", this.redoButton.style.alignItems = "center", this.redoButton.style.justifyContent = "center", this.redoButton.style.pointerEvents = "auto", this.redoButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.redoButton.style.transition = "0.2s", this.redoButton.addEventListener("click", () => {
+      if (!this.currentView) return;
+      const e = this.views.get(this.currentView);
+      (e == null ? void 0 : e.redo) && e.redo();
+    }), this.commonControlsContainer.appendChild(this.redoButton);
   }
   /**
    * Update edit toggle button
@@ -3135,7 +3204,7 @@ class Zr {
     };
     for (const n of this.enabledViews) {
       const s = document.createElement("button");
-      s.innerHTML = ct(e[n], 16), s.setAttribute("aria-label", t[n]), s.setAttribute("title", t[n]), s.style.padding = "8px 16px", s.style.border = "1px solid #ccc", s.style.borderRadius = "4px 4px 0 0", s.style.backgroundColor = "#fff", s.style.cursor = "pointer", s.style.fontSize = "14px", s.style.display = "flex", s.style.alignItems = "center", s.style.justifyContent = "center", s.style.color = "#000000", s.style.pointerEvents = "auto", s.style.visibility = "visible", s.style.opacity = "1", s.addEventListener("click", () => {
+      s.innerHTML = tt(e[n], 16), s.setAttribute("aria-label", t[n]), s.setAttribute("title", t[n]), s.style.padding = "8px 16px", s.style.border = "1px solid #ccc", s.style.borderRadius = "4px 4px 0 0", s.style.backgroundColor = "#fff", s.style.cursor = "pointer", s.style.fontSize = "14px", s.style.display = "flex", s.style.alignItems = "center", s.style.justifyContent = "center", s.style.color = "#000000", s.style.pointerEvents = "auto", s.style.visibility = "visible", s.style.opacity = "1", s.addEventListener("click", () => {
         this.switchView(n);
       }), this.tabButtons.set(n, s), this.tabContainer.appendChild(s);
     }
@@ -3282,9 +3351,9 @@ class Zr {
     if (!this.commonControlsContainer)
       return;
     const n = [];
-    for (this.cancelEditButton && n.push(this.cancelEditButton), this.editToggleButton && n.push(this.editToggleButton), this.deleteBendButton && n.push(this.deleteBendButton), this.lightingToggleButton && n.push(this.lightingToggleButton), this.moonToggleButton && n.push(this.moonToggleButton), this.tileTypeButton && n.push(this.tileTypeButton), this.alwaysShowEdgesButton && this.hasEdges && n.push(this.alwaysShowEdgesButton), this.fitCenterButton && n.push(this.fitCenterButton), this.exportButton && n.push(this.exportButton); this.commonControlsContainer.firstChild; )
+    for (this.cancelEditButton && n.push(this.cancelEditButton), this.undoButton && n.push(this.undoButton), this.redoButton && n.push(this.redoButton), this.editToggleButton && n.push(this.editToggleButton), this.deleteBendButton && n.push(this.deleteBendButton), this.lightingToggleButton && n.push(this.lightingToggleButton), this.moonToggleButton && n.push(this.moonToggleButton), this.tileTypeButton && n.push(this.tileTypeButton), this.alwaysShowEdgesButton && this.hasEdges && n.push(this.alwaysShowEdgesButton), this.fitCenterButton && n.push(this.fitCenterButton), this.exportButton && n.push(this.exportButton); this.commonControlsContainer.firstChild; )
       this.commonControlsContainer.removeChild(this.commonControlsContainer.firstChild);
-    e ? (this.deleteBendButton && this.commonControlsContainer.appendChild(this.deleteBendButton), this.cancelEditButton && this.commonControlsContainer.appendChild(this.cancelEditButton), this.editToggleButton && this.commonControlsContainer.appendChild(this.editToggleButton), this.alwaysShowEdgesButton && this.hasEdges && this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton), this.fitCenterButton && this.commonControlsContainer.appendChild(this.fitCenterButton), this.exportButton && this.commonControlsContainer.appendChild(this.exportButton)) : t && (this.moonToggleButton && this.currentView === "map2d" && this.commonControlsContainer.appendChild(this.moonToggleButton), this.lightingToggleButton && this.commonControlsContainer.appendChild(this.lightingToggleButton), this.tileTypeButton && this.commonControlsContainer.appendChild(this.tileTypeButton), this.alwaysShowEdgesButton && this.hasEdges && this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton), this.fitCenterButton && this.commonControlsContainer.appendChild(this.fitCenterButton), this.exportButton && this.commonControlsContainer.appendChild(this.exportButton));
+    e ? (this.undoButton && this.commonControlsContainer.appendChild(this.undoButton), this.redoButton && this.commonControlsContainer.appendChild(this.redoButton), this.deleteBendButton && this.commonControlsContainer.appendChild(this.deleteBendButton), this.cancelEditButton && this.commonControlsContainer.appendChild(this.cancelEditButton), this.editToggleButton && this.commonControlsContainer.appendChild(this.editToggleButton), this.alwaysShowEdgesButton && this.hasEdges && this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton), this.fitCenterButton && this.commonControlsContainer.appendChild(this.fitCenterButton), this.exportButton && this.commonControlsContainer.appendChild(this.exportButton)) : t && (this.moonToggleButton && this.currentView === "map2d" && this.commonControlsContainer.appendChild(this.moonToggleButton), this.lightingToggleButton && this.commonControlsContainer.appendChild(this.lightingToggleButton), this.tileTypeButton && this.commonControlsContainer.appendChild(this.tileTypeButton), this.alwaysShowEdgesButton && this.hasEdges && this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton), this.fitCenterButton && this.commonControlsContainer.appendChild(this.fitCenterButton), this.exportButton && this.commonControlsContainer.appendChild(this.exportButton));
   }
   /**
    * Update always show edges button visibility based on edges existence
@@ -3387,10 +3456,32 @@ class Zr {
       this.deleteBendButton.style.display = "none";
   }
   /**
+   * Update undo/redo button visibility and enabled state (Graph edit mode only)
+   */
+  updateUndoRedoButtons() {
+    var _a, _b, _c;
+    if (!this.undoButton || !this.redoButton) return;
+    if (!this.currentView || this.currentView !== "graph") {
+      this.undoButton.style.display = "none", this.redoButton.style.display = "none";
+      return;
+    }
+    const e = this.views.get(this.currentView);
+    if (!e) {
+      this.undoButton.style.display = "none", this.redoButton.style.display = "none";
+      return;
+    }
+    const t = e;
+    if (!(((_a = t.getMode) == null ? void 0 : _a.call(t)) === "edit")) {
+      this.undoButton.style.display = "none", this.redoButton.style.display = "none";
+      return;
+    }
+    this.undoButton.style.display = "flex", this.redoButton.style.display = "flex", this.undoButton.disabled = !((_b = t.canUndo) == null ? void 0 : _b.call(t)), this.redoButton.disabled = !((_c = t.canRedo) == null ? void 0 : _c.call(t));
+  }
+  /**
    * Update Graph-specific buttons (called from GraphView when state changes)
    */
   updateGraphButtons() {
-    this.updateCancelEditButton(), this.updateDeleteBendButton();
+    this.updateCancelEditButton(), this.updateUndoRedoButtons(), this.updateDeleteBendButton();
   }
   /**
    * Destroy
@@ -3406,9 +3497,9 @@ function Ht(i, e = 16) {
     <use href="#${i}"></use>
   </svg>`;
 }
-class jr {
+const _oi = class _oi {
   constructor(e, t, n, s = false, o, a) {
-    this.nodes = [], this.edges = [], this.groups = [], this.mode = "view", this.editable = false, this.nodeElements = /* @__PURE__ */ new Map(), this.edgeElements = /* @__PURE__ */ new Map(), this.selectedEdgeId = null, this.selectedNodeId = null, this.zoomedNodeId = null, this.anchorHandles = /* @__PURE__ */ new Map(), this.draggingAnchor = null, this.bendHandles = /* @__PURE__ */ new Map(), this.draggingBend = null, this.draggingNode = null, this.draggingGroup = null, this.panning = null, this.lastPanEndTime = 0, this.resizingNode = null, this.resizingGroup = null, this.saveDebounceTimer = null, this.SAVE_DEBOUNCE_MS = 500, this.resizeRenderTimer = null, this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.alwaysShowEdges = false, this.hoveredEdgePairKey = null, this.tappedEdgePairKey = null, this.snapshotBeforeEdit = null, this.edgeClickTimers = /* @__PURE__ */ new WeakMap(), this.offsetX = 0, this.offsetY = 0, this.zoom = 1, this.pinchDistance = null, this.pinchCenter = null, this.initialZoom = 1, this.popupElement = null, this.popupNodeId = null, this.DEFAULT_NODE_WIDTH = 120, this.DEFAULT_NODE_HEIGHT = 60, this.EDGE_DEFAULT_COLOR = "#999", this.EDGE_HOVER_COLOR = "#333", this.EDGE_DEFAULT_WIDTH = 1.5, this.EDGE_HOVER_WIDTH = 3, this.EDGE_MIN_WEIGHT = 1, this.EDGE_MAX_WEIGHT = 10, this.NODE_PADDING = 10, this.HANDLE_RADIUS = 8, this.BEND_HANDLE_RADIUS = 7, this.HIT_PATH_WIDTH = 32, this.controlButtonsContainer = null, this.deleteBendButton = null, this.fitCenterButton = null, this.cancelEditButton = null, this.container = e, this.onNodeClick = t ? (r) => {
+    this.nodes = [], this.edges = [], this.groups = [], this.mode = "view", this.editable = false, this.nodeElements = /* @__PURE__ */ new Map(), this.edgeElements = /* @__PURE__ */ new Map(), this.selectedEdgeId = null, this.selectedNodeId = null, this.zoomedNodeId = null, this.anchorHandles = /* @__PURE__ */ new Map(), this.draggingAnchor = null, this.bendHandles = /* @__PURE__ */ new Map(), this.draggingBend = null, this.draggingNode = null, this.draggingGroup = null, this.panning = null, this.lastPanEndTime = 0, this.resizingNode = null, this.resizingGroup = null, this.saveDebounceTimer = null, this.SAVE_DEBOUNCE_MS = 500, this.resizeRenderTimer = null, this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.alwaysShowEdges = false, this.hoveredEdgePairKey = null, this.tappedEdgePairKey = null, this.snapshotBeforeEdit = null, this.edgeClickTimers = /* @__PURE__ */ new WeakMap(), this.undoStack = [], this.redoStack = [], this.offsetX = 0, this.offsetY = 0, this.zoom = 1, this.pinchDistance = null, this.pinchCenter = null, this.initialZoom = 1, this.popupElement = null, this.popupNodeId = null, this.DEFAULT_NODE_WIDTH = 120, this.DEFAULT_NODE_HEIGHT = 60, this.EDGE_DEFAULT_COLOR = "#999", this.EDGE_HOVER_COLOR = "#333", this.EDGE_DEFAULT_WIDTH = 1.5, this.EDGE_HOVER_WIDTH = 3, this.EDGE_MIN_WEIGHT = 1, this.EDGE_MAX_WEIGHT = 10, this.NODE_PADDING = 10, this.HANDLE_RADIUS = 8, this.BEND_HANDLE_RADIUS = 7, this.HIT_PATH_WIDTH = 32, this.controlButtonsContainer = null, this.deleteBendButton = null, this.fitCenterButton = null, this.cancelEditButton = null, this.container = e, this.onNodeClick = t ? (r) => {
       this.popupNodeId === r.node.id && this.popupElement && this.popupElement.style.opacity === "1" ? this.hidePopup() : this.showPopup(r.node), t(r);
     } : void 0, this.onSave = n, this.editable = s, this.onEdgeClick = o, this.onGroupClick = a, this.container.style.position = "relative", this.container.style.width = "100%", this.container.style.height = "100%", this.container.style.overflow = "visible", this.createAlwaysShowEdgesButton(), this.alwaysShowEdgesButton && (this.alwaysShowEdgesButton.style.display = "none", this.alwaysShowEdgesButton.parentNode && this.alwaysShowEdgesButton.parentNode.removeChild(this.alwaysShowEdgesButton)), this.createEditToggleButton(), this.editToggleButton && (this.editToggleButton.style.display = "none", this.editToggleButton.parentNode && this.editToggleButton.parentNode.removeChild(this.editToggleButton)), this.createControlButtons(), this.controlButtonsContainer && (this.controlButtonsContainer.style.display = "none", this.controlButtonsContainer.parentNode && this.controlButtonsContainer.parentNode.removeChild(this.controlButtonsContainer)), this.createAttributionLabel(), this.svgWrapper = document.createElement("div"), this.svgWrapper.style.position = "absolute", this.svgWrapper.style.top = "0", this.svgWrapper.style.left = "0", this.svgWrapper.style.width = "100%", this.svgWrapper.style.height = "100%", this.svgWrapper.style.transformOrigin = "0 0", this.svgWrapper.style.pointerEvents = "none", this.container.appendChild(this.svgWrapper), this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"), this.svg.style.width = "100%", this.svg.style.height = "100%", this.svg.style.display = "block", this.svg.style.pointerEvents = "auto", this.svgWrapper.appendChild(this.svg), this.svgDefs = document.createElementNS("http://www.w3.org/2000/svg", "defs"), this.createArrowMarkers(), this.svg.appendChild(this.svgDefs), this.groupsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g"), this.groupsGroup.setAttribute("class", "groups"), this.svg.appendChild(this.groupsGroup), this.edgesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g"), this.edgesGroup.setAttribute("class", "edges"), this.svg.appendChild(this.edgesGroup), this.nodesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g"), this.nodesGroup.setAttribute("class", "nodes"), this.svg.appendChild(this.nodesGroup), this.anchorHandlesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g"), this.anchorHandlesGroup.setAttribute("class", "anchor-handles"), this.anchorHandlesGroup.style.display = "none", this.svg.appendChild(this.anchorHandlesGroup), this.bendHandlesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g"), this.bendHandlesGroup.setAttribute("class", "bend-handles"), this.bendHandlesGroup.style.display = "none", this.svg.appendChild(this.bendHandlesGroup), this.edgeLabelsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g"), this.edgeLabelsGroup.setAttribute("class", "edge-labels"), this.svg.appendChild(this.edgeLabelsGroup), this.updateTransform(), this.setupEventListeners();
   }
@@ -3454,7 +3545,7 @@ class jr {
       this.selectedEdgeId && this.deleteNearestBendPoint();
     }), this.deleteBendButton.style.display = "none", this.fitCenterButton = this.createIconButton(Ht("icon-home", 16), "Fit and center", "Fit and center", () => {
       this.fitAndCenter();
-    }), this.fitCenterButton.style.display = "none", this.cancelEditButton = this.createIconButton(Ht("icon-undo", 16), "Cancel edit", "Cancel edit and restore previous state", () => {
+    }), this.fitCenterButton.style.display = "none", this.cancelEditButton = this.createIconButton(Ht("icon-close", 16), "Cancel edit", "Cancel edit and restore previous state", () => {
       this.restoreSnapshot(), this.setMode("view");
     }), this.cancelEditButton.style.display = "none", this.controlButtonsContainer.appendChild(this.deleteBendButton), this.controlButtonsContainer.appendChild(this.fitCenterButton), this.controlButtonsContainer.appendChild(this.cancelEditButton);
   }
@@ -3606,6 +3697,7 @@ class jr {
           if (g) {
             const c = this.nodes.find((u) => u.id === g);
             if (c == null ? void 0 : c.position) {
+              this.pushUndoState();
               const u = c.style || {}, f = u.width || this.DEFAULT_NODE_WIDTH, p = u.height || this.DEFAULT_NODE_HEIGHT, y = this.screenToSvg(s.clientX, s.clientY);
               this.resizingNode = {
                 nodeId: g,
@@ -3624,6 +3716,7 @@ class jr {
         if (a) {
           const g = this.nodes.find((c) => c.id === a);
           if (g == null ? void 0 : g.position) {
+            this.pushUndoState();
             const c = this.screenToSvg(s.clientX, s.clientY);
             this.draggingNode = {
               nodeId: a,
@@ -3641,6 +3734,7 @@ class jr {
               if (w && w.bends) {
                 const m = parseInt(l, 10);
                 if (m >= 0 && m < w.bends.length) {
+                  this.pushUndoState();
                   const b = w.bends[m];
                   this.draggingBend = {
                     edgeId: g,
@@ -3664,6 +3758,7 @@ class jr {
                 if (b) {
                   const _ = h === "src" ? w.b : w.a, E = this.nodes.find((C) => C.id === _);
                   if (E) {
+                    this.pushUndoState();
                     const C = h === "src" ? w.srcAnchor || this.estimateAnchor(b, E) : w.dstAnchor || this.estimateAnchor(b, E), v = b.style || {}, B = v.width || this.DEFAULT_NODE_WIDTH, T = v.height || this.DEFAULT_NODE_HEIGHT, x = this.calculateAnchorPosition(b, C, B, T);
                     this.draggingAnchor = {
                       edgeId: g,
@@ -3782,7 +3877,17 @@ class jr {
     }), this.svg.addEventListener("pointercancel", (s) => {
       s.pointerType === "touch" && (n.delete(s.pointerId), n.size < 2 && (this.pinchDistance = null, this.pinchCenter = null)), s.target instanceof SVGElement && s.target.releasePointerCapture(s.pointerId), this.resizingNode && this.handleResizeEnd(), this.panning && (this.lastPanEndTime = Date.now()), this.panning = null, this.resizingNode ? this.handleResizeEnd() : this.resizingGroup && this.handleGroupResizeEnd(), this.resizingNode = null, this.resizingGroup = null, this.draggingNode = null, this.draggingGroup = null, this.draggingAnchor = null, this.draggingBend = null;
     }), this.container.addEventListener("keydown", (s) => {
-      this.mode !== "edit" || !this.selectedEdgeId || (s.key === "Delete" || s.key === "Backspace") && (this.deleteNearestBendPoint(), s.preventDefault());
+      if (this.mode === "edit") {
+        if ((s.ctrlKey || s.metaKey) && s.key === "z" && !s.shiftKey) {
+          this.canUndo() && (this.undo(), s.preventDefault());
+          return;
+        }
+        if ((s.ctrlKey || s.metaKey) && (s.key === "y" || s.key === "z" && s.shiftKey)) {
+          this.canRedo() && (this.redo(), s.preventDefault());
+          return;
+        }
+        this.selectedEdgeId && (s.key === "Delete" || s.key === "Backspace") && (this.deleteNearestBendPoint(), s.preventDefault());
+      }
     }), this.container.setAttribute("tabindex", "0"), this.container.addEventListener("wheel", (s) => {
       if (s.ctrlKey || s.metaKey) {
         s.preventDefault();
@@ -3901,10 +4006,10 @@ class jr {
         const [N, P] = k.coordinates, G = (P - A.minLon) / (A.maxLon - A.minLon), j = 1 - (N - A.minLat) / (A.maxLat - A.minLat), Z = {
           x: u + G * g,
           y: j * c
-        }, K = k.style || {}, lt = K.width || this.DEFAULT_NODE_WIDTH, mt = K.height || this.DEFAULT_NODE_HEIGHT, F = Z.x, R = Z.y;
+        }, K = k.style || {}, ht = K.width || this.DEFAULT_NODE_WIDTH, mt = K.height || this.DEFAULT_NODE_HEIGHT, F = Z.x, R = Z.y;
         L.set(k.id, { originalCenterX: F, originalCenterY: R }), S.set(k.id, {
           node: k,
-          width: lt,
+          width: ht,
           height: mt,
           originalCenterX: F,
           originalCenterY: R
@@ -4021,55 +4126,55 @@ class jr {
           const [T, x] = w[B], A = g.get(T), L = c.get(T), S = u(T), k = t.get(b), N = t.get(T), P = N.originalCenterX - k.originalCenterX, G = N.originalCenterY - k.originalCenterY, j = Math.sqrt(P * P + G * G);
           if (j === 0) continue;
           const Z = P / j, K = G / j;
-          let lt = false, mt = 0;
+          let ht = false, mt = 0;
           for (const F of v) {
             const R = f(F);
             if (R)
               for (const wt of S) {
-                let ht = false;
+                let dt = false;
                 if (F.id === wt.id)
-                  ht = true;
+                  dt = true;
                 else {
-                  const q = (nt, dt) => {
-                    if (dt.parentId === nt.id) return true;
-                    if (!dt.parentId) return false;
-                    const J = this.groups.find((st) => st.id === dt.parentId);
-                    return J ? q(nt, J) : false;
+                  const q = (st, ct) => {
+                    if (ct.parentId === st.id) return true;
+                    if (!ct.parentId) return false;
+                    const J = this.groups.find((ot) => ot.id === ct.parentId);
+                    return J ? q(st, J) : false;
                   };
-                  ht = q(F, wt) || q(wt, F);
+                  dt = q(F, wt) || q(wt, F);
                 }
-                if (ht) continue;
+                if (dt) continue;
                 const z = f(wt);
                 if (!z) continue;
                 const At = R.minX < z.maxX + 60 && R.maxX + 60 > z.minX, Bt = R.minY < z.maxY + 60 && R.maxY + 60 > z.minY;
                 if (At && Bt) {
-                  lt = true;
-                  const q = (R.minX + R.maxX) / 2, nt = (R.minY + R.maxY) / 2, dt = (z.minX + z.maxX) / 2, J = (z.minY + z.maxY) / 2, st = dt - q, oe = J - nt, Ee = Math.sqrt(st * st + oe * oe), Ce = R.maxX - R.minX, re = R.maxY - R.minY, ae = z.maxX - z.minX, Mn = z.maxY - z.minY, Nn = Math.abs(Ce * Z) + Math.abs(re * K), Dn = Math.abs(ae * Z) + Math.abs(Mn * K), oi = (Nn + Dn) / 2 + 60;
-                  Ee < oi && (mt = Math.max(mt, oi));
+                  ht = true;
+                  const q = (R.minX + R.maxX) / 2, st = (R.minY + R.maxY) / 2, ct = (z.minX + z.maxX) / 2, J = (z.minY + z.maxY) / 2, ot = ct - q, oe = J - st, Ee = Math.sqrt(ot * ot + oe * oe), Ce = R.maxX - R.minX, re = R.maxY - R.minY, ae = z.maxX - z.minX, Nn = z.maxY - z.minY, Dn = Math.abs(Ce * Z) + Math.abs(re * K), Rn = Math.abs(ae * Z) + Math.abs(Nn * K), ri = (Dn + Rn) / 2 + 60;
+                  Ee < ri && (mt = Math.max(mt, ri));
                 }
               }
           }
-          if (lt && mt > 0) {
+          if (ht && mt > 0) {
             y = true;
             const F = A.centerX - E.centerX, R = A.centerY - E.centerY;
             if (Math.sqrt(F * F + R * R) < mt) {
-              const ht = l.has(b), z = l.has(T);
-              if (ht && z)
+              const dt = l.has(b), z = l.has(T);
+              if (dt && z)
                 continue;
-              const At = mt / j, Bt = P * At, q = G * At, nt = k.originalCenterX + Bt, dt = k.originalCenterY + q, J = (nt - A.centerX) / 2, st = (dt - A.centerY) / 2;
-              ht || (E.centerX -= J, E.centerY -= st, C.x = E.centerX - _.width / 2, C.y = E.centerY - _.height / 2), z || (A.centerX += J, A.centerY += st, L.x = A.centerX - x.width / 2, L.y = A.centerY - x.height / 2);
+              const At = mt / j, Bt = P * At, q = G * At, st = k.originalCenterX + Bt, ct = k.originalCenterY + q, J = (st - A.centerX) / 2, ot = (ct - A.centerY) / 2;
+              dt || (E.centerX -= J, E.centerY -= ot, C.x = E.centerX - _.width / 2, C.y = E.centerY - _.height / 2), z || (A.centerX += J, A.centerY += ot, L.x = A.centerX - x.width / 2, L.y = A.centerY - x.height / 2);
             }
           }
-          if (!lt) {
+          if (!ht) {
             const F = l.has(b), R = l.has(T);
             if (F && R)
               continue;
-            const wt = C.x < L.x + L.width + 20 && C.x + C.width + 20 > L.x, ht = C.y < L.y + L.height + 20 && C.y + C.height + 20 > L.y;
-            if (wt && ht) {
+            const wt = C.x < L.x + L.width + 20 && C.x + C.width + 20 > L.x, dt = C.y < L.y + L.height + 20 && C.y + C.height + 20 > L.y;
+            if (wt && dt) {
               y = true;
-              const z = Math.abs(_.width * Z) + Math.abs(_.height * K), At = Math.abs(x.width * Z) + Math.abs(x.height * K), Bt = (z + At) / 2 + 20, q = A.centerX - E.centerX, nt = A.centerY - E.centerY;
-              if (Math.sqrt(q * q + nt * nt) < Bt) {
-                const J = Bt / j, st = P * J, oe = G * J, Ee = k.originalCenterX + st, Ce = k.originalCenterY + oe, re = (Ee - A.centerX) / 2, ae = (Ce - A.centerY) / 2;
+              const z = Math.abs(_.width * Z) + Math.abs(_.height * K), At = Math.abs(x.width * Z) + Math.abs(x.height * K), Bt = (z + At) / 2 + 20, q = A.centerX - E.centerX, st = A.centerY - E.centerY;
+              if (Math.sqrt(q * q + st * st) < Bt) {
+                const J = Bt / j, ot = P * J, oe = G * J, Ee = k.originalCenterX + ot, Ce = k.originalCenterY + oe, re = (Ee - A.centerX) / 2, ae = (Ce - A.centerY) / 2;
                 F || (E.centerX -= re, E.centerY -= ae, C.x = E.centerX - _.width / 2, C.y = E.centerY - _.height / 2), R || (A.centerX += re, A.centerY += ae, L.x = A.centerX - x.width / 2, L.y = A.centerY - x.height / 2);
               }
             }
@@ -4362,8 +4467,8 @@ class jr {
               if (Math.abs(b.relativeDx) > Math.abs(b.relativeDy))
                 x = (b.relativeDx > 0 ? -1 : 1) * Math.abs(C) / B * T, A = v / B * T * 0.5;
               else {
-                const lt = b.relativeDy > 0 ? -1 : 1;
-                x = C / B * T * 0.5, A = lt * Math.abs(v) / B * T;
+                const ht = b.relativeDy > 0 ? -1 : 1;
+                x = C / B * T * 0.5, A = ht * Math.abs(v) / B * T;
               }
             else
               x = C / B * T, A = v / B * T;
@@ -4528,6 +4633,7 @@ class jr {
     const t = this.edges.find((l) => l.id === e);
     if (!t)
       return;
+    this.pushUndoState();
     const [n, s] = t.src < t.dst ? [t.src, t.dst] : [t.dst, t.src], o = `${n}||${s}`, a = this.groupEdgesByPair(this.edges).find((l) => l.key === o);
     if (!a)
       return;
@@ -4721,6 +4827,106 @@ class jr {
     })), this.render(), this.deselectEdge());
   }
   /**
+   * Clone current nodes, edges, groups (editable state only)
+   */
+  cloneState() {
+    return {
+      nodes: this.nodes.map((e) => ({
+        ...e,
+        position: e.position ? { ...e.position } : void 0,
+        style: e.style ? { ...e.style } : void 0,
+        meta: e.meta ? { ...e.meta } : void 0
+      })),
+      edges: this.edges.map((e) => ({
+        ...e,
+        srcAnchor: e.srcAnchor ? { ...e.srcAnchor } : void 0,
+        dstAnchor: e.dstAnchor ? { ...e.dstAnchor } : void 0,
+        bends: e.bends ? e.bends.map((t) => ({ ...t })) : void 0,
+        style: e.style ? { ...e.style } : void 0,
+        meta: e.meta ? { ...e.meta } : void 0
+      })),
+      groups: this.groups.map((e) => ({
+        ...e,
+        layout: e.layout ? {
+          position: { ...e.layout.position },
+          size: { ...e.layout.size }
+        } : void 0,
+        meta: e.meta ? { ...e.meta } : void 0
+      }))
+    };
+  }
+  /**
+   * Push current state to undo stack (call at start of an edit)
+   */
+  pushUndoState() {
+    var _a;
+    if (this.mode !== "edit")
+      return;
+    const e = this.cloneState();
+    this.undoStack.push(e), this.undoStack.length > _oi.MAX_UNDO_LEVELS && this.undoStack.shift(), this.redoStack = [], (_a = this.onGraphButtonsUpdate) == null ? void 0 : _a.call(this);
+  }
+  /**
+   * Apply a snapshot to current state
+   */
+  applyState(e) {
+    this.nodes = e.nodes.map((t) => ({
+      ...t,
+      position: t.position ? { ...t.position } : void 0,
+      style: t.style ? { ...t.style } : void 0,
+      meta: t.meta ? { ...t.meta } : void 0
+    })), this.edges = e.edges.map((t) => ({
+      ...t,
+      srcAnchor: t.srcAnchor ? { ...t.srcAnchor } : void 0,
+      dstAnchor: t.dstAnchor ? { ...t.dstAnchor } : void 0,
+      bends: t.bends ? t.bends.map((n) => ({ ...n })) : void 0,
+      style: t.style ? { ...t.style } : void 0,
+      meta: t.meta ? { ...t.meta } : void 0
+    })), this.groups = e.groups.map((t) => ({
+      ...t,
+      layout: t.layout ? {
+        position: { ...t.layout.position },
+        size: { ...t.layout.size }
+      } : void 0,
+      meta: t.meta ? { ...t.meta } : void 0
+    }));
+  }
+  /**
+   * Undo last edit (Graph edit mode only)
+   */
+  undo() {
+    var _a;
+    if (this.mode !== "edit" || this.undoStack.length === 0)
+      return;
+    const e = this.cloneState();
+    this.redoStack.push(e);
+    const t = this.undoStack.pop();
+    this.applyState(t), this.render(), this.updateAnchorHandles(), this.updateBendHandles(), this.updateControlButtons(), this.debouncedSave(), (_a = this.onGraphButtonsUpdate) == null ? void 0 : _a.call(this);
+  }
+  /**
+   * Redo last undone edit (Graph edit mode only)
+   */
+  redo() {
+    var _a;
+    if (this.mode !== "edit" || this.redoStack.length === 0)
+      return;
+    const e = this.cloneState();
+    this.undoStack.push(e);
+    const t = this.redoStack.pop();
+    this.applyState(t), this.render(), this.updateAnchorHandles(), this.updateBendHandles(), this.updateControlButtons(), this.debouncedSave(), (_a = this.onGraphButtonsUpdate) == null ? void 0 : _a.call(this);
+  }
+  /**
+   * Whether undo is available (for ViewContainer button state)
+   */
+  canUndo() {
+    return this.mode === "edit" && this.undoStack.length > 0;
+  }
+  /**
+   * Whether redo is available (for ViewContainer button state)
+   */
+  canRedo() {
+    return this.mode === "edit" && this.redoStack.length > 0;
+  }
+  /**
    * Update anchor position (during drag)
    */
   updateAnchorPosition(e) {
@@ -4788,6 +4994,7 @@ class jr {
     const n = this.edges.find((S) => S.id === e);
     if (!n)
       return;
+    this.pushUndoState();
     const [s, o] = n.src < n.dst ? [n.src, n.dst] : [n.dst, n.src], a = `${s}||${o}`, r = this.groupEdgesByPair(this.edges).find((S) => S.key === a);
     if (!r)
       return;
@@ -4832,7 +5039,7 @@ class jr {
       return;
     const [t, n] = e.src < e.dst ? [e.src, e.dst] : [e.dst, e.src], s = `${t}||${n}`, o = this.groupEdgesByPair(this.edges).find((a) => a.key === s);
     if (!(!o || !o.bends || o.bends.length === 0)) {
-      o.bends.pop(), o.bends.length === 0 && delete o.bends;
+      this.pushUndoState(), o.bends.pop(), o.bends.length === 0 && delete o.bends;
       for (const a of o.edges)
         o.bends ? a.bends = [...o.bends] : delete a.bends;
       this.render(), this.updateBendHandles(), this.updateControlButtons();
@@ -5113,6 +5320,7 @@ class jr {
       const a = this.screenToSvg(s.clientX, s.clientY), r = a.x, h = a.y;
       if (!t.layout)
         return;
+      this.pushUndoState();
       const l = t.layout.position.x, d = t.layout.position.y;
       this.draggingGroup = {
         groupId: t.id,
@@ -5151,7 +5359,7 @@ class jr {
           return;
         c.stopPropagation(), c.preventDefault(), r.setPointerCapture(c.pointerId);
         const u = this.screenToSvg(c.clientX, c.clientY), f = u.x, p = u.y;
-        t.layout && (this.resizingGroup = {
+        t.layout && (this.pushUndoState(), this.resizingGroup = {
           groupId: t.id,
           side: a,
           startX: f,
@@ -5389,7 +5597,7 @@ class jr {
     if (!this.editable && e === "edit")
       return;
     const t = this.mode === "edit";
-    e === "edit" && this.mode === "view" && this.saveSnapshot(), this.mode = e, this.render(), e === "view" && (this.deselectEdge(), t && this.onSave && this.onSave({
+    e === "edit" && this.mode === "view" && (this.saveSnapshot(), this.undoStack = [], this.redoStack = []), this.mode = e, this.render(), e === "view" && (this.deselectEdge(), t && this.onSave && this.onSave({
       nodes: this.nodes,
       edges: this.edges,
       groups: this.groups.length > 0 ? this.groups : void 0
@@ -5578,7 +5786,9 @@ class jr {
   destroy() {
     this.nodeElements.clear(), this.edgeElements.clear(), this.container.contains(this.svg) && this.container.removeChild(this.svg);
   }
-}
+};
+_oi.MAX_UNDO_LEVELS = 50;
+let oi = _oi;
 function Kr(i, e = 16) {
   return Dt(), `<svg width="${e}" height="${e}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${i}"></use>
@@ -7529,7 +7739,7 @@ function na(i, e = {}) {
     t = c;
   } else
     t = i;
-  const n = e.enabledViews || ["graph", "map2d", "globe3d"], s = e.initialView || (n.includes("map2d") ? "map2d" : n[0]), o = ((_a = e.graph) == null ? void 0 : _a.mode) || "view", a = ((_b = e.graph) == null ? void 0 : _b.editable) || false, r = e.tileServers, h = new Zr(t, n);
+  const n = e.enabledViews || ["graph", "map2d", "globe3d"], s = e.initialView || (n.includes("map2d") ? "map2d" : n[0]), o = ((_a = e.graph) == null ? void 0 : _a.mode) || "view", a = ((_b = e.graph) == null ? void 0 : _b.editable) || false, r = e.tileServers, h = new jr(t, n);
   e.time && h.setTime(e.time), typeof e.enableLighting == "boolean" && h.setLightingEnabled(e.enableLighting), e.tables && h.setTableOptions(e.tables), ((_c = e.events) == null ? void 0 : _c.onNodeClick) && h.setOnNodeClickCallback(e.events.onNodeClick);
   const l = ((_d = e.events) == null ? void 0 : _d.onNodeClick) ? (c) => {
     e.events.onNodeClick(c), h.highlightNodeRow(c.node.id);
@@ -7543,7 +7753,7 @@ function na(i, e = {}) {
   if (n.includes("graph")) {
     const c = document.createElement("div");
     c.style.width = "100%", c.style.height = "100%", h.getViewContainer().appendChild(c);
-    const u = new jr(
+    const u = new oi(
       c,
       l || ((_e2 = e.events) == null ? void 0 : _e2.onNodeClick),
       (_f = e.events) == null ? void 0 : _f.onSave,
@@ -7666,7 +7876,7 @@ function na(i, e = {}) {
       return Ke(u.nodes, u.edges, u.groups, f);
     },
     importFromPlantUML(c) {
-      const u = Wr(c), f = h.getView("graph");
+      const u = Vr(c), f = h.getView("graph");
       f && f.setData(u.nodes, u.edges, u.groups);
       const p = h.getView("map2d");
       p && p.setData(u.nodes, u.edges);
@@ -7681,9 +7891,9 @@ function na(i, e = {}) {
 export {
   na as createRelatosViewer,
   ta as decodeAndInflate,
-  Nr as deflateAndEncode,
+  Dr as deflateAndEncode,
   Ke as exportToPlantUML,
   ia as getPlantUMLServerUrl,
-  Wr as importFromPlantUML,
+  Vr as importFromPlantUML,
   ea as isDeflateEncoded
 };

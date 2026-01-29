@@ -124,6 +124,26 @@ export interface View {
    * Cancel edit mode (Graph only)
    */
   cancelEdit?(): void;
+
+  /**
+   * Undo last edit (Graph edit mode only)
+   */
+  undo?(): void;
+
+  /**
+   * Redo last undone edit (Graph edit mode only)
+   */
+  redo?(): void;
+
+  /**
+   * Whether undo is available (Graph edit mode only)
+   */
+  canUndo?(): boolean;
+
+  /**
+   * Whether redo is available (Graph edit mode only)
+   */
+  canRedo?(): boolean;
 }
 
 /**
@@ -147,6 +167,8 @@ export class ViewContainer {
   private moonToggleButton: HTMLButtonElement | null = null; // Moon toggle button (Map2D only)
   private fitCenterButton: HTMLButtonElement | null = null; // Fit and center button (all views)
   private deleteBendButton: HTMLButtonElement | null = null; // Delete bend point button (Graph only)
+  private undoButton: HTMLButtonElement | null = null; // Undo button (Graph edit only)
+  private redoButton: HTMLButtonElement | null = null; // Redo button (Graph edit only)
   private cancelEditButton: HTMLButtonElement | null = null; // Cancel edit button (Graph only)
   private exportButton: HTMLButtonElement | null = null; // PlantUML export button (all views)
   private plantUMLExportOptions: PlantUMLExportOptions = {
@@ -622,6 +644,8 @@ export class ViewContainer {
     // For Graph: Cancel, Edit toggle, Always show edges, Fit/Center
     // For Map2D/Globe3D: Lighting toggle, Tile type, Always show edges, Fit/Center
     this.createCancelEditButton();
+    this.createUndoButton();
+    this.createRedoButton();
     this.createEditToggleButton();
     this.createAlwaysShowEdgesButton();
     this.createDeleteBendButton();
@@ -1071,7 +1095,7 @@ export class ViewContainer {
    */
   private createCancelEditButton(): void {
     this.cancelEditButton = document.createElement('button');
-    this.cancelEditButton.innerHTML = createSvgIcon('icon-undo', 16);
+    this.cancelEditButton.innerHTML = createSvgIcon('icon-close', 16);
     this.cancelEditButton.setAttribute('aria-label', 'Cancel edit');
     this.cancelEditButton.setAttribute('title', 'Cancel edit and restore previous state');
     this.cancelEditButton.style.padding = '6px';
@@ -1101,6 +1125,66 @@ export class ViewContainer {
     });
     
     this.commonControlsContainer.appendChild(this.cancelEditButton);
+  }
+
+  /**
+   * Create undo button (Graph edit mode only)
+   */
+  private createUndoButton(): void {
+    this.undoButton = document.createElement('button');
+    this.undoButton.innerHTML = createSvgIcon('icon-undo', 16);
+    this.undoButton.setAttribute('aria-label', 'Undo');
+    this.undoButton.setAttribute('title', 'Undo (Ctrl+Z)');
+    this.undoButton.style.padding = '6px';
+    this.undoButton.style.border = '1px solid #ccc';
+    this.undoButton.style.borderRadius = '4px';
+    this.undoButton.style.backgroundColor = '#fff';
+    this.undoButton.style.cursor = 'pointer';
+    this.undoButton.style.fontSize = '16px';
+    this.undoButton.style.width = '32px';
+    this.undoButton.style.height = '32px';
+    this.undoButton.style.display = 'none';
+    this.undoButton.style.alignItems = 'center';
+    this.undoButton.style.justifyContent = 'center';
+    this.undoButton.style.pointerEvents = 'auto';
+    this.undoButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+    this.undoButton.style.transition = '0.2s';
+    this.undoButton.addEventListener('click', () => {
+      if (!this.currentView) return;
+      const currentView = this.views.get(this.currentView);
+      if (currentView?.undo) currentView.undo();
+    });
+    this.commonControlsContainer.appendChild(this.undoButton);
+  }
+
+  /**
+   * Create redo button (Graph edit mode only)
+   */
+  private createRedoButton(): void {
+    this.redoButton = document.createElement('button');
+    this.redoButton.innerHTML = createSvgIcon('icon-redo', 16);
+    this.redoButton.setAttribute('aria-label', 'Redo');
+    this.redoButton.setAttribute('title', 'Redo (Ctrl+Shift+Z)');
+    this.redoButton.style.padding = '6px';
+    this.redoButton.style.border = '1px solid #ccc';
+    this.redoButton.style.borderRadius = '4px';
+    this.redoButton.style.backgroundColor = '#fff';
+    this.redoButton.style.cursor = 'pointer';
+    this.redoButton.style.fontSize = '16px';
+    this.redoButton.style.width = '32px';
+    this.redoButton.style.height = '32px';
+    this.redoButton.style.display = 'none';
+    this.redoButton.style.alignItems = 'center';
+    this.redoButton.style.justifyContent = 'center';
+    this.redoButton.style.pointerEvents = 'auto';
+    this.redoButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+    this.redoButton.style.transition = '0.2s';
+    this.redoButton.addEventListener('click', () => {
+      if (!this.currentView) return;
+      const currentView = this.views.get(this.currentView);
+      if (currentView?.redo) currentView.redo();
+    });
+    this.commonControlsContainer.appendChild(this.redoButton);
   }
 
   /**
@@ -1521,6 +1605,8 @@ export class ViewContainer {
     // Remove all buttons from container
     const buttons: HTMLElement[] = [];
     if (this.cancelEditButton) buttons.push(this.cancelEditButton);
+    if (this.undoButton) buttons.push(this.undoButton);
+    if (this.redoButton) buttons.push(this.redoButton);
     if (this.editToggleButton) buttons.push(this.editToggleButton);
     if (this.deleteBendButton) buttons.push(this.deleteBendButton);
     if (this.lightingToggleButton) buttons.push(this.lightingToggleButton);
@@ -1538,7 +1624,9 @@ export class ViewContainer {
     
     // Add buttons in correct order based on view
     if (isGraph) {
-      // Graph order: Delete bend, Cancel, Edit toggle, Always show edges (if edges exist), Fit/Center, Export
+      // Graph order: Undo, Redo, Delete bend, Cancel, Edit toggle, Always show edges (if edges exist), Fit/Center, Export
+      if (this.undoButton) this.commonControlsContainer.appendChild(this.undoButton);
+      if (this.redoButton) this.commonControlsContainer.appendChild(this.redoButton);
       if (this.deleteBendButton) this.commonControlsContainer.appendChild(this.deleteBendButton);
       if (this.cancelEditButton) this.commonControlsContainer.appendChild(this.cancelEditButton);
       if (this.editToggleButton) this.commonControlsContainer.appendChild(this.editToggleButton);
@@ -1729,10 +1817,40 @@ export class ViewContainer {
   }
 
   /**
+   * Update undo/redo button visibility and enabled state (Graph edit mode only)
+   */
+  private updateUndoRedoButtons(): void {
+    if (!this.undoButton || !this.redoButton) return;
+    if (!this.currentView || this.currentView !== 'graph') {
+      this.undoButton.style.display = 'none';
+      this.redoButton.style.display = 'none';
+      return;
+    }
+    const currentView = this.views.get(this.currentView);
+    if (!currentView) {
+      this.undoButton.style.display = 'none';
+      this.redoButton.style.display = 'none';
+      return;
+    }
+    const graphView = currentView as any;
+    const isEditMode = graphView.getMode?.() === 'edit';
+    if (!isEditMode) {
+      this.undoButton.style.display = 'none';
+      this.redoButton.style.display = 'none';
+      return;
+    }
+    this.undoButton.style.display = 'flex';
+    this.redoButton.style.display = 'flex';
+    this.undoButton.disabled = !graphView.canUndo?.();
+    this.redoButton.disabled = !graphView.canRedo?.();
+  }
+
+  /**
    * Update Graph-specific buttons (called from GraphView when state changes)
    */
   updateGraphButtons(): void {
     this.updateCancelEditButton();
+    this.updateUndoRedoButtons();
     this.updateDeleteBendButton();
   }
 
