@@ -17,6 +17,7 @@ import { Globe3DView } from './views/globe3d/view';
 import { Map2DView } from './views/map2d/view';
 import { injectSvgSprite } from './assets/icons/icons-embedded';
 import { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl, type PlantUMLExportOptions } from './utils/plantuml';
+import { getShapeDataForOffice } from './utils/office-shapes';
 
 /**
  * Creates a RelatosViewer instance
@@ -291,13 +292,12 @@ export function createRelatosViewer(
       viewContainer.setLightingEnabled(enabled);
     },
 
+    getData(): { nodes: Node[]; edges: Edge[]; groups: Group[] } {
+      return viewContainer.getData();
+    },
+
     exportToPlantUML(options?: PlantUMLExportOptions): string {
-      // Get current data from ViewContainer
-      const data = {
-        nodes: viewContainer['nodes'] as Node[],
-        edges: viewContainer['edges'] as Edge[],
-        groups: viewContainer['groups'] as Group[],
-      };
+      const data = viewContainer.getData();
       // Merge with default options (useShortIds: true by default)
       const exportOptions: PlantUMLExportOptions = {
         useShortIds: true,
@@ -330,6 +330,25 @@ export function createRelatosViewer(
     setPlantUMLExportOptions(options: PlantUMLExportOptions): void {
       viewContainer.setPlantUMLExportOptions(options);
     },
+
+    getShapeDataForOffice() {
+      const { nodes, edges, groups } = viewContainer.getData();
+      return getShapeDataForOffice(nodes, edges, groups);
+    },
+
+    getViewAsSvg(): string | null {
+      const current = viewContainer.getCurrentView();
+      if (!current) return null;
+      const view = viewContainer.getView(current);
+      return view?.getViewAsSvg?.() ?? null;
+    },
+
+    async exportViewToImage(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null> {
+      const current = viewContainer.getCurrentView();
+      if (!current) return null;
+      const view = viewContainer.getView(current);
+      return view?.exportViewToImage?.(format, options) ?? Promise.resolve(null);
+    },
   };
 }
 
@@ -339,3 +358,5 @@ export type * from './types';
 // Export PlantUML utilities
 export { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl } from './utils/plantuml';
 export type { PlantUMLExportOptions } from './utils/plantuml';
+export { getShapeDataForOffice } from './utils/office-shapes';
+export type { OfficeShapeExport, NodeShapeData, EdgeShapeData, GroupShapeData, BoundingBox } from './types/office-shapes';

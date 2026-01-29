@@ -669,14 +669,12 @@ export class GraphView implements View {
       return;
     }
 
-    // Check container size (check first to prevent NaN)
     const containerRectInitial = this.container.getBoundingClientRect();
     if (containerRectInitial.width <= 0 || containerRectInitial.height <= 0 || !isFinite(containerRectInitial.width) || !isFinite(containerRectInitial.height)) {
-      // Skip fit operation if container size is invalid
       return;
     }
 
-    // Calculate bounding box of all nodes
+    // Bounding box: nodes + edge paths (start, bends, end)
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
@@ -694,12 +692,21 @@ export class GraphView implements View {
       }
     }
 
+    for (const edge of this.edges) {
+      const points = this.getEdgePoints(edge);
+      for (const p of points) {
+        minX = Math.min(minX, p.x);
+        minY = Math.min(minY, p.y);
+        maxX = Math.max(maxX, p.x);
+        maxY = Math.max(maxY, p.y);
+      }
+    }
+
     if (minX === Infinity) {
       return;
     }
 
-    // Add padding (ensure sufficient margin to prevent node overlap)
-    const padding = 60; // Increased padding to ensure spacing between nodes
+    const padding = 60;
     minX -= padding;
     minY -= padding;
     maxX += padding;
@@ -5523,6 +5530,107 @@ export class GraphView implements View {
    */
   getMode(): GraphMode {
     return this.mode;
+  }
+
+  /**
+   * Get current diagram as SVG string (Graph view only).
+   * Content is fitted to viewBox with padding.
+   */
+  getViewAsSvg(): string | null {
+    if (this.nodes.length === 0) return null;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const node of this.nodes) {
+      if (!node.position) continue;
+      const nodeStyle = (node as { style?: { width?: number; height?: number } }).style || {};
+      const w = nodeStyle.width ?? this.DEFAULT_NODE_WIDTH;
+      const h = nodeStyle.height ?? this.DEFAULT_NODE_HEIGHT;
+      minX = Math.min(minX, node.position.x - w / 2);
+      minY = Math.min(minY, node.position.y - h / 2);
+      maxX = Math.max(maxX, node.position.x + w / 2);
+      maxY = Math.max(maxY, node.position.y + h / 2);
+    }
+    for (const group of this.groups) {
+      const layout = this.getGroupLayout(group);
+      if (layout) {
+        minX = Math.min(minX, layout.position.x);
+        minY = Math.min(minY, layout.position.y);
+        maxX = Math.max(maxX, layout.position.x + layout.size.width);
+        maxY = Math.max(maxY, layout.position.y + layout.size.height);
+      }
+    }
+    for (const edge of this.edges) {
+      const points = this.getEdgePoints(edge);
+      for (const p of points) {
+        minX = Math.min(minX, p.x);
+        minY = Math.min(minY, p.y);
+        maxX = Math.max(maxX, p.x);
+        maxY = Math.max(maxY, p.y);
+      }
+    }
+    const padding = 20;
+    minX -= padding;
+    minY -= padding;
+    maxX += padding;
+    maxY += padding;
+    const width = maxX - minX;
+    const height = maxY - minY;
+    const clone = this.svg.cloneNode(true) as SVGElement;
+    clone.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    clone.setAttribute('width', String(Math.round(width)));
+    clone.setAttribute('height', String(Math.round(height)));
+    const translate = `translate(${-minX}, ${-minY})`;
+    const groupsToTransform = [clone.querySelector('.groups'), clone.querySelector('.edges'), clone.querySelector('.nodes'),
+      clone.querySelector('.anchor-handles'), clone.querySelector('.bend-handles'), clone.querySelector('.edge-labels')];
+    groupsToTransform.forEach((g) => {
+      if (g instanceof SVGGElement) g.setAttribute('transform', translate);
+    });
+    // Make edges fully visible in export (no hover state): full opacity and minimum stroke width
+    const edgePaths = clone.querySelectorAll('.edges path[data-edge-pair-key]');
+    edgePaths.forEach((el) => {
+      if (el instanceof SVGPathElement) {
+        el.setAttribute('stroke-opacity', '1');
+        const currentWidth = parseFloat(el.getAttribute('stroke-width') || '0') || 0;
+        if (currentWidth < 2) el.setAttribute('stroke-width', '2');
+      }
+    });
+    return new XMLSerializer().serializeToString(clone);
+  }
+
+  /**
+   * Export current view as image blob (Graph view: SVG → canvas → blob).
+   * Uses data URL for SVG to avoid tainted canvas when drawing to canvas.
+   */
+  async exportViewToImage(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null> {
+    const svgString = this.getViewAsSvg();
+    if (!svgString) return null;
+    const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const w = img.naturalWidth;
+        const h = img.naturalHeight;
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0);
+        const quality = options?.quality ?? 0.92;
+        canvas.toBlob(
+          (b) => resolve(b ?? null),
+          format === 'png' ? 'image/png' : 'image/webp',
+          quality
+        );
+      };
+      img.onerror = () => resolve(null);
+      img.src = dataUrl;
+    });
   }
 
   /**

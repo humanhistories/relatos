@@ -29,6 +29,9 @@ accessible, and reusable.
 - **Language-Neutral UI**  
   Icon-based controls designed for global use without localization dependencies.
 
+- **Export APIs (v0.3.0)**  
+  `getData()`, `getShapeDataForOffice()` (for xlsx/pptx shapes), `exportToPlantUML()` / `importFromPlantUML()` (with layout in `@relatos:layout:*` comments), `getViewAsSvg()`, `exportViewToImage('png'|'webp')`.
+
 
 ## Installation
 
@@ -222,10 +225,15 @@ window.CESIUM_BASE_URL = '/node_modules/cesium/Build/Cesium/';
 
 ## Examples
 
-Two examples are provided in the `examples/` directory:
+- **examples/basic/** — Minimal setup
+- **examples/airports/** — Full features (tables, time, tile servers)
 
-- **Basic Example** (`examples/basic/`): Minimal setup showing core functionality
-- **Airports Example** (`examples/airports/`): Complete example with table display, time controls, and all features
+## Test Pages (v0.3.0)
+
+- **test/import/** — PlantUML import (plain or deflate)
+- **test/export/** — Data & view export: getData, getShapeDataForOffice, exportToPlantUML, getViewAsSvg, exportViewToImage (PNG/WebP)
+
+Run dev server and open `/test/export/` or `/test/import/` to verify export/import APIs.
 
 ## Browser Support
 

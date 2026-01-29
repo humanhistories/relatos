@@ -31,51 +31,28 @@ interface RelatosViewerOptions {
 }
 ```
 
-### 2. RelatosViewer
+### 2. RelatosViewer (v0.3.0)
 
 Viewer instance API.
 
 ```typescript
 interface RelatosViewer {
-  /**
-   * Set data
-   */
-  setData(data: { nodes: Node[]; edges: Edge[] }): void;
-
-  /**
-   * Switch view
-   */
+  setData(data: { nodes: Node[]; edges: Edge[]; groups?: Group[] }): void;
+  getData(): { nodes: Node[]; edges: Edge[]; groups: Group[] };
+  getShapeDataForOffice(): OfficeShapeExport;  // For xlsx/pptx shape export
+  exportToPlantUML(options?: PlantUMLExportOptions): string;
+  importFromPlantUML(plantUMLText: string): void;
+  setPlantUMLExportOptions(options: PlantUMLExportOptions): void;
+  getViewAsSvg(): string | null;              // Graph only
+  exportViewToImage(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null>;
   setView(viewType: ViewType): void;
-
-  /**
-   * Get current view type
-   */
   getView(): ViewType;
-
-  /**
-   * Set graph mode (graph view only)
-   */
   setMode(mode: GraphMode): void;
-
-  /**
-   * Get current graph mode
-   */
   getMode(): GraphMode | null;
-
-  /**
-   * Select node (highlight display)
-   * @param nodeId Node ID to select (null to deselect)
-   */
   selectNode(nodeId: string | null): void;
-
-  /**
-   * Resize
-   */
+  setTime(timeISO: string): void;
+  setLighting(enabled: boolean): void;
   resize(): void;
-
-  /**
-   * Destroy
-   */
   destroy(): void;
 }
 ```
@@ -203,6 +180,24 @@ interface TileServerConfig {
 5. **Pan/Zoom**: Supports mouse, touch, and wheel. Includes fit/centering functionality
 6. **Tile Server Support**: Shared `tileServers` option for both Map2D and Globe3D views
 
+### OfficeShapeExport (v0.3.0)
+
+Shape data for Excel/PowerPoint export (nodes, edges, groups with geometry).
+
+```typescript
+interface OfficeShapeExport {
+  nodes: NodeShapeData[];   // left, top, width, height, fillColor, strokeColor
+  edges: EdgeShapeData[];   // points[], color, weight, label
+  groups: GroupShapeData[]; // left, top, width, height, nodeIds, childGroupIds
+  bounds?: BoundingBox;
+}
+```
+
+### PlantUML
+
+- `exportToPlantUML(nodes, edges, groups?, options?)`: Export to PlantUML text (plain or deflate).
+- `importFromPlantUML(text)`: Import from PlantUML; layout restored from `@relatos:layout:node`, `@relatos:layout:group`, `@relatos:layout:edge` comments.
+
 ## Type Exports
 
 ```typescript
@@ -211,6 +206,12 @@ import type {
   RelatosViewerOptions,
   Node,
   Edge,
+  Group,
+  OfficeShapeExport,
+  NodeShapeData,
+  EdgeShapeData,
+  GroupShapeData,
+  PlantUMLExportOptions,
   NodeClickEvent,
   SavePayload,
   ViewType,
@@ -220,8 +221,11 @@ import type {
 } from 'relatos';
 ```
 
-## Implementation Status
+## Implementation Status (v0.3.0)
 
-- ✅ Graph View: Implemented
-- ✅ Map2D View: Implemented
-- ✅ Globe3D View: Implemented
+- ✅ Graph View (view/edit, undo/redo, fit/center)
+- ✅ Map2D View (Leaflet)
+- ✅ Globe3D View (Cesium)
+- ✅ getData / getShapeDataForOffice / exportToPlantUML / importFromPlantUML
+- ✅ getViewAsSvg / exportViewToImage (PNG, WebP)
+- ✅ PlantUML layout export/import via @relatos:layout:* comments

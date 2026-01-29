@@ -6,6 +6,7 @@ import type { ViewType, GraphMode } from './options';
 import type { Node, Edge, Group } from './data';
 import type { SavePayload } from './events';
 import type { PlantUMLExportOptions } from '../utils/plantuml';
+import type { OfficeShapeExport } from './office-shapes';
 
 /**
  * RelatosViewer instance
@@ -29,9 +30,17 @@ export interface RelatosViewer {
   setData(data: { nodes: Node[]; edges: Edge[]; groups?: Group[] }): void;
 
   /**
-   * Get current data
+   * Get current data (nodes, edges, groups)
    */
-  getData(): { nodes: Node[]; edges: Edge[]; groups?: Group[] };
+  getData(): { nodes: Node[]; edges: Edge[]; groups: Group[] };
+
+  /**
+   * Get shape data for Office export (Excel/PowerPoint native shapes)
+   * Returns node/edge/group geometry and styles in Graph-view coordinates
+   * so the web app can render them as rectangles, connectors, and group boxes.
+   * @returns OfficeShapeExport (nodes, edges, groups, optional bounds)
+   */
+  getShapeDataForOffice(): OfficeShapeExport;
 
   /**
    * Set graph mode (graph view only)
@@ -133,4 +142,14 @@ export interface RelatosViewer {
    * ```
    */
   setPlantUMLExportOptions(options: PlantUMLExportOptions): void;
+
+  /**
+   * Get current view as SVG string (Graph only; others return null)
+   */
+  getViewAsSvg(): string | null;
+
+  /**
+   * Export current view as image blob (PNG or WebP)
+   */
+  exportViewToImage(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null>;
 }

@@ -1,6 +1,6 @@
 {
   "name": "relatos",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Relatos is a relational atlas visualization library developed by Human Histories.",
   "main": "./dist/relatos.umd.js",
   "module": "./dist/relatos.es.js",
@@ -20,9 +20,6 @@
     "NOTICE",
     "README.md"
   ],
-  "directories": {
-    "doc": "docs"
-  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -50,7 +47,6 @@
   },
   "homepage": "https://humanhistories.org/en/histoverse/#relatos",
   "dependencies": {
-    "brotli-wasm": "^3.0.1",
     "cesium": "^1.137.0",
     "leaflet": "^1.9.4",
     "pako": "^2.1.0"
@@ -62,8 +58,6 @@
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-cesium": "^1.2.23",
-    "vite-plugin-dts": "^4.0.0",
-    "vite-plugin-top-level-await": "^1.6.0",
-    "vite-plugin-wasm": "^3.5.0"
+    "vite-plugin-dts": "^4.0.0"
   }
 }

@@ -23,3 +23,16 @@ You may obtain a copy of the License at:
 
 For more information about CesiumJS:
 https://cesium.com/
+
+---
+
+pako
+
+This software includes pako (deflate/inflate for PlantUML deflate format).
+
+Copyright (c) 2014–2017 Vitaly Puzrin and Andrei Tuputcyn
+
+pako is licensed under the MIT License.
+You may obtain a copy of the License at:
+
+    https://opensource.org/licenses/MIT

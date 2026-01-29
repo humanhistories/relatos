@@ -405,82 +405,86 @@ function getGroupNodeIds(group: Group, allGroups: Group[]): Set<string> {
 }
 
 /**
- * Export node metadata as a JSON comment
- * Includes all node properties except layout (position)
+ * Export node metadata as a JSON comment (existing spec: no layout)
  */
 function nodeToMetaComment(node: Node, includeMetadata: boolean): string {
   if (!includeMetadata) return '';
-  
-  const meta: Record<string, unknown> = {
-    id: node.id,
-  };
-  
+  const meta: Record<string, unknown> = { id: node.id };
   if (node.type) meta.type = node.type;
   if (node.coordinates) meta.coordinates = node.coordinates;
   if (node.meta && Object.keys(node.meta).length > 0) meta.meta = node.meta;
   if (node.info && Object.keys(node.info).length > 0) meta.info = node.info;
-  
-  // Include style information (GraphView uses this)
-  const nodeAny = node as any;
+  const nodeAny = node as unknown as Record<string, unknown>;
   if (nodeAny.style && typeof nodeAny.style === 'object') {
-    const style: Record<string, unknown> = {};
-    if (nodeAny.style.color !== undefined) style.color = nodeAny.style.color;
-    if (nodeAny.style.borderColor !== undefined) style.borderColor = nodeAny.style.borderColor;
-    if (nodeAny.style.width !== undefined) style.width = nodeAny.style.width;
-    if (nodeAny.style.height !== undefined) style.height = nodeAny.style.height;
-    if (Object.keys(style).length > 0) meta.style = style;
+    const style = nodeAny.style as Record<string, unknown>;
+    const s: Record<string, unknown> = {};
+    if (style.color !== undefined) s.color = style.color;
+    if (style.borderColor !== undefined) s.borderColor = style.borderColor;
+    if (style.width !== undefined) s.width = style.width;
+    if (style.height !== undefined) s.height = style.height;
+    if (Object.keys(s).length > 0) meta.style = s;
   }
-  
   return `' @relatos:node ${JSON.stringify(meta)}`;
 }
 
-/**
- * Export group metadata as a JSON comment
- */
-function groupToMetaComment(group: Group, includeMetadata: boolean): string {
-  if (!includeMetadata) return '';
-  
-  const meta: Record<string, unknown> = {
-    id: group.id,
-  };
-  
-  if (group.parentId) meta.parentId = group.parentId;
-  if (group.nodeIds && group.nodeIds.length > 0) meta.nodeIds = group.nodeIds;
-  if (group.meta && Object.keys(group.meta).length > 0) meta.meta = group.meta;
-  
-  return `' @relatos:group ${JSON.stringify(meta)}`;
+/** Layout-only comment for node (position). Emitted after @relatos:node when present. */
+function nodeLayoutComment(node: Node, includeMetadata: boolean): string {
+  if (!includeMetadata || !node.position) return '';
+  return `' @relatos:layout:node ${JSON.stringify({ id: node.id, position: node.position })}`;
 }
 
 /**
- * Export edge metadata as a JSON comment
- * Includes all edge properties except layout (anchors, bends)
+ * Export group metadata as a JSON comment (existing spec: no layout)
+ */
+function groupToMetaComment(group: Group, includeMetadata: boolean): string {
+  if (!includeMetadata) return '';
+  const meta: Record<string, unknown> = { id: group.id };
+  if (group.parentId) meta.parentId = group.parentId;
+  if (group.nodeIds && group.nodeIds.length > 0) meta.nodeIds = group.nodeIds;
+  if (group.meta && Object.keys(group.meta).length > 0) meta.meta = group.meta;
+  return `' @relatos:group ${JSON.stringify(meta)}`;
+}
+
+/** Layout-only comment for group. Emitted after @relatos:group when present. */
+function groupLayoutComment(group: Group, includeMetadata: boolean): string {
+  if (!includeMetadata || !group.layout) return '';
+  return `' @relatos:layout:group ${JSON.stringify({ id: group.id, layout: group.layout })}`;
+}
+
+/**
+ * Export edge metadata as a JSON comment (existing spec: no layout)
  */
 function edgeToMetaComment(edge: Edge, includeMetadata: boolean): string {
   if (!includeMetadata) return '';
-  
-  const meta: Record<string, unknown> = {
-    id: edge.id,
-    src: edge.src,
-    dst: edge.dst,
-  };
-  
+  const meta: Record<string, unknown> = { id: edge.id, src: edge.src, dst: edge.dst };
   if (edge.relType) meta.relType = edge.relType;
   if (edge.meta && Object.keys(edge.meta).length > 0) meta.meta = edge.meta;
   if (edge.info && Object.keys(edge.info).length > 0) meta.info = edge.info;
-  
-  // Include style information (GraphView uses this)
-  const edgeAny = edge as any;
+  const edgeAny = edge as unknown as Record<string, unknown>;
   if (edgeAny.style && typeof edgeAny.style === 'object') {
-    const style: Record<string, unknown> = {};
-    if (edgeAny.style.color !== undefined) style.color = edgeAny.style.color;
-    if (edgeAny.style.weight !== undefined) style.weight = edgeAny.style.weight;
-    if (edgeAny.style.label !== undefined) style.label = edgeAny.style.label;
-    if (edgeAny.style.srcLabel !== undefined) style.srcLabel = edgeAny.style.srcLabel;
-    if (edgeAny.style.dstLabel !== undefined) style.dstLabel = edgeAny.style.dstLabel;
-    if (Object.keys(style).length > 0) meta.style = style;
+    const style = edgeAny.style as Record<string, unknown>;
+    const s: Record<string, unknown> = {};
+    if (style.color !== undefined) s.color = style.color;
+    if (style.weight !== undefined) s.weight = style.weight;
+    if (style.label !== undefined) s.label = style.label;
+    if (style.srcLabel !== undefined) s.srcLabel = style.srcLabel;
+    if (style.dstLabel !== undefined) s.dstLabel = style.dstLabel;
+    if (Object.keys(s).length > 0) meta.style = s;
   }
-  
   return `' @relatos:edge ${JSON.stringify(meta)}`;
+}
+
+/** Layout-only comment for edge (anchors, bends). Emitted after @relatos:edge when present. */
+function edgeLayoutComment(edge: Edge, includeMetadata: boolean): string {
+  if (!includeMetadata) return '';
+  const edgeAny = edge as unknown as Record<string, unknown>;
+  const hasLayout = edgeAny.srcAnchor || edgeAny.dstAnchor || (edge.bends && edge.bends.length > 0);
+  if (!hasLayout) return '';
+  const payload: Record<string, unknown> = { id: edge.id };
+  if (edgeAny.srcAnchor) payload.srcAnchor = edgeAny.srcAnchor;
+  if (edgeAny.dstAnchor) payload.dstAnchor = edgeAny.dstAnchor;
+  if (edge.bends && edge.bends.length > 0) payload.bends = edge.bends;
+  return `' @relatos:layout:edge ${JSON.stringify(payload)}`;
 }
 
 /**
@@ -538,10 +542,12 @@ function nodeToPlantUML(
   const styleString = buildNodeStyleString(node);
   
   const metaComment = nodeToMetaComment(node, includeMetadata);
-  if (metaComment) {
-    return `${indent}${metaComment}\n${indent}${plantUMLType} "${label}" as ${safeId}${styleString}`;
-  }
-  return `${indent}${plantUMLType} "${label}" as ${safeId}${styleString}`;
+  const layoutComment = nodeLayoutComment(node, includeMetadata);
+  const comments: string[] = [];
+  if (metaComment) comments.push(`${indent}${metaComment}`);
+  if (layoutComment) comments.push(`${indent}${layoutComment}`);
+  const line = `${indent}${plantUMLType} "${label}" as ${safeId}${styleString}`;
+  return comments.length > 0 ? comments.join('\n') + '\n' + line : line;
 }
 
 /**
@@ -563,13 +569,10 @@ function groupToPlantUML(
     : sanitizeId(group.id);
   const label = escapeQuotes(group.label);
   
-  // Group metadata comment
   const metaComment = groupToMetaComment(group, includeMetadata);
-  if (metaComment) {
-    lines.push(`${indent}${metaComment}`);
-  }
-  
-  // Opening package (UML standard for groups)
+  const layoutComment = groupLayoutComment(group, includeMetadata);
+  if (metaComment) lines.push(`${indent}${metaComment}`);
+  if (layoutComment) lines.push(`${indent}${layoutComment}`);
   lines.push(`${indent}package "${label}" as ${safeId} {`);
   
   const innerIndent = indent + '  ';
@@ -651,10 +654,12 @@ function edgeToPlantUML(
   const arrowStyle = buildEdgeStyleString(edge);
   
   const metaComment = edgeToMetaComment(edge, includeMetadata);
-  if (metaComment) {
-    return `${metaComment}\n${srcId} ${arrowStyle} ${dstId}${label}`;
-  }
-  return `${srcId} ${arrowStyle} ${dstId}${label}`;
+  const layoutComment = edgeLayoutComment(edge, includeMetadata);
+  const comments: string[] = [];
+  if (metaComment) comments.push(metaComment);
+  if (layoutComment) comments.push(layoutComment);
+  const line = `${srcId} ${arrowStyle} ${dstId}${label}`;
+  return comments.length > 0 ? comments.join('\n') + '\n' + line : line;
 }
 
 /**
@@ -756,11 +761,26 @@ export function exportToPlantUML(
 function parseRelatosComment(line: string): { type: string; data: Record<string, unknown> } | null {
   const match = line.match(/^'\s*@relatos:(\w+)\s+(.+)$/);
   if (!match) return null;
-  
+  if (match[1] === 'layout') return null;
   try {
     const type = match[1];
     const data = JSON.parse(match[2]);
     return { type, data };
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Parse layout-only comment: @relatos:layout:node | layout:group | layout:edge
+ */
+function parseLayoutComment(line: string): { kind: 'node' | 'group' | 'edge'; data: Record<string, unknown> } | null {
+  const match = line.match(/^'\s*@relatos:layout:(node|group|edge)\s+(.+)$/);
+  if (!match) return null;
+  try {
+    const kind = match[1] as 'node' | 'group' | 'edge';
+    const data = JSON.parse(match[2]) as Record<string, unknown>;
+    return { kind, data };
   } catch (e) {
     return null;
   }
@@ -926,37 +946,34 @@ export function importFromPlantUML(plantUMLText: string): {
   const edges: Edge[] = [];
   const groups: Group[] = [];
   
-  // Maps for metadata (from @relatos: comments)
   const nodeMeta = new Map<string, Record<string, unknown>>();
   const edgeMeta = new Map<string, Record<string, unknown>>();
   const groupMeta = new Map<string, Record<string, unknown>>();
-  
-  // ID mapping (sanitized ID -> original ID)
+  const nodeLayoutMap = new Map<string, { x: number; y: number }>();
+  const groupLayoutMap = new Map<string, Group['layout']>();
+  const edgeLayoutMap = new Map<string, { srcAnchor?: unknown; dstAnchor?: unknown; bends?: Edge['bends'] }>();
   const nodeIdMap = new Map<string, string>();
   const groupIdMap = new Map<string, string>();
-  
-  // Track current group context for nested parsing
-  const groupStack: string[] = [];
-  
-  // Current pending metadata (for next element)
   let pendingMeta: { type: string; data: Record<string, unknown> } | null = null;
-  
+  const groupStack: string[] = [];
   const lines = plantUMLText.split('\n');
-  
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
-    
-    // Skip empty lines and non-relatos comments
-    if (!line || (line.startsWith("'") && !line.includes('@relatos:'))) {
+    if (!line || (line.startsWith("'") && !line.includes('@relatos:'))) continue;
+    if (line === '@startuml' || line === '@enduml' || line.startsWith('skinparam') || line.startsWith('left to right')) continue;
+
+    const layoutComment = parseLayoutComment(line);
+    if (layoutComment) {
+      const id = layoutComment.data.id as string;
+      if (id) {
+        if (layoutComment.kind === 'node') nodeLayoutMap.set(sanitizeId(id), layoutComment.data.position as { x: number; y: number });
+        else if (layoutComment.kind === 'group') groupLayoutMap.set(sanitizeId(id), layoutComment.data.layout as Group['layout']);
+        else if (layoutComment.kind === 'edge') edgeLayoutMap.set(id, layoutComment.data as { srcAnchor?: unknown; dstAnchor?: unknown; bends?: Edge['bends'] });
+      }
       continue;
     }
-    
-    // Skip header/footer
-    if (line === '@startuml' || line === '@enduml' || line.startsWith('skinparam') || line.startsWith('left to right')) {
-      continue;
-    }
-    
-    // Parse @relatos: metadata comment
+
     const relatosMeta = parseRelatosComment(line);
     if (relatosMeta) {
       pendingMeta = relatosMeta;
@@ -995,9 +1012,9 @@ export function importFromPlantUML(plantUMLText: string): {
         label: groupDef.label,
         nodeIds: (meta?.nodeIds as string[]) || [],
         parentId: groupStack.length > 0 ? groupIdMap.get(groupStack[groupStack.length - 1]) : (meta?.parentId as string | undefined),
+        layout: groupLayoutMap.get(groupDef.id) ?? (meta?.layout as Group['layout']) ?? undefined,
         meta: (meta?.meta as Record<string, unknown>) || undefined,
       };
-      
       groups.push(group);
       groupStack.push(groupDef.id);
       pendingMeta = null;
@@ -1017,18 +1034,15 @@ export function importFromPlantUML(plantUMLText: string): {
         label: nodeDef.label,
         type: (meta?.type as string) || nodeDef.type,
         coordinates: (meta?.coordinates as [number, number]) || undefined,
+        position: nodeLayoutMap.get(nodeDef.id) ?? (meta?.position as { x: number; y: number }) ?? undefined,
         meta: (meta?.meta as Record<string, unknown>) || undefined,
         info: (meta?.info as Record<string, unknown>) || undefined,
       };
-      
-      // Restore style information (metadata takes precedence over native PlantUML style)
       if (meta?.style && typeof meta.style === 'object') {
-        (node as any).style = meta.style;
+        (node as unknown as Record<string, unknown>).style = meta.style;
       } else if (nodeDef.style) {
-        // Use native PlantUML style if no metadata
-        (node as any).style = nodeDef.style;
+        (node as unknown as Record<string, unknown>).style = nodeDef.style;
       }
-      
       nodes.push(node);
       pendingMeta = null;
       continue;
@@ -1045,23 +1059,27 @@ export function importFromPlantUML(plantUMLText: string): {
       const edgeKey = `${edgeDef.src}_${edgeDef.dst}`;
       const meta = pendingMeta?.type === 'edge' ? pendingMeta.data : null;
       
+      const edgeId = (meta?.id as string) || edgeKey;
+      const layoutEdge = edgeLayoutMap.get(edgeId) ?? edgeLayoutMap.get(edgeKey);
       const edge: Edge = {
-        id: (meta?.id as string) || edgeKey,
+        id: edgeId,
         src: (meta?.src as string) || srcId,
         dst: (meta?.dst as string) || dstId,
         relType: (meta?.relType as string) || edgeDef.label || '',
+        bends: layoutEdge?.bends ?? (meta?.bends as Edge['bends']) ?? undefined,
         meta: (meta?.meta as Record<string, unknown>) || undefined,
         info: (meta?.info as Record<string, unknown>) || undefined,
       };
-      
-      // Restore style information (metadata takes precedence over native PlantUML style)
       if (meta?.style && typeof meta.style === 'object') {
-        (edge as any).style = meta.style;
+        (edge as unknown as Record<string, unknown>).style = meta.style;
       } else if (edgeDef.style) {
-        // Use native PlantUML style if no metadata
-        (edge as any).style = edgeDef.style;
+        (edge as unknown as Record<string, unknown>).style = edgeDef.style;
       }
-      
+      const edgeExt = edge as unknown as Record<string, unknown>;
+      if (layoutEdge?.srcAnchor != null) edgeExt.srcAnchor = layoutEdge.srcAnchor;
+      if (layoutEdge?.dstAnchor != null) edgeExt.dstAnchor = layoutEdge.dstAnchor;
+      if (layoutEdge?.srcAnchor == null && meta?.srcAnchor != null) edgeExt.srcAnchor = meta.srcAnchor;
+      if (layoutEdge?.dstAnchor == null && meta?.dstAnchor != null) edgeExt.dstAnchor = meta.dstAnchor;
       edges.push(edge);
       pendingMeta = null;
       continue;

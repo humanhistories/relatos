@@ -37,7 +37,10 @@ relatos/
 │   └── airports/
 │       ├── index.html
 │       └── main.ts                 # Airports example: complete features
-├── dist/                            # Build output
+├── test/
+│   ├── import/                     # PlantUML import test page
+│   └── export/                    # Data & view export API test page (v0.3.0)
+├── dist/                           # Build output
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -186,18 +189,20 @@ const viewer = createRelatosViewer('#container', {
 });
 ```
 
-### Main Methods
+### Main Methods (v0.3.0)
 
-- `viewer.setData(data: RelatosData)`: Set or update data (nodes and edges)
-- `viewer.setView(viewType: ViewType)`: Switch view ('graph' | 'map2d' | 'globe3d')
-- `viewer.getView(): ViewType`: Get current view type
-- `viewer.setMode(mode: 'view' | 'edit')`: Set graph mode (only affects graph view)
-- `viewer.getMode(): 'view' | 'edit'`: Get current graph mode
-- `viewer.selectNode(nodeId: string | null)`: Select node (highlight display, pass null to deselect)
-- `viewer.setTime(timeISO: string)`: Set time for day/night shading and moon position (ISO 8601 format)
-- `viewer.setLighting(enabled: boolean)`: Set lighting state for Map2D and Globe3D (day/night shading)
-- `viewer.resize()`: Resize viewer to fit container
-- `viewer.destroy()`: Destroy viewer and clean up resources
+- `viewer.setData(data)`: Set or update data (nodes, edges, optional groups)
+- `viewer.getData()`: Get current nodes, edges, groups
+- `viewer.getShapeDataForOffice()`: Get node/edge/group geometry for Excel/PowerPoint shapes (OfficeShapeExport)
+- `viewer.exportToPlantUML(options?)`: Export to PlantUML text (plain or deflate)
+- `viewer.importFromPlantUML(text)`: Import from PlantUML text (layout via @relatos:layout:* comments)
+- `viewer.setPlantUMLExportOptions(options)`: Set export button options
+- `viewer.getViewAsSvg()`: Get current view as SVG string (Graph only; null for Map2D/Globe3D)
+- `viewer.exportViewToImage(format, options?)`: Export view as PNG or WebP blob (Promise&lt;Blob|null&gt;)
+- `viewer.setView(viewType)`, `viewer.getView()`: Switch / get current view
+- `viewer.setMode(mode)`, `viewer.getMode()`: Graph mode (view | edit)
+- `viewer.selectNode(nodeId)`, `viewer.setTime(timeISO)`, `viewer.setLighting(enabled)`
+- `viewer.resize()`, `viewer.destroy()`
 
 ## Data Model
 

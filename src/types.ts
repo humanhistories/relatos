@@ -2,6 +2,8 @@
  * Relatos Viewer - Type Definitions
  */
 
+import type { Group } from './types/data';
+
 /**
  * Available view types
  */
@@ -238,7 +240,27 @@ export interface RelatosViewer {
   /**
    * Set data
    */
-  setData(data: { nodes: Node[]; edges: Edge[] }): void;
+  setData(data: { nodes: Node[]; edges: Edge[]; groups?: Group[] }): void;
+
+  /**
+   * Get current data (nodes, edges, groups)
+   */
+  getData(): { nodes: Node[]; edges: Edge[]; groups: Group[] };
+
+  /**
+   * Get shape data for Office export (Excel/PowerPoint native shapes)
+   */
+  getShapeDataForOffice(): import('./types/office-shapes').OfficeShapeExport;
+
+  /**
+   * Get current view as SVG string (Graph only)
+   */
+  getViewAsSvg(): string | null;
+
+  /**
+   * Export current view as image blob (PNG or WebP)
+   */
+  exportViewToImage(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null>;
 
   /**
    * Switch view

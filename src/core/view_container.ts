@@ -144,6 +144,16 @@ export interface View {
    * Whether redo is available (Graph edit mode only)
    */
   canRedo?(): boolean;
+
+  /**
+   * Get current view as SVG string (Graph only; others return null)
+   */
+  getViewAsSvg?(): string | null;
+
+  /**
+   * Export current view as image blob (Graph: SVG→canvas; Map2D/Globe3D: canvas)
+   */
+  exportViewToImage?(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null>;
 }
 
 /**
@@ -326,6 +336,17 @@ export class ViewContainer {
     this.hasEdges = Array.isArray(edges) && edges.length > 0;
     this.updateTables();
     this.updateAlwaysShowEdgesButtonVisibility();
+  }
+
+  /**
+   * Get current data (nodes, edges, groups)
+   */
+  getData(): { nodes: Node[]; edges: Edge[]; groups: Group[] } {
+    return {
+      nodes: this.nodes,
+      edges: this.edges,
+      groups: this.groups,
+    };
   }
 
   /**
