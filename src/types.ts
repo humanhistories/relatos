@@ -305,4 +305,17 @@ export interface RelatosViewer {
    * @param plantUMLText PlantUML text string
    */
   importFromPlantUML(plantUMLText: string): void;
+
+  /**
+   * Set PlantUML export options for the export button
+   * @param options Export options
+   */
+  setPlantUMLExportOptions(options: {
+    /** Use short IDs (A, B, ...) instead of full IDs. Default: true */
+    useShortIds?: boolean;
+    /** Include metadata comments for import. Default: true */
+    includeMetadata?: boolean;
+    /** Output format: 'plain' or 'deflate'. Default: 'plain' */
+    outputFormat?: 'plain' | 'deflate';
+  }): void;
 }

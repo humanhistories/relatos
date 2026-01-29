@@ -5,6 +5,7 @@
 import type { ViewType, GraphMode } from './options';
 import type { Node, Edge, Group } from './data';
 import type { SavePayload } from './events';
+import type { PlantUMLExportOptions } from '../utils/plantuml';
 
 /**
  * RelatosViewer instance
@@ -116,4 +117,20 @@ export interface RelatosViewer {
    * @param plantUMLText PlantUML text string to import
    */
   importFromPlantUML(plantUMLText: string): void;
+
+  /**
+   * Set PlantUML export options for the export button
+   * 
+   * @param options Export options to set
+   * 
+   * @example
+   * ```typescript
+   * viewer.setPlantUMLExportOptions({
+   *   outputFormat: 'deflate',  // Export as deflate-encoded string
+   *   useShortIds: true,
+   *   includeMetadata: true,
+   * });
+   * ```
+   */
+  setPlantUMLExportOptions(options: PlantUMLExportOptions): void;
 }

@@ -16,7 +16,7 @@ import { GraphView } from './views/graph/view';
 import { Globe3DView } from './views/globe3d/view';
 import { Map2DView } from './views/map2d/view';
 import { injectSvgSprite } from './assets/icons/icons-embedded';
-import { exportToPlantUML, importFromPlantUML, deflateAndEncode, getPlantUMLServerUrl, type PlantUMLExportOptions } from './utils/plantuml';
+import { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl, type PlantUMLExportOptions } from './utils/plantuml';
 
 /**
  * Creates a RelatosViewer instance
@@ -326,8 +326,16 @@ export function createRelatosViewer(
       // Also update ViewContainer data (for table display and export button)
       viewContainer.setData(data.nodes, data.edges, data.groups);
     },
+
+    setPlantUMLExportOptions(options: PlantUMLExportOptions): void {
+      viewContainer.setPlantUMLExportOptions(options);
+    },
   };
 }
 
 // Export type definitions
 export type * from './types';
+
+// Export PlantUML utilities
+export { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl } from './utils/plantuml';
+export type { PlantUMLExportOptions } from './utils/plantuml';

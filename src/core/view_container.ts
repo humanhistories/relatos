@@ -952,8 +952,10 @@ export class ViewContainer {
    * Export current data to PlantUML format and copy to clipboard
    */
   private async exportToPlantUMLAndCopy(): Promise<void> {
-    const plantUML = exportToPlantUML(this.nodes, this.edges, this.groups, this.plantUMLExportOptions);
-    const success = await copyToClipboard(plantUML);
+    try {
+      const plantUML = exportToPlantUML(this.nodes, this.edges, this.groups, this.plantUMLExportOptions);
+      console.log('Exported PlantUML length:', plantUML.length);
+      const success = await copyToClipboard(plantUML);
     
     if (this.exportButton) {
       if (success) {
@@ -984,6 +986,22 @@ export class ViewContainer {
             this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
           }
         }, 2000);
+      }
+    }
+    } catch (error) {
+      console.error('Export failed:', error);
+      if (this.exportButton) {
+        this.exportButton.style.backgroundColor = '#ffcdd2';
+        this.exportButton.style.borderColor = '#f44336';
+        this.exportButton.setAttribute('title', `Export failed: ${error instanceof Error ? error.message : String(error)}`);
+        
+        setTimeout(() => {
+          if (this.exportButton) {
+            this.exportButton.style.backgroundColor = '#fff';
+            this.exportButton.style.borderColor = '#ccc';
+            this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
+          }
+        }, 3000);
       }
     }
   }

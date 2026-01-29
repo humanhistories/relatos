@@ -8,3 +8,5 @@ import { RelatosViewerOptions, RelatosViewer } from './types';
  */
 export declare function createRelatosViewer(containerEl: HTMLElement | string, options?: RelatosViewerOptions): RelatosViewer;
 export type * from './types';
+export { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl } from './utils/plantuml';
+export type { PlantUMLExportOptions } from './utils/plantuml';

@@ -1,9 +1,13 @@
 import { defineConfig } from 'vite';
 import cesium from 'vite-plugin-cesium';
 import dts from 'vite-plugin-dts';
+import wasm from 'vite-plugin-wasm';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig({
   plugins: [
+    wasm(),
+    topLevelAwait(),
     cesium(),
     dts({
       insertTypesEntry: true,
@@ -29,6 +33,8 @@ export default defineConfig({
       'bitmap-sdf',
       'lerc',
     ],
+    // Exclude WASM packages from optimization (handled by vite-plugin-wasm)
+    exclude: ['brotli-wasm'],
     esbuildOptions: {
       // Enable CommonJS module transformation
       target: 'es2020',

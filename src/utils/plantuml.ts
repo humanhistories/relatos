@@ -31,7 +31,7 @@ export interface PlantUMLExportOptions {
   /**
    * Output format
    * - 'plain': Plain PlantUML text
-   * - 'deflate': Compressed and encoded string for PlantUML server
+   * - 'deflate': Deflate compressed and encoded string for PlantUML server
    *   (Use with URL like: http://www.plantuml.com/plantuml/svg/{encodedString})
    * @default 'plain'
    */
@@ -102,21 +102,108 @@ class IdShortener {
 }
 
 // ============================================================================
-// Deflate and Encode (similar to makerelationdiagram.py)
+// Deflate Compression and Encode (PlantUML compatible)
+// Reference: https://plantuml.com/ja-dark/text-encoding
+// Reference: https://plantuml.com/ja-dark/code-javascript-synchronous
 // ============================================================================
 
-/**
- * PlantUML alphabet for URL encoding
- */
-const PLANTUML_ALPHABET = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
-const BASE64_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+import pako from 'pako';
 
 /**
- * Compress and encode PlantUML text for use in PlantUML server URLs
+ * Encode a 6-bit value (0-63) to PlantUML character
+ * 
+ * PlantUML uses a custom Base64-like encoding:
+ * - 0-9   → '0'-'9' (ASCII 48-57)
+ * - 10-35 → 'A'-'Z' (ASCII 65-90)
+ * - 36-61 → 'a'-'z' (ASCII 97-122)
+ * - 62    → '-'
+ * - 63    → '_'
+ * 
+ * This differs from standard Base64 which uses:
+ * ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/
+ * 
+ * @param b 6-bit value (0-63)
+ * @returns Single character
+ */
+function encode6bit(b: number): string {
+  if (b < 10) {
+    return String.fromCharCode(48 + b); // '0'-'9'
+  }
+  b -= 10;
+  if (b < 26) {
+    return String.fromCharCode(65 + b); // 'A'-'Z'
+  }
+  b -= 26;
+  if (b < 26) {
+    return String.fromCharCode(97 + b); // 'a'-'z'
+  }
+  b -= 26;
+  if (b === 0) {
+    return '-';
+  }
+  if (b === 1) {
+    return '_';
+  }
+  return '?';
+}
+
+/**
+ * Decode a PlantUML character to 6-bit value (0-63)
+ * Reverse of encode6bit()
+ * 
+ * @param c PlantUML encoded character
+ * @returns 6-bit value (0-63), or -1 if invalid
+ */
+function decode6bit(c: string): number {
+  const code = c.charCodeAt(0);
+  // '0'-'9' (ASCII 48-57) → 0-9
+  if (code >= 48 && code <= 57) {
+    return code - 48;
+  }
+  // 'A'-'Z' (ASCII 65-90) → 10-35
+  if (code >= 65 && code <= 90) {
+    return code - 65 + 10;
+  }
+  // 'a'-'z' (ASCII 97-122) → 36-61
+  if (code >= 97 && code <= 122) {
+    return code - 97 + 36;
+  }
+  // '-' → 62
+  if (c === '-') {
+    return 62;
+  }
+  // '_' → 63
+  if (c === '_') {
+    return 63;
+  }
+  return -1; // Invalid character
+}
+
+/**
+ * Encode 3 bytes to 4 PlantUML characters
+ * Reference: https://plantuml.com/ja-dark/code-javascript-synchronous
+ * 
+ * @param b1 First byte
+ * @param b2 Second byte
+ * @param b3 Third byte
+ * @returns 4 PlantUML encoded characters
+ */
+function append3bytes(b1: number, b2: number, b3: number): string {
+  const c1 = b1 >> 2;
+  const c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
+  const c3 = ((b2 & 0xF) << 2) | (b3 >> 6);
+  const c4 = b3 & 0x3F;
+  return encode6bit(c1 & 0x3F) + encode6bit(c2 & 0x3F) + encode6bit(c3 & 0x3F) + encode6bit(c4 & 0x3F);
+}
+
+/**
+ * Compress and encode PlantUML text using Deflate algorithm
  * Similar to deflate_and_encode() in makerelationdiagram.py
  * 
- * Note: This uses a pure JavaScript implementation without external dependencies.
- * The compression uses a simple deflate-like algorithm.
+ * Process:
+ * 1. UTF-8 encode the text
+ * 2. Compress with Deflate algorithm (raw, no zlib header)
+ * 3. Encode to PlantUML's Base64-like format
  * 
  * @param plantumlText Plain PlantUML text
  * @returns Encoded string for PlantUML server URL
@@ -126,77 +213,96 @@ export function deflateAndEncode(plantumlText: string): string {
   const encoder = new TextEncoder();
   const data = encoder.encode(plantumlText);
   
-  // Compress using deflate (raw, no header)
-  const compressed = deflateRaw(data);
+  // Compress using Deflate (raw, no zlib header) with pako
+  // level 9 = maximum compression
+  const compressed = pako.deflateRaw(data, { level: 9 });
   
-  // Convert to base64
-  let base64 = '';
+  // Encode to PlantUML format using append3bytes
+  // Reference: https://plantuml.com/ja-dark/code-javascript-synchronous
+  let result = '';
   for (let i = 0; i < compressed.length; i += 3) {
-    const b1 = compressed[i] || 0;
-    const b2 = compressed[i + 1] || 0;
-    const b3 = compressed[i + 2] || 0;
-    
-    const c1 = b1 >> 2;
-    const c2 = ((b1 & 0x03) << 4) | (b2 >> 4);
-    const c3 = ((b2 & 0x0f) << 2) | (b3 >> 6);
-    const c4 = b3 & 0x3f;
-    
-    base64 += PLANTUML_ALPHABET[c1];
-    base64 += PLANTUML_ALPHABET[c2];
-    if (i + 1 < compressed.length) {
-      base64 += PLANTUML_ALPHABET[c3];
-    }
-    if (i + 2 < compressed.length) {
-      base64 += PLANTUML_ALPHABET[c4];
+    if (i + 2 === compressed.length) {
+      // Last 2 bytes
+      result += append3bytes(compressed[i], compressed[i + 1], 0);
+    } else if (i + 1 === compressed.length) {
+      // Last 1 byte
+      result += append3bytes(compressed[i], 0, 0);
+    } else {
+      // Full 3 bytes
+      result += append3bytes(compressed[i], compressed[i + 1], compressed[i + 2]);
     }
   }
   
-  return base64;
+  return result;
 }
 
 /**
- * Simple deflate compression (raw, no zlib header)
- * This is a minimal implementation for PlantUML encoding
+ * Decode and inflate PlantUML encoded text
+ * Reverse of deflateAndEncode()
+ * 
+ * @param encoded PlantUML encoded string (from URL or clipboard)
+ * @returns Plain PlantUML text, or null if decoding fails
  */
-function deflateRaw(data: Uint8Array): Uint8Array {
-  // Use CompressionStream API if available (modern browsers)
-  // Otherwise fall back to uncompressed literal blocks
-  
-  // For simplicity and browser compatibility, we'll use a simpler approach:
-  // Store data in uncompressed DEFLATE blocks (literal blocks)
-  // This is valid DEFLATE and works with PlantUML server
-  
-  const result: number[] = [];
-  const BLOCK_SIZE = 65535; // Max block size for uncompressed blocks
-  
-  let offset = 0;
-  while (offset < data.length) {
-    const remaining = data.length - offset;
-    const blockSize = Math.min(remaining, BLOCK_SIZE);
-    const isLast = offset + blockSize >= data.length;
-    
-    // Block header: BFINAL (1 bit) + BTYPE=00 (2 bits for no compression)
-    result.push(isLast ? 0x01 : 0x00);
-    
-    // LEN (2 bytes, little-endian)
-    result.push(blockSize & 0xff);
-    result.push((blockSize >> 8) & 0xff);
-    
-    // NLEN (one's complement of LEN)
-    const nlen = blockSize ^ 0xffff;
-    result.push(nlen & 0xff);
-    result.push((nlen >> 8) & 0xff);
-    
-    // Copy literal data
-    for (let i = 0; i < blockSize; i++) {
-      result.push(data[offset + i]);
+export function decodeAndInflate(encoded: string): string | null {
+  try {
+    // Decode from PlantUML format to bytes using decode6bit
+    const bytes: number[] = [];
+    for (let i = 0; i < encoded.length; i += 4) {
+      const c1 = decode6bit(encoded[i] || '0');
+      const c2 = decode6bit(encoded[i + 1] || '0');
+      const c3 = decode6bit(encoded[i + 2] || '0');
+      const c4 = decode6bit(encoded[i + 3] || '0');
+      
+      if (c1 < 0 || c2 < 0) {
+        return null; // Invalid character
+      }
+      
+      bytes.push((c1 << 2) | (c2 >> 4));
+      if (i + 2 < encoded.length && c3 >= 0) {
+        bytes.push(((c2 & 0x0f) << 4) | (c3 >> 2));
+      }
+      if (i + 3 < encoded.length && c4 >= 0) {
+        bytes.push(((c3 & 0x03) << 6) | c4);
+      }
     }
     
-    offset += blockSize;
+    const compressed = new Uint8Array(bytes);
+    
+    // Decompress using Inflate (raw, no zlib header) with pako
+    const decompressed = pako.inflateRaw(compressed);
+    
+    // Convert bytes to UTF-8 string
+    const decoder = new TextDecoder('utf-8');
+    return decoder.decode(decompressed);
+  } catch (e) {
+    console.error('Deflate decompression failed:', e);
+    return null;
+  }
+}
+
+/**
+ * Check if a string looks like PlantUML deflate-encoded text
+ * @param text Text to check
+ * @returns true if the text appears to be deflate-encoded
+ */
+export function isDeflateEncoded(text: string): boolean {
+  const trimmed = text.trim();
+  
+  // Plain PlantUML text
+  if (trimmed.startsWith('@startuml') || trimmed.startsWith("'")) {
+    return false;
   }
   
-  return new Uint8Array(result);
+  // Check if all characters are valid PlantUML encoded characters using decode6bit
+  for (const char of trimmed) {
+    if (decode6bit(char) < 0) {
+      return false;
+    }
+  }
+  
+  return trimmed.length > 0;
 }
+
 
 /**
  * Generate PlantUML server URL from encoded text
@@ -558,7 +664,7 @@ function edgeToPlantUML(
  * @param edges Array of edges
  * @param groups Array of groups (optional)
  * @param options Export options (optional)
- * @returns PlantUML text string (or URL if outputFormat is 'deflate')
+ * @returns PlantUML text string (or deflate-encoded string if outputFormat is 'deflate')
  */
 export function exportToPlantUML(
   nodes: Node[],
@@ -579,13 +685,6 @@ export function exportToPlantUML(
   // Header
   lines.push('@startuml');
   lines.push('');
-  
-  if (includeMetadata) {
-    lines.push("' Relatos Diagram Export");
-    lines.push("' Generated by Relatos Viewer");
-    lines.push("' https://github.com/tomfujit/relatos");
-    lines.push('');
-  }
   
   lines.push('skinparam backgroundColor #efefef');
   lines.push('skinparam componentStyle uml2');
@@ -643,7 +742,7 @@ export function exportToPlantUML(
   
   // Return based on output format
   if (outputFormat === 'deflate') {
-    // Return only the deflate-encoded string (without URL prefix)
+    // Return deflate-encoded string for PlantUML server
     // User can prepend their own server URL if needed
     return deflateAndEncode(plainText);
   }
