@@ -410,7 +410,6 @@ function getGroupNodeIds(group: Group, allGroups: Group[]): Set<string> {
 function nodeToMetaComment(node: Node, includeMetadata: boolean): string {
   if (!includeMetadata) return '';
   const meta: Record<string, unknown> = { id: node.id };
-  if (node.type) meta.type = node.type;
   if (node.coordinates) meta.coordinates = node.coordinates;
   if (node.meta && Object.keys(node.meta).length > 0) meta.meta = node.meta;
   if (node.info && Object.keys(node.info).length > 0) meta.info = node.info;
@@ -441,7 +440,7 @@ function groupToMetaComment(group: Group, includeMetadata: boolean): string {
   const meta: Record<string, unknown> = { id: group.id };
   if (group.parentId) meta.parentId = group.parentId;
   if (group.nodeIds && group.nodeIds.length > 0) meta.nodeIds = group.nodeIds;
-  if (group.meta && Object.keys(group.meta).length > 0) meta.meta = group.meta;
+  if (group.info && Object.keys(group.info).length > 0) meta.info = group.info;
   return `' @relatos:group ${JSON.stringify(meta)}`;
 }
 
@@ -532,7 +531,7 @@ function nodeToPlantUML(
   idShortener: IdShortener | null = null,
   includeMetadata: boolean = true
 ): string {
-  const plantUMLType = getPlantUMLNodeType(node.type);
+  const plantUMLType = getPlantUMLNodeType();
   const safeId = idShortener 
     ? idShortener.getShortId(node.id)
     : sanitizeId(node.id);
@@ -1013,7 +1012,7 @@ export function importFromPlantUML(plantUMLText: string): {
         nodeIds: (meta?.nodeIds as string[]) || [],
         parentId: groupStack.length > 0 ? groupIdMap.get(groupStack[groupStack.length - 1]) : (meta?.parentId as string | undefined),
         layout: groupLayoutMap.get(groupDef.id) ?? (meta?.layout as Group['layout']) ?? undefined,
-        meta: (meta?.meta as Record<string, unknown>) || undefined,
+        info: (meta?.info as Record<string, unknown>) || (meta?.meta as Record<string, unknown>) || undefined,
       };
       groups.push(group);
       groupStack.push(groupDef.id);
@@ -1032,7 +1031,6 @@ export function importFromPlantUML(plantUMLText: string): {
       const node: Node = {
         id: originalId,
         label: nodeDef.label,
-        type: (meta?.type as string) || nodeDef.type,
         coordinates: (meta?.coordinates as [number, number]) || undefined,
         position: nodeLayoutMap.get(nodeDef.id) ?? (meta?.position as { x: number; y: number }) ?? undefined,
         meta: (meta?.meta as Record<string, unknown>) || undefined,

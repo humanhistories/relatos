@@ -63,7 +63,6 @@ export interface NodeStyle {
 export interface Node {
   id: string;
   label: string;
-  type?: string;
   position?: NodePosition; // Position information for Graph view
   coordinates?: [number, number]; // Geographic coordinates for Map2D/Globe3D [latitude, longitude]
   style?: NodeStyle; // Styling options
@@ -327,6 +326,20 @@ export interface RelatosViewer {
    * @param plantUMLText PlantUML text string
    */
   importFromPlantUML(plantUMLText: string): void;
+
+  /**
+   * Import data from relat format (Relatos dedicated text language)
+   * @param relatText relat text string
+   * @param options Optional. onWarnings: called when the parser produced warnings (syntax issues). Message may include " (line N, column M)".
+   */
+  importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void }): void;
+
+  /**
+   * Export data to relat format
+   * @param options Export options (optional)
+   * @returns relat text string
+   */
+  exportRelat(options?: { includeLayout?: boolean }): string;
 
   /**
    * Set PlantUML export options for the export button

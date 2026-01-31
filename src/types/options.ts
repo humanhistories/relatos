@@ -197,6 +197,10 @@ export interface TableOptions {
    */
   nodes?: {
     /**
+     * Section title (e.g. "ノード一覧"). Shown above the table when specified.
+     */
+    sectionTitle?: string;
+    /**
      * Header HTML (optional)
      * Default header is used if not specified
      */
@@ -214,6 +218,8 @@ export interface TableOptions {
    * Table is not output if format is null
    */
   edges?: {
+    /** Section title (e.g. "エッジ一覧"). */
+    sectionTitle?: string;
     /**
      * Header HTML (optional)
      * Default header is used if not specified
@@ -232,6 +238,8 @@ export interface TableOptions {
    * Table is not output if format is null
    */
   groups?: {
+    /** Section title (e.g. "グループ一覧"). */
+    sectionTitle?: string;
     /**
      * Header HTML (optional)
      * Default header is used if not specified

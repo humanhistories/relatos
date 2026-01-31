@@ -37,8 +37,6 @@ export interface NodeShapeData {
   fillColor?: string;
   /** Stroke/border color (e.g. #333333) */
   strokeColor?: string;
-  /** Node type (optional, for styling) */
-  type?: string;
 }
 
 /**
@@ -87,6 +85,14 @@ export interface GroupShapeData {
   nodeIds: string[];
   /** Child group IDs (for hierarchy) */
   childGroupIds?: string[];
+  /** Fill (background) color */
+  fillColor?: string;
+  /** Border (stroke) color */
+  strokeColor?: string;
+  /** Border width in pixels */
+  strokeWidth?: number;
+  /** true = dashed border, false = solid */
+  strokeDash?: boolean;
 }
 
 /**

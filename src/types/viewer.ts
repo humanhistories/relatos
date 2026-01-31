@@ -128,6 +128,20 @@ export interface RelatosViewer {
   importFromPlantUML(plantUMLText: string): void;
 
   /**
+   * Import data from relat format (Relatos dedicated text language)
+   * @param relatText relat text string
+   * @param options Optional. onWarnings: called when the parser produced warnings (syntax issues). Message may include " (line N, column M)".
+   */
+  importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void }): void;
+
+  /**
+   * Export data to relat format (Relatos dedicated text language)
+   * @param options Export options (optional)
+   * @returns relat text string
+   */
+  exportRelat(options?: { includeLayout?: boolean }): string;
+
+  /**
    * Set PlantUML export options for the export button
    * 
    * @param options Export options to set

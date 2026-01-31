@@ -1842,6 +1842,29 @@ export class GraphView implements View {
         });
       });
     }
+
+    // When we have groups but did not run resolveNodePositionsWithVectorConstraints (e.g. nodes without coords only),
+    // ensure group layouts are calculated and stored. Process deepest groups first so parent bounds include children.
+    if (this.groups.length > 0) {
+      const getLevel = (group: Group): number => {
+        if (!group.parentId) return 0;
+        const parent = this.groups.find(g => g.id === group.parentId);
+        return parent ? 1 + getLevel(parent) : 0;
+      };
+      const byLevelDesc = [...this.groups].sort((a, b) => getLevel(b) - getLevel(a));
+      for (const group of byLevelDesc) {
+        const bounds = this.calculateGroupBounds(group.nodeIds, group.id);
+        if (bounds) {
+          group.layout = {
+            position: { x: bounds.minX, y: bounds.minY },
+            size: {
+              width: bounds.maxX - bounds.minX,
+              height: bounds.maxY - bounds.minY,
+            },
+          };
+        }
+      }
+    }
   }
 
   /**
@@ -3573,7 +3596,7 @@ export class GraphView implements View {
           position: { ...g.layout.position },
           size: { ...g.layout.size },
         } : undefined,
-        meta: g.meta ? { ...g.meta } : undefined,
+        info: g.info ? { ...g.info } : undefined,
       })),
     };
   }
@@ -3606,7 +3629,7 @@ export class GraphView implements View {
         position: { ...g.layout.position },
         size: { ...g.layout.size },
       } : undefined,
-      meta: g.meta ? { ...g.meta } : undefined,
+      info: g.info ? { ...g.info } : undefined,
     }));
 
     this.render();
@@ -3638,7 +3661,7 @@ export class GraphView implements View {
           position: { ...g.layout.position },
           size: { ...g.layout.size },
         } : undefined,
-        meta: g.meta ? { ...g.meta } : undefined,
+        info: g.info ? { ...g.info } : undefined,
       })),
     };
   }
@@ -3683,7 +3706,7 @@ export class GraphView implements View {
         position: { ...g.layout.position },
         size: { ...g.layout.size },
       } : undefined,
-      meta: g.meta ? { ...g.meta } : undefined,
+      info: g.info ? { ...g.info } : undefined,
     }));
   }
 
@@ -4515,10 +4538,11 @@ export class GraphView implements View {
       rect.setAttribute('y', String(layout.position.y));
       rect.setAttribute('width', String(layout.size.width));
       rect.setAttribute('height', String(layout.size.height));
-      rect.setAttribute('fill', 'rgba(200, 200, 200, 0.1)'); // Light gray background
-      rect.setAttribute('stroke', '#999'); // Gray border
-      rect.setAttribute('stroke-width', '2');
-      rect.setAttribute('stroke-dasharray', '5,5'); // Dashed border
+      const gs = group.style;
+      rect.setAttribute('fill', gs?.color ?? 'rgba(200, 200, 200, 0.1)');
+      rect.setAttribute('stroke', gs?.borderColor ?? '#999');
+      rect.setAttribute('stroke-width', String(gs?.borderWidth ?? 2));
+      rect.setAttribute('stroke-dasharray', gs?.borderDash === false ? 'none' : '5,5');
       rect.setAttribute('rx', '4');
       // Edges are now drawn above groups, so pointer-events can be 'auto' for both modes
       rect.style.pointerEvents = 'auto';
@@ -4602,6 +4626,16 @@ export class GraphView implements View {
         }
         // Include all parent groups
         this.addParentGroupsToUpdate(changedGroup, allGroupsToUpdate);
+        // Collect all node IDs that belong to the moved group (direct + all descendants).
+        // When Earth is moved, Tokyo, Melbourne, etc. move; groups containing them (e.g. syster) must have bounds recalculated.
+        const affectedNodeIds = this.collectNodeIdsInGroupAndDescendants(changedGroup);
+        for (const nid of affectedNodeIds) {
+          const containingGroups = this.groups.filter(g => g.nodeIds.includes(nid));
+          for (const g of containingGroups) {
+            allGroupsToUpdate.add(g);
+            this.addParentGroupsToUpdate(g, allGroupsToUpdate);
+          }
+        }
       }
     }
 
@@ -4637,6 +4671,23 @@ export class GraphView implements View {
         group.layout.size.height = bounds.maxY - bounds.minY;
       }
     }
+  }
+
+  /**
+   * Collect all node IDs that belong to a group (direct nodeIds + all descendant groups' nodeIds).
+   * Used when a group is moved so that other groups containing any of these nodes (e.g. syster) get bounds recalculated.
+   */
+  private collectNodeIdsInGroupAndDescendants(group: Group): Set<string> {
+    const nodeIds = new Set<string>();
+    for (const nid of group.nodeIds) {
+      nodeIds.add(nid);
+    }
+    const childGroups = this.groups.filter(g => g.parentId === group.id);
+    for (const child of childGroups) {
+      const childNodeIds = this.collectNodeIdsInGroupAndDescendants(child);
+      childNodeIds.forEach(nid => nodeIds.add(nid));
+    }
+    return nodeIds;
   }
 
   /**

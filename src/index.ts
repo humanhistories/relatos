@@ -17,6 +17,7 @@ import { Globe3DView } from './views/globe3d/view';
 import { Map2DView } from './views/map2d/view';
 import { injectSvgSprite } from './assets/icons/icons-embedded';
 import { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl, type PlantUMLExportOptions } from './utils/plantuml';
+import { importRelat, exportRelat } from './utils/relat';
 import { getShapeDataForOffice } from './utils/office-shapes';
 
 /**
@@ -327,6 +328,28 @@ export function createRelatosViewer(
       viewContainer.setData(data.nodes, data.edges, data.groups);
     },
 
+    importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void }): void {
+      const data = importRelat(relatText, options);
+      const graphView = viewContainer.getView('graph') as GraphView | undefined;
+      if (graphView) {
+        graphView.setData(data.nodes, data.edges, data.groups);
+      }
+      const map2dView = viewContainer.getView('map2d') as Map2DView | undefined;
+      if (map2dView) {
+        map2dView.setData(data.nodes, data.edges);
+      }
+      const globe3dView = viewContainer.getView('globe3d') as Globe3DView | undefined;
+      if (globe3dView) {
+        globe3dView.setData(data.nodes, data.edges);
+      }
+      viewContainer.setData(data.nodes, data.edges, data.groups);
+    },
+
+    exportRelat(options?: { includeLayout?: boolean }): string {
+      const { nodes, edges, groups } = viewContainer.getData();
+      return exportRelat(nodes, edges, groups, options);
+    },
+
     setPlantUMLExportOptions(options: PlantUMLExportOptions): void {
       viewContainer.setPlantUMLExportOptions(options);
     },
@@ -358,5 +381,9 @@ export type * from './types';
 // Export PlantUML utilities
 export { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl } from './utils/plantuml';
 export type { PlantUMLExportOptions } from './utils/plantuml';
+export { importRelat, exportRelat, irToRelatosData } from './utils/relat';
+export type { RelatImportResult, RelatExportOptions, RelatImportOptions } from './utils/relat';
+export { parseRelat } from './utils/relat-parser';
+export type { RelatIR } from './utils/relat-parser';
 export { getShapeDataForOffice } from './utils/office-shapes';
 export type { OfficeShapeExport, NodeShapeData, EdgeShapeData, GroupShapeData, BoundingBox } from './types/office-shapes';

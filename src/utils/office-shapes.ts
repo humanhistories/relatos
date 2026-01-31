@@ -254,7 +254,6 @@ export function getShapeDataForOffice(
       height,
       fillColor: style.color,
       strokeColor: style.borderColor,
-      type: node.type,
     });
     minX = Math.min(minX, left);
     maxX = Math.max(maxX, left + width);
@@ -269,6 +268,7 @@ export function getShapeDataForOffice(
   for (const group of groups) {
     const layout = getLayoutForGroup(group);
     if (!layout) continue;
+    const gs = group.style;
     groupShapes.push({
       id: group.id,
       label: group.label,
@@ -278,6 +278,10 @@ export function getShapeDataForOffice(
       height: layout.size.height,
       nodeIds: [...group.nodeIds],
       childGroupIds: groups.filter((g) => g.parentId === group.id).map((g) => g.id) || undefined,
+      fillColor: gs?.color,
+      strokeColor: gs?.borderColor,
+      strokeWidth: gs?.borderWidth,
+      strokeDash: gs?.borderDash,
     });
     minX = Math.min(minX, layout.position.x);
     maxX = Math.max(maxX, layout.position.x + layout.size.width);

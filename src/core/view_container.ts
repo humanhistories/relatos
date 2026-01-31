@@ -8,6 +8,7 @@ import type { Group } from '../types/data';
 import type { TableOptions } from '../types/options';
 import { injectSvgSprite } from '../assets/icons/icons-embedded';
 import { exportToPlantUML, copyToClipboard, type PlantUMLExportOptions } from '../utils/plantuml';
+import { exportRelat } from '../utils/relat';
 
 /**
  * Helper function to get icon from SVG sprite
@@ -22,6 +23,36 @@ function createSvgIcon(iconId: string, size: number = 16): string {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${iconId}"></use>
   </svg>`;
+}
+
+/** Get nested value by dot-separated path (e.g. "a.b.c"). */
+function getNested(obj: Record<string, unknown> | undefined, path: string): unknown {
+  if (!obj) return undefined;
+  const parts = path.split('.');
+  let current: unknown = obj;
+  for (const p of parts) {
+    if (current == null || typeof current !== 'object') return undefined;
+    current = (current as Record<string, unknown>)[p];
+  }
+  return current;
+}
+
+/** Flatten object to "prefix.key: value" lines; nested as prefix.k1.k2: value. */
+function flattenToDisplayString(obj: Record<string, unknown> | undefined, prefix: string): string {
+  if (!obj || typeof obj !== 'object') return '';
+  const lines: string[] = [];
+  function walk(o: Record<string, unknown>, path: string) {
+    for (const [key, value] of Object.entries(o)) {
+      const fullPath = path ? `${path}.${key}` : key;
+      if (value != null && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Date)) {
+        walk(value as Record<string, unknown>, fullPath);
+      } else {
+        lines.push(`${prefix}.${fullPath}: ${value === undefined || value === null ? '' : String(value)}`);
+      }
+    }
+  }
+  walk(obj, '');
+  return lines.join('\n');
 }
 
 /**
@@ -363,20 +394,39 @@ export class ViewContainer {
     // Display node table
     if (this.tableOptions.nodes?.format) {
       this.nodesTableContainer = this.createTable('nodes', this.tableOptions.nodes.header || '', this.tableOptions.nodes.format, this.nodes, 'node');
-      this.tableContainer.appendChild(this.nodesTableContainer);
+      const nodeSection = this.wrapTableSection(this.nodesTableContainer, this.tableOptions.nodes.sectionTitle);
+      this.tableContainer.appendChild(nodeSection);
     }
 
     // Display edge table
     if (this.tableOptions.edges?.format) {
       this.edgesTableContainer = this.createTable('edges', this.tableOptions.edges.header || '', this.tableOptions.edges.format, this.edges, 'edge');
-      this.tableContainer.appendChild(this.edgesTableContainer);
+      const edgeSection = this.wrapTableSection(this.edgesTableContainer, this.tableOptions.edges.sectionTitle);
+      this.tableContainer.appendChild(edgeSection);
     }
 
     // Display group table
     if (this.tableOptions.groups?.format) {
       this.groupsTableContainer = this.createTable('groups', this.tableOptions.groups.header || '', this.tableOptions.groups.format, this.groups, 'group');
-      this.tableContainer.appendChild(this.groupsTableContainer);
+      const groupSection = this.wrapTableSection(this.groupsTableContainer, this.tableOptions.groups.sectionTitle);
+      this.tableContainer.appendChild(groupSection);
     }
+  }
+
+  private wrapTableSection(tableElement: HTMLElement, sectionTitle?: string): HTMLElement {
+    const section = document.createElement('div');
+    section.className = 'relatos-table-section';
+    if (sectionTitle) {
+      const h3 = document.createElement('h3');
+      h3.textContent = sectionTitle;
+      h3.style.margin = '0 0 8px 0';
+      h3.style.padding = '8px 12px 0';
+      h3.style.fontSize = '14px';
+      h3.style.color = '#333';
+      section.appendChild(h3);
+    }
+    section.appendChild(tableElement);
+    return section;
   }
 
   /**
@@ -457,25 +507,34 @@ export class ViewContainer {
       let rowHtml = format;
       
       // Embed data ({{fieldName}} format)
-      // First, embed info fields ({{info.fieldName}} format)
-      if ('info' in item && item.info) {
-        for (const [key, value] of Object.entries(item.info)) {
-          const regex = new RegExp(`\\{\\{info\\.${key}\\}\\}`, 'g');
-          rowHtml = rowHtml.replace(regex, String(value || ''));
-        }
-      }
-      
-      // Replace any remaining {{info.fieldName}} patterns with empty string
-      // (for fields that don't exist in the item's info)
-      rowHtml = rowHtml.replace(/\{\{info\.[^}]+\}\}/g, '');
+      // {{info}}: full flattened "info.key: value" / "info.k1.k2: value"
+      rowHtml = rowHtml.replace(/\{\{info\}\}/g, () =>
+        flattenToDisplayString('info' in item ? (item.info as Record<string, unknown> | undefined) : undefined, 'info')
+      );
+      rowHtml = rowHtml.replace(/\{\{info\.([^}]+)\}\}/g, (_, path: string) =>
+        String(getNested('info' in item ? (item.info as Record<string, unknown>) : undefined, path) ?? '')
+      );
+      // {{meta}}: full flattened "meta.key: value" (Group etc.)
+      rowHtml = rowHtml.replace(/\{\{meta\}\}/g, () =>
+        flattenToDisplayString('meta' in item ? (item.meta as Record<string, unknown> | undefined) : undefined, 'meta')
+      );
+      rowHtml = rowHtml.replace(/\{\{meta\.([^}]+)\}\}/g, (_, path: string) =>
+        String(getNested('meta' in item ? (item.meta as Record<string, unknown>) : undefined, path) ?? '')
+      );
       
       // Then embed Node/Edge basic fields ({{fieldName}} format)
       // This allows access to both standard fields and info fields
       rowHtml = rowHtml.replace(/\{\{id\}\}/g, String(item.id || ''));
       rowHtml = rowHtml.replace(/\{\{label\}\}/g, String('label' in item ? (item.label || '') : ''));
 
-      // type field (Node only, optional)
-      rowHtml = rowHtml.replace(/\{\{type\}\}/g, String('type' in item ? (item.type || '') : ''));
+      // position field (Node only, Graph) and layout shorthand {{x}}, {{y}}
+      if ('position' in item && item.position && typeof item.position === 'object') {
+        const pos = item.position as { x?: number; y?: number };
+        rowHtml = rowHtml.replace(/\{\{position\.x\}\}/g, String(pos.x ?? ''));
+        rowHtml = rowHtml.replace(/\{\{position\.y\}\}/g, String(pos.y ?? ''));
+        rowHtml = rowHtml.replace(/\{\{x\}\}/g, String(pos.x ?? ''));
+        rowHtml = rowHtml.replace(/\{\{y\}\}/g, String(pos.y ?? ''));
+      }
       
       // coordinates field (Node only)
       if ('coordinates' in item && item.coordinates) {
@@ -485,7 +544,7 @@ export class ViewContainer {
         rowHtml = rowHtml.replace(/\{\{longitude\}\}/g, String(item.coordinates[1] || ''));
       }
 
-      // style fields (Node/Edge common, optional)
+      // style fields (Node/Edge/Group common, optional) and primary weight (Edge)
       if ((item as any).style && typeof (item as any).style === 'object') {
         const style: any = (item as any).style;
         rowHtml = rowHtml.replace(/\{\{style\.color\}\}/g, String(style.color ?? ''));
@@ -496,6 +555,15 @@ export class ViewContainer {
         rowHtml = rowHtml.replace(/\{\{style\.label\}\}/g, String(style.label ?? ''));
         rowHtml = rowHtml.replace(/\{\{style\.srcLabel\}\}/g, String(style.srcLabel ?? ''));
         rowHtml = rowHtml.replace(/\{\{style\.dstLabel\}\}/g, String(style.dstLabel ?? ''));
+        rowHtml = rowHtml.replace(/\{\{style\.borderDash\}\}/g, String(style.borderDash ?? ''));
+        rowHtml = rowHtml.replace(/\{\{style\.dash\}\}/g, String(style.borderDash ?? ''));
+        rowHtml = rowHtml.replace(/\{\{weight\}\}/g, String(style.weight ?? ''));
+      }
+      // Node layout shorthand {{w}}, {{h}} from style (Node only; Group uses layout)
+      if (!('nodeIds' in item) && (item as any).style && typeof (item as any).style === 'object') {
+        const style: any = (item as any).style;
+        rowHtml = rowHtml.replace(/\{\{w\}\}/g, String(style.width ?? ''));
+        rowHtml = rowHtml.replace(/\{\{h\}\}/g, String(style.height ?? ''));
       }
 
       // Other basic fields (Edge specific)
@@ -504,28 +572,52 @@ export class ViewContainer {
         rowHtml = rowHtml.replace(/\{\{dst\}\}/g, String(item.dst || ''));
         rowHtml = rowHtml.replace(/\{\{relType\}\}/g, String(item.relType || ''));
       }
+      // Edge layout: anchors (src_side, src_t, dst_side, dst_t)
+      const edgeItem = item as { srcAnchor?: { side?: string; t?: number }; dstAnchor?: { side?: string; t?: number }; anchors?: { src?: { side?: string; t?: number }; dst?: { side?: string; t?: number } } };
+      const srcAnchor = edgeItem.srcAnchor ?? edgeItem.anchors?.src;
+      const dstAnchor = edgeItem.dstAnchor ?? edgeItem.anchors?.dst;
+      rowHtml = rowHtml.replace(/\{\{src_side\}\}/g, String(srcAnchor?.side ?? ''));
+      rowHtml = rowHtml.replace(/\{\{src_t\}\}/g, String(srcAnchor?.t ?? ''));
+      rowHtml = rowHtml.replace(/\{\{dst_side\}\}/g, String(dstAnchor?.side ?? ''));
+      rowHtml = rowHtml.replace(/\{\{dst_t\}\}/g, String(dstAnchor?.t ?? ''));
+      rowHtml = rowHtml.replace(/\{\{src\.x\}\}/g, '');
+      rowHtml = rowHtml.replace(/\{\{src\.y\}\}/g, '');
+      rowHtml = rowHtml.replace(/\{\{dst\.x\}\}/g, '');
+      rowHtml = rowHtml.replace(/\{\{dst\.y\}\}/g, '');
+      if ('src' in item) {
+        const bends = (item as any).bends;
+        const bendsStr = Array.isArray(bends) && bends.length > 0
+          ? (bends as Array<{ x: number; y: number }>).map(b => `{x=${b.x},y=${b.y}}`).join(', ')
+          : '';
+        rowHtml = rowHtml.replace(/\{\{bends\}\}/g, bendsStr);
+      }
 
       // Group specific fields
       if ('nodeIds' in item) {
         const group = item as Group;
+        const childGroupIds = Array.isArray(data)
+          ? (data as Group[]).filter((g: Group) => g.parentId === group.id).map((g: Group) => g.id)
+          : [];
         rowHtml = rowHtml.replace(/\{\{nodeIds\}\}/g, String(group.nodeIds?.join(', ') || ''));
         rowHtml = rowHtml.replace(/\{\{nodeCount\}\}/g, String(group.nodeIds?.length || 0));
+        rowHtml = rowHtml.replace(/\{\{groupIds\}\}/g, String(childGroupIds.join(', ') || ''));
+        rowHtml = rowHtml.replace(/\{\{groupCount\}\}/g, String(childGroupIds.length || 0));
         rowHtml = rowHtml.replace(/\{\{parentId\}\}/g, String(group.parentId || ''));
-        // meta fields
-        if (group.meta && typeof group.meta === 'object') {
-          for (const [key, value] of Object.entries(group.meta)) {
-            const regex = new RegExp(`\\{\\{meta\\.${key}\\}\\}`, 'g');
-            rowHtml = rowHtml.replace(regex, String(value || ''));
-          }
-        }
-        // layout fields
+        // layout fields and shorthand {{x}}, {{y}}, {{w}}, {{h}}
         if (group.layout) {
           rowHtml = rowHtml.replace(/\{\{layout\.position\.x\}\}/g, String(group.layout.position.x || ''));
           rowHtml = rowHtml.replace(/\{\{layout\.position\.y\}\}/g, String(group.layout.position.y || ''));
           rowHtml = rowHtml.replace(/\{\{layout\.size\.width\}\}/g, String(group.layout.size.width || ''));
           rowHtml = rowHtml.replace(/\{\{layout\.size\.height\}\}/g, String(group.layout.size.height || ''));
+          rowHtml = rowHtml.replace(/\{\{x\}\}/g, String(group.layout.position.x ?? ''));
+          rowHtml = rowHtml.replace(/\{\{y\}\}/g, String(group.layout.position.y ?? ''));
+          rowHtml = rowHtml.replace(/\{\{w\}\}/g, String(group.layout.size.width ?? ''));
+          rowHtml = rowHtml.replace(/\{\{h\}\}/g, String(group.layout.size.height ?? ''));
         }
       }
+
+      // 未解決の {{...}} プレースホルダーを空白に置換（値がない項目を info/nodeIds と同様に空白表示）
+      rowHtml = rowHtml.replace(/\{\{[^}]*\}\}/g, '');
 
       row.innerHTML = rowHtml;
 
@@ -963,13 +1055,13 @@ export class ViewContainer {
 
   /**
    * Create export button (in common controls, all views)
-   * Exports nodes, edges, and groups to PlantUML format and copies to clipboard
+   * Exports nodes, edges, and groups to relat format (with layout) and copies to clipboard
    */
   private createExportButton(): void {
     this.exportButton = document.createElement('button');
     this.exportButton.innerHTML = createSvgIcon('icon-export', 16);
-    this.exportButton.setAttribute('aria-label', 'Export to PlantUML');
-    this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
+    this.exportButton.setAttribute('aria-label', 'Export to relat');
+    this.exportButton.setAttribute('title', 'Export to relat (copy to clipboard)');
     this.exportButton.style.padding = '6px';
     this.exportButton.style.border = '1px solid #ccc';
     this.exportButton.style.borderRadius = '4px';
@@ -985,66 +1077,60 @@ export class ViewContainer {
     this.exportButton.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
     this.exportButton.style.transition = '0.2s';
     
-    // Click event: export to PlantUML and copy to clipboard
+    // Click event: export to relat (with layout) and copy to clipboard
     this.exportButton.addEventListener('click', async () => {
-      await this.exportToPlantUMLAndCopy();
+      await this.exportRelatAndCopy();
     });
     
     this.commonControlsContainer.appendChild(this.exportButton);
   }
 
   /**
-   * Export current data to PlantUML format and copy to clipboard
+   * Export current data to relat format (with layout) and copy to clipboard
    */
-  private async exportToPlantUMLAndCopy(): Promise<void> {
+  private async exportRelatAndCopy(): Promise<void> {
+    const exportTitle = 'Export to relat (copy to clipboard)';
     try {
-      const plantUML = exportToPlantUML(this.nodes, this.edges, this.groups, this.plantUMLExportOptions);
-      console.log('Exported PlantUML length:', plantUML.length);
-      const success = await copyToClipboard(plantUML);
-    
-    if (this.exportButton) {
-      if (success) {
-        // Show success feedback
-        this.exportButton.style.backgroundColor = '#c8e6c9';
-        this.exportButton.style.borderColor = '#4caf50';
-        this.exportButton.setAttribute('title', 'Copied to clipboard!');
-        
-        // Reset after 2 seconds
-        setTimeout(() => {
-          if (this.exportButton) {
-            this.exportButton.style.backgroundColor = '#fff';
-            this.exportButton.style.borderColor = '#ccc';
-            this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
-          }
-        }, 2000);
-      } else {
-        // Show error feedback
-        this.exportButton.style.backgroundColor = '#ffcdd2';
-        this.exportButton.style.borderColor = '#f44336';
-        this.exportButton.setAttribute('title', 'Failed to copy');
-        
-        // Reset after 2 seconds
-        setTimeout(() => {
-          if (this.exportButton) {
-            this.exportButton.style.backgroundColor = '#fff';
-            this.exportButton.style.borderColor = '#ccc';
-            this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
-          }
-        }, 2000);
+      const relatText = exportRelat(this.nodes, this.edges, this.groups, { includeLayout: true });
+      console.log('Exported relat length:', relatText.length);
+      const success = await copyToClipboard(relatText);
+
+      if (this.exportButton) {
+        if (success) {
+          this.exportButton.style.backgroundColor = '#c8e6c9';
+          this.exportButton.style.borderColor = '#4caf50';
+          this.exportButton.setAttribute('title', 'Copied to clipboard!');
+          setTimeout(() => {
+            if (this.exportButton) {
+              this.exportButton.style.backgroundColor = '#fff';
+              this.exportButton.style.borderColor = '#ccc';
+              this.exportButton.setAttribute('title', exportTitle);
+            }
+          }, 2000);
+        } else {
+          this.exportButton.style.backgroundColor = '#ffcdd2';
+          this.exportButton.style.borderColor = '#f44336';
+          this.exportButton.setAttribute('title', 'Failed to copy');
+          setTimeout(() => {
+            if (this.exportButton) {
+              this.exportButton.style.backgroundColor = '#fff';
+              this.exportButton.style.borderColor = '#ccc';
+              this.exportButton.setAttribute('title', exportTitle);
+            }
+          }, 2000);
+        }
       }
-    }
     } catch (error) {
       console.error('Export failed:', error);
       if (this.exportButton) {
         this.exportButton.style.backgroundColor = '#ffcdd2';
         this.exportButton.style.borderColor = '#f44336';
         this.exportButton.setAttribute('title', `Export failed: ${error instanceof Error ? error.message : String(error)}`);
-        
         setTimeout(() => {
           if (this.exportButton) {
             this.exportButton.style.backgroundColor = '#fff';
             this.exportButton.style.borderColor = '#ccc';
-            this.exportButton.setAttribute('title', 'Export to PlantUML (copy to clipboard)');
+            this.exportButton.setAttribute('title', exportTitle);
           }
         }, 3000);
       }
@@ -1071,6 +1157,13 @@ export class ViewContainer {
   getPlantUMLExport(options?: PlantUMLExportOptions): string {
     const exportOptions = options || this.plantUMLExportOptions;
     return exportToPlantUML(this.nodes, this.edges, this.groups, exportOptions);
+  }
+
+  /**
+   * Get relat export text (with layout when includeLayout is true)
+   */
+  getExportRelat(includeLayout?: boolean): string {
+    return exportRelat(this.nodes, this.edges, this.groups, { includeLayout: includeLayout ?? true });
   }
 
   /**

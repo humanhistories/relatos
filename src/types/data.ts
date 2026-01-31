@@ -50,11 +50,6 @@ export interface Node {
   label: string;
 
   /**
-   * Node type (optional)
-   */
-  type?: string;
-
-  /**
    * Position information for Graph view
    * If not present, graph initializes with circular layout
    */
@@ -165,6 +160,20 @@ export interface GroupLayout {
 }
 
 /**
+ * Group styling (fill, border color/width, dashed/solid)
+ */
+export interface GroupStyle {
+  /** Fill (background) color. Default: rgba(200, 200, 200, 0.1) */
+  color?: string;
+  /** Border (stroke) color. Default: #999 */
+  borderColor?: string;
+  /** Border width in pixels. Default: 2 */
+  borderWidth?: number;
+  /** true = dashed border, false/undefined = solid. Default: true (dashed) */
+  borderDash?: boolean;
+}
+
+/**
  * Group (for Graph view)
  * Represents a collection of nodes that can be visually grouped together
  * Supports up to 3 levels of hierarchy
@@ -199,7 +208,12 @@ export interface Group {
   layout?: GroupLayout;
 
   /**
-   * Metadata (arbitrary)
+   * Group styling (fill, border color/width, dashed/solid)
    */
-  meta?: Record<string, unknown>;
+  style?: GroupStyle;
+
+  /**
+   * Group information (for table display, arbitrary key-value; same role as Node.info)
+   */
+  info?: Record<string, unknown>;
 }
