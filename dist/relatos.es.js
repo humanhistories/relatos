@@ -846,7 +846,7 @@ function Pt(w) {
     const I = h[T];
     I ? (A !== void 0 && A !== T && (I.label = A), I.style = mt(I.style, E) ?? I.style, S && (I.members = [.../* @__PURE__ */ new Set([...I.members, ...S])])) : h[T] = { id: T, label: A ?? T, style: E ?? void 0, members: S ?? [] };
   }
-  const o = { current: 0 }, g = s.length;
+  const o = { current: 0 }, u = s.length;
   function p(T) {
     let A = 1, E = 1;
     for (let S = 0; S < T && S < e.length; S++)
@@ -855,40 +855,40 @@ function Pt(w) {
     return { line: A, col: E };
   }
   function f(T) {
-    const A = o.current < g ? s[o.current].offset : e.length, { line: E, col: S } = p(A);
+    const A = o.current < u ? s[o.current].offset : e.length, { line: E, col: S } = p(A);
     t.push(`${T} (line ${E}, column ${S})`);
   }
-  function u(T, A) {
-    return o.current >= g ? T === 19 : s[o.current].type === T;
+  function g(T, A) {
+    return o.current >= u ? T === 19 : s[o.current].type === T;
   }
   function y(T, A) {
-    if (o.current >= g) return null;
+    if (o.current >= u) return null;
     const E = s[o.current];
     return E.type !== T ? null : (o.current++, E);
   }
   function m() {
-    for (; o.current < g && (s[o.current].type === 18 || s[o.current].value === "," || s[o.current].value === ";" || s[o.current].value === `
+    for (; o.current < u && (s[o.current].type === 18 || s[o.current].value === "," || s[o.current].value === ";" || s[o.current].value === `
 `); ) o.current++;
-    for (; o.current < g && s[o.current].type === 0 && s[o.current].value === ""; ) o.current++;
+    for (; o.current < u && s[o.current].type === 0 && s[o.current].value === ""; ) o.current++;
   }
   function b(T) {
     const A = [];
     for (; ; ) {
-      if (m(), u(
+      if (m(), g(
         5
         /* Rbrace */
       ))
         return o.current++, A;
-      if (u(
+      if (g(
         19
         /* Eof */
       ))
         return f("Missing closing } for group"), A;
-      if (u(
+      if (g(
         15
         /* GroupKw */
       )) {
-        if (o.current++, !u(
+        if (o.current++, !g(
           0
           /* Id */
         ))
@@ -896,10 +896,10 @@ function Pt(w) {
         const E = s[o.current].value;
         o.current++;
         let S = E;
-        u(
+        g(
           10
           /* As */
-        ) && (o.current++, u(
+        ) && (o.current++, g(
           2
           /* String */
         ) && (S = s[o.current].value, o.current++));
@@ -913,22 +913,22 @@ function Pt(w) {
         d(E, S !== E ? S : E, I, x), A.push(E);
         continue;
       }
-      if (u(
+      if (g(
         0
         /* Id */
       )) {
         const E = s[o.current].value;
         o.current++;
         let S = E;
-        u(
+        g(
           10
           /* As */
-        ) && (o.current++, u(
+        ) && (o.current++, g(
           2
           /* String */
         ) && (S = s[o.current].value, o.current++));
         const I = X(s, o) ?? void 0;
-        if (u(
+        if (g(
           4
           /* Lbrace */
         )) {
@@ -946,15 +946,15 @@ function Pt(w) {
     }
   }
   function C() {
-    if (!u(
+    if (!g(
       19
       /* Eof */
     )) {
-      if (u(
+      if (g(
         15
         /* GroupKw */
       )) {
-        if (o.current++, !u(
+        if (o.current++, !g(
           0
           /* Id */
         )) {
@@ -975,7 +975,7 @@ function Pt(w) {
         d(T, T, A, E);
         return;
       }
-      if (u(
+      if (g(
         12
         /* Layout */
       )) {
@@ -987,24 +987,24 @@ function Pt(w) {
           return;
         }
         const T = {}, A = {}, E = {};
-        for (; !u(
+        for (; !g(
           5
           /* Rbrace */
-        ) && !u(
+        ) && !g(
           19
           /* Eof */
-        ) && (m(), !(u(
+        ) && (m(), !(g(
           19
           /* Eof */
-        ) || u(
+        ) || g(
           5
           /* Rbrace */
         ))); )
-          if (u(
+          if (g(
             11
             /* Node */
           )) {
-            if (o.current++, !u(
+            if (o.current++, !g(
               0
               /* Id */
             )) {
@@ -1020,22 +1020,22 @@ function Pt(w) {
               continue;
             }
             let I, x, L, k, N = !1;
-            for (; !u(
+            for (; !g(
               5
               /* Rbrace */
-            ) && !u(
+            ) && !g(
               19
               /* Eof */
-            ) && (m(), !u(
+            ) && (m(), !g(
               5
               /* Rbrace */
             )); )
-              if (u(
+              if (g(
                 0
                 /* Id */
               )) {
                 const M = s[o.current].value;
-                if (o.current++, u(
+                if (o.current++, g(
                   9
                   /* Equals */
                 )) {
@@ -1050,15 +1050,15 @@ function Pt(w) {
                 } else M === "fixed" && (N = !0);
               } else
                 o.current++;
-            u(
+            g(
               5
               /* Rbrace */
             ) && o.current++, I != null && x != null && (T[S] = { x: I, y: x, w: L, h: k, fixed: N || void 0 });
-          } else if (u(
+          } else if (g(
             15
             /* GroupKw */
           )) {
-            if (o.current++, !u(
+            if (o.current++, !g(
               0
               /* Id */
             )) {
@@ -1074,22 +1074,22 @@ function Pt(w) {
               continue;
             }
             let I, x, L, k;
-            for (; !u(
+            for (; !g(
               5
               /* Rbrace */
-            ) && !u(
+            ) && !g(
               19
               /* Eof */
-            ) && (m(), !u(
+            ) && (m(), !g(
               5
               /* Rbrace */
             )); )
-              if (u(
+              if (g(
                 0
                 /* Id */
               )) {
                 const N = s[o.current].value;
-                if (o.current++, u(
+                if (o.current++, g(
                   9
                   /* Equals */
                 )) {
@@ -1104,15 +1104,15 @@ function Pt(w) {
                 }
               } else
                 o.current++;
-            u(
+            g(
               5
               /* Rbrace */
             ) && o.current++, I != null && x != null && L != null && k != null && (A[S] = { x: I, y: x, w: L, h: k });
-          } else if (u(
+          } else if (g(
             16
             /* EdgeKw */
           )) {
-            if (o.current++, !u(
+            if (o.current++, !g(
               0
               /* Id */
             )) {
@@ -1122,26 +1122,26 @@ function Pt(w) {
             const S = s[o.current].value;
             o.current++, m();
             let I, x, L, k;
-            if (u(
+            if (g(
               4
               /* Lbrace */
             )) {
-              for (o.current++; !u(
+              for (o.current++; !g(
                 5
                 /* Rbrace */
-              ) && !u(
+              ) && !g(
                 19
                 /* Eof */
-              ) && (m(), !u(
+              ) && (m(), !g(
                 5
                 /* Rbrace */
               )); )
-                if (u(
+                if (g(
                   0
                   /* Id */
                 )) {
                   const M = s[o.current].value;
-                  if (o.current++, u(
+                  if (o.current++, g(
                     9
                     /* Equals */
                   )) {
@@ -1156,51 +1156,51 @@ function Pt(w) {
                   }
                 } else
                   o.current++;
-              u(
+              g(
                 5
                 /* Rbrace */
               ) && o.current++, m();
             }
             const N = [];
-            if (u(
+            if (g(
               17
               /* Bends */
             ) && (o.current++, m(), y(
               4
               /* Lbrace */
             ))) {
-              for (; !u(
+              for (; !g(
                 5
                 /* Rbrace */
-              ) && !u(
+              ) && !g(
                 19
                 /* Eof */
-              ) && (m(), !u(
+              ) && (m(), !g(
                 5
                 /* Rbrace */
               )); )
-                if (u(
+                if (g(
                   4
                   /* Lbrace */
                 )) {
                   o.current++;
                   let M, _;
-                  for (; !u(
+                  for (; !g(
                     5
                     /* Rbrace */
-                  ) && !u(
+                  ) && !g(
                     19
                     /* Eof */
-                  ) && (m(), !u(
+                  ) && (m(), !g(
                     5
                     /* Rbrace */
                   )); )
-                    if (u(
+                    if (g(
                       0
                       /* Id */
                     )) {
                       const D = s[o.current].value;
-                      if (o.current++, u(
+                      if (o.current++, g(
                         9
                         /* Equals */
                       )) {
@@ -1215,12 +1215,12 @@ function Pt(w) {
                       }
                     } else
                       o.current++;
-                  u(
+                  g(
                     5
                     /* Rbrace */
                   ) && o.current++, M != null && _ != null && N.push({ x: M, y: _ });
                 }
-              u(
+              g(
                 5
                 /* Rbrace */
               ) && o.current++;
@@ -1231,7 +1231,7 @@ function Pt(w) {
             }
           } else
             o.current++;
-        u(
+        g(
           5
           /* Rbrace */
         ) && o.current++, r = {
@@ -1241,7 +1241,7 @@ function Pt(w) {
         };
         return;
       }
-      if (u(
+      if (g(
         13
         /* StyleKw */
       )) {
@@ -1253,24 +1253,24 @@ function Pt(w) {
           return;
         }
         const T = {}, A = {}, E = {}, S = {};
-        for (; !u(
+        for (; !g(
           5
           /* Rbrace */
-        ) && !u(
+        ) && !g(
           19
           /* Eof */
-        ) && (m(), !(u(
+        ) && (m(), !(g(
           19
           /* Eof */
-        ) || u(
+        ) || g(
           5
           /* Rbrace */
         ))); )
-          if (u(
+          if (g(
             11
             /* Node */
           )) {
-            if (o.current++, !u(
+            if (o.current++, !g(
               0
               /* Id */
             )) {
@@ -1281,11 +1281,11 @@ function Pt(w) {
             o.current++;
             const x = X(s, o);
             x && Object.keys(x).length > 0 && (T[I] = x);
-          } else if (u(
+          } else if (g(
             15
             /* GroupKw */
           )) {
-            if (o.current++, !u(
+            if (o.current++, !g(
               0
               /* Id */
             )) {
@@ -1296,11 +1296,11 @@ function Pt(w) {
             o.current++;
             const x = X(s, o);
             x && Object.keys(x).length > 0 && (A[I] = x);
-          } else if (u(
+          } else if (g(
             16
             /* EdgeKw */
           )) {
-            if (o.current++, !u(
+            if (o.current++, !g(
               0
               /* Id */
             )) {
@@ -1311,11 +1311,11 @@ function Pt(w) {
             o.current++;
             const x = X(s, o);
             x && Object.keys(x).length > 0 && (E[I] = x);
-          } else if (u(
+          } else if (g(
             14
             /* RelKw */
           )) {
-            if (o.current++, !u(
+            if (o.current++, !g(
               0
               /* Id */
             )) {
@@ -1328,7 +1328,7 @@ function Pt(w) {
             x && Object.keys(x).length > 0 && (S[I] = x);
           } else
             o.current++;
-        u(
+        g(
           5
           /* Rbrace */
         ) && o.current++, c = {
@@ -1339,19 +1339,19 @@ function Pt(w) {
         };
         return;
       }
-      if (u(
+      if (g(
         0
         /* Id */
       )) {
-        const T = s[o.current].value, A = o.current + 1 < g ? s[o.current + 1].type : 19;
+        const T = s[o.current].value, A = o.current + 1 < u ? s[o.current + 1].type : 19;
         if (A === 3) {
           if (o.current++, y(
             3
             /* Arrow */
-          ), !u(
+          ), !g(
             0
             /* Id */
-          ) && !u(
+          ) && !g(
             2
             /* String */
           )) {
@@ -1361,22 +1361,22 @@ function Pt(w) {
           let x;
           s[o.current].type, x = s[o.current].value, o.current++, l(T, T), l(x, x);
           let L, k;
-          if (u(
+          if (g(
             8
             /* Colon */
           )) {
-            if (o.current++, u(
+            if (o.current++, g(
               0
               /* Id */
             ))
-              L = s[o.current].value, o.current++, u(
+              L = s[o.current].value, o.current++, g(
                 10
                 /* As */
-              ) && (o.current++, u(
+              ) && (o.current++, g(
                 2
                 /* String */
               ) && (k = s[o.current].value, o.current++));
-            else if (u(
+            else if (g(
               2
               /* String */
             )) {
@@ -1391,34 +1391,34 @@ function Pt(w) {
         let E = A === 4;
         if (A === 6) {
           let x = o.current + 2, L = 1;
-          for (; x < g && L > 0; )
+          for (; x < u && L > 0; )
             s[x].type === 6 ? L++ : s[x].type === 7 && L--, x++;
-          x < g && s[x].type === 4 && (E = !0);
+          x < u && s[x].type === 4 && (E = !0);
         }
         if (!E && A === 10) {
           let x = o.current + 1;
-          if (x + 1 < g && s[x].type === 10 && s[x + 1].type === 2) {
-            for (x += 2; x < g && s[x].type === 6; ) {
+          if (x + 1 < u && s[x].type === 10 && s[x + 1].type === 2) {
+            for (x += 2; x < u && s[x].type === 6; ) {
               let L = 1;
-              for (x++; x < g && L > 0; )
+              for (x++; x < u && L > 0; )
                 s[x].type === 6 ? L++ : s[x].type === 7 && L--, x++;
             }
-            x < g && s[x].type === 4 && (E = !0);
+            x < u && s[x].type === 4 && (E = !0);
           }
         }
         if (E) {
           const x = s[o.current].value;
           o.current++;
           let L = x;
-          u(
+          g(
             10
             /* As */
-          ) && (o.current++, u(
+          ) && (o.current++, g(
             2
             /* String */
           ) && (L = s[o.current].value, o.current++));
           const k = X(s, o) ?? void 0;
-          if (!u(
+          if (!g(
             4
             /* Lbrace */
           )) {
@@ -1435,10 +1435,10 @@ function Pt(w) {
         }
         o.current++;
         let S = T;
-        u(
+        g(
           10
           /* As */
-        ) && (o.current++, u(
+        ) && (o.current++, g(
           2
           /* String */
         ) && (S = s[o.current].value, o.current++));
@@ -1446,11 +1446,11 @@ function Pt(w) {
         l(T, S ?? T, I);
         return;
       }
-      if (u(
+      if (g(
         11
         /* Node */
       )) {
-        if (o.current++, !u(
+        if (o.current++, !g(
           0
           /* Id */
         )) {
@@ -1460,10 +1460,10 @@ function Pt(w) {
         const T = s[o.current].value;
         o.current++;
         let A = T;
-        u(
+        g(
           10
           /* As */
-        ) && (o.current++, u(
+        ) && (o.current++, g(
           2
           /* String */
         ) && (A = s[o.current].value, o.current++));
@@ -1474,9 +1474,9 @@ function Pt(w) {
       o.current++;
     }
   }
-  const B = Math.max(g * 3, 1e4);
+  const B = Math.max(u * 3, 1e4);
   let v = 0;
-  for (; o.current < g && !u(
+  for (; o.current < u && !g(
     19
     /* Eof */
   ); ) {
@@ -1484,7 +1484,7 @@ function Pt(w) {
       f("Parse iteration limit exceeded (possible infinite loop or malformed input)");
       break;
     }
-    if (m(), u(
+    if (m(), g(
       19
       /* Eof */
     )) break;
@@ -1524,24 +1524,24 @@ function Ct(w, t) {
 function Rt(w) {
   const t = w.layout, e = w.style, s = Object.values(w.nodes).map((r) => {
     const c = rt(r.style, e?.nodes?.[r.id]) ?? {}, { style: l, coordinates: d, info: o } = Ht(c);
-    let g = Object.keys(l).length ? Xt(l) : void 0;
+    let u = Object.keys(l).length ? Xt(l) : void 0;
     const p = t?.nodes?.[r.id], f = p;
-    return f && (f.w != null || f.h != null) && (g = { ...g }, f.w != null && (g.width = f.w), f.h != null && (g.height = f.h)), {
+    return f && (f.w != null || f.h != null) && (u = { ...u }, f.w != null && (u.width = f.w), f.h != null && (u.height = f.h)), {
       id: r.id,
       label: r.label ?? r.id,
-      style: g,
+      style: u,
       position: p ? { x: p.x, y: p.y } : void 0,
       coordinates: d,
       info: o
     };
   }), i = Object.values(w.groups).map((r) => {
-    const c = rt(r.style, e?.groups?.[r.id]) ?? {}, { style: l, info: d } = zt(c), o = Object.keys(l).length ? Yt(l) : void 0, g = t?.groups?.[r.id], p = r.members.filter((f) => f in w.nodes);
+    const c = rt(r.style, e?.groups?.[r.id]) ?? {}, { style: l, info: d } = zt(c), o = Object.keys(l).length ? Yt(l) : void 0, u = t?.groups?.[r.id], p = r.members.filter((f) => f in w.nodes);
     return {
       id: r.id,
       label: r.label ?? r.id,
       nodeIds: p,
       style: o,
-      layout: g ? { position: { x: g.x, y: g.y }, size: { width: g.w, height: g.h } } : void 0,
+      layout: u ? { position: { x: u.x, y: u.y }, size: { width: u.w, height: u.h } } : void 0,
       info: d
     };
   });
@@ -1554,16 +1554,16 @@ function Rt(w) {
   const n = i, h = /* @__PURE__ */ new Map(), a = w.edges.map((r) => {
     const c = `${r.from}	${r.to}`, l = (h.get(c) ?? 0) + 1;
     h.set(c, l);
-    const d = l === 1 ? `e_${r.from}_${r.to}` : `e_${r.from}_${r.to}_${l}`, o = r.relId ?? "link", g = rt(
+    const d = l === 1 ? `e_${r.from}_${r.to}` : `e_${r.from}_${r.to}_${l}`, o = r.relId ?? "link", u = rt(
       r.style,
       rt(e?.edges?.[d], e?.rels?.[o])
-    ) ?? {}, { style: p, info: f } = Ot(g), u = Object.keys(p).length ? Ut(p) : void 0, y = r.label ?? u?.label ?? (r.relId && r.relId !== "link" ? r.relId : void 0), m = t?.edges?.[d], b = m?.src_side != null ? { side: m.src_side, t: m.src_t ?? 0.5 } : void 0, C = m?.dst_side != null ? { side: m.dst_side, t: m.dst_t ?? 0.5 } : void 0;
+    ) ?? {}, { style: p, info: f } = Ot(u), g = Object.keys(p).length ? Ut(p) : void 0, y = r.label ?? g?.label ?? (r.relId && r.relId !== "link" ? r.relId : void 0), m = t?.edges?.[d], b = m?.src_side != null ? { side: m.src_side, t: m.src_t ?? 0.5 } : void 0, C = m?.dst_side != null ? { side: m.dst_side, t: m.dst_t ?? 0.5 } : void 0;
     return {
       id: d,
       src: r.from,
       dst: r.to,
       relType: o,
-      style: y ? u ? { ...u, label: y } : { label: y } : u,
+      style: y ? g ? { ...g, label: y } : { label: y } : g,
       bends: m?.bends?.length ? m.bends : void 0,
       srcAnchor: b,
       dstAnchor: C,
@@ -1632,28 +1632,55 @@ function Ut(w) {
   const t = {};
   return w.color != null && (t.color = String(w.color)), w.width != null && (t.weight = Number(w.width)), w.weight != null && (t.weight = Number(w.weight)), w.label != null && (t.label = String(w.label)), Object.keys(t).length ? t : void 0;
 }
+function Ft(w, t) {
+  const e = new Map(t.nodes.map((r) => [r.id, r])), s = new Map(t.edges.map((r) => [r.id, r])), i = new Map(
+    (t.groups ?? []).map((r) => [r.id, r])
+  ), n = w.nodes.map((r) => {
+    const c = e.get(r.id);
+    if (!c) return r;
+    const l = r, d = c, o = c.position ?? r.position;
+    let u = l.style;
+    return (d.style?.width !== void 0 || d.style?.height !== void 0) && (u = { ...u }, d.style.width !== void 0 && (u.width = d.style.width), d.style.height !== void 0 && (u.height = d.style.height)), { ...r, position: o, style: u };
+  }), h = w.edges.map((r) => {
+    const c = s.get(r.id);
+    if (!c) return r;
+    const l = c;
+    return {
+      ...r,
+      srcAnchor: l.srcAnchor ?? r.srcAnchor,
+      dstAnchor: l.dstAnchor ?? r.dstAnchor,
+      bends: l.bends ?? r.bends
+    };
+  }), a = w.groups.map((r) => {
+    const c = i.get(r.id);
+    return c ? { ...r, layout: c.layout ?? r.layout } : r;
+  });
+  return { nodes: n, edges: h, groups: a };
+}
 function Et(w, t) {
   const e = Pt(w);
-  return t?.onWarnings && e.warnings.length > 0 && t.onWarnings(e.warnings), Rt(e);
+  t?.onWarnings && e.warnings.length > 0 && t.onWarnings(e.warnings);
+  const s = Rt(e);
+  return t?.layoutPayload ? Ft(s, t.layoutPayload) : s;
 }
 function ut(w, t, e, s) {
   const i = [], n = new Set(w.map((l) => l.id));
   function h(l) {
-    const d = e.filter((u) => u.parentId === l.id), g = [...l.nodeIds.filter((u) => n.has(u))];
-    for (const u of d) g.push(h(u));
-    const p = g.join(", "), f = l.label !== l.id ? `${l.id} as "${l.label.replace(/"/g, '\\"')}"` : l.id;
+    const d = e.filter((g) => g.parentId === l.id), u = [...l.nodeIds.filter((g) => n.has(g))];
+    for (const g of d) u.push(h(g));
+    const p = u.join(", "), f = l.label !== l.id ? `${l.id} as "${l.label.replace(/"/g, '\\"')}"` : l.id;
     return p ? `${f} { ${p} }` : `${f} { }`;
   }
   const a = e.filter((l) => !l.parentId);
   for (const l of a) {
     const d = e.filter((y) => y.parentId === l.id), o = l.nodeIds.filter((y) => n.has(y));
     if (!(o.length > 0 || d.length > 0)) continue;
-    const p = l.label !== l.id ? `${l.id} as "${l.label.replace(/"/g, '\\"')}"` : l.id, f = Ct(l.style, l.info), u = [...o];
-    for (const y of d) u.push(h(y));
-    i.push(`${p}${f} { ${u.join(", ")} }`);
+    const p = l.label !== l.id ? `${l.id} as "${l.label.replace(/"/g, '\\"')}"` : l.id, f = Ct(l.style, l.info), g = [...o];
+    for (const y of d) g.push(h(y));
+    i.push(`${p}${f} { ${g.join(", ")} }`);
   }
   for (const l of w) {
-    const d = l.style ? { ...l.style, width: void 0, height: void 0 } : void 0, o = d && Object.keys(d).some((u) => d[u] != null);
+    const d = l.style ? { ...l.style, width: void 0, height: void 0 } : void 0, o = d && Object.keys(d).some((g) => d[g] != null);
     if (!(l.label !== l.id || o || l.coordinates != null || l.info != null && Object.keys(l.info).length > 0)) continue;
     const p = l.label !== l.id ? `${l.id} as "${l.label.replace(/"/g, '\\"')}"` : l.id, f = wt(l.style, !0, l.coordinates, l.info);
     i.push(`${p}${f}`);
@@ -1661,31 +1688,31 @@ function ut(w, t, e, s) {
   const r = /* @__PURE__ */ new Map();
   for (const l of [...new Set(t.map((d) => d.relType).filter(Boolean))]) {
     if (l === "link") continue;
-    const d = t.filter((g) => g.relType === l);
+    const d = t.filter((u) => u.relType === l);
     if (d.length < 2) continue;
-    const o = [...new Set(d.map((g) => g.style?.label ?? l))];
+    const o = [...new Set(d.map((u) => u.style?.label ?? l))];
     o.length === 1 && o[0] !== l && r.set(l, o[0]);
   }
   for (const l of t) {
     let d = `${l.src}-->${l.dst}${l.relType && l.relType !== "link" ? ` : ${l.relType}` : ""}`;
-    const o = l.style?.label, g = o != null && o !== l.relType, p = l.relType != null && r.has(l.relType);
-    p || g && (d += ` as "${o.replace(/"/g, '\\"')}"`);
-    const f = o != null && o === l.relType, u = p || g || f, y = bt(l.style, u, l.info);
+    const o = l.style?.label, u = o != null && o !== l.relType, p = l.relType != null && r.has(l.relType);
+    p || u && (d += ` as "${o.replace(/"/g, '\\"')}"`);
+    const f = o != null && o === l.relType, g = p || u || f, y = bt(l.style, g, l.info);
     y && (d += " " + y), i.push(d);
   }
   if (s?.includeLayout) {
     const l = [];
     for (const d of w)
       if (d.position != null) {
-        const o = d.style?.width, g = d.style?.height, p = [o != null ? `w=${o}` : "", g != null ? `h=${g}` : ""].filter(Boolean).join(" ");
+        const o = d.style?.width, u = d.style?.height, p = [o != null ? `w=${o}` : "", u != null ? `h=${u}` : ""].filter(Boolean).join(" ");
         l.push(`node ${d.id} {x=${d.position.x} y=${d.position.y}${p ? ` ${p}` : ""}}`);
       }
     for (const d of e)
       d.layout && l.push(`group ${d.id} {x=${d.layout.position.x} y=${d.layout.position.y} w=${d.layout.size.width} h=${d.layout.size.height}}`);
     for (const d of t) {
-      const o = d.srcAnchor != null || d.dstAnchor != null, g = d.bends != null && d.bends.length > 0;
-      if (!o && !g) continue;
-      const p = d.srcAnchor?.side ?? "right", f = d.srcAnchor?.t ?? 0.5, u = d.dstAnchor?.side ?? "right", y = d.dstAnchor?.t ?? 0.5, m = o ? ` { src_side=${p}, src_t=${f}, dst_side=${u}, dst_t=${y} }` : "", b = g && d.bends ? ` bends {${d.bends.map((C) => `{x=${C.x},y=${C.y}}`).join(",")}}` : "";
+      const o = d.srcAnchor != null || d.dstAnchor != null, u = d.bends != null && d.bends.length > 0;
+      if (!o && !u) continue;
+      const p = d.srcAnchor?.side ?? "right", f = d.srcAnchor?.t ?? 0.5, g = d.dstAnchor?.side ?? "right", y = d.dstAnchor?.t ?? 0.5, m = o ? ` { src_side=${p}, src_t=${f}, dst_side=${g}, dst_t=${y} }` : "", b = u && d.bends ? ` bends {${d.bends.map((C) => `{x=${C.x},y=${C.y}}`).join(",")}}` : "";
       l.push(`edge ${d.id}${m}${b}`);
     }
     l.length > 0 && (i.push(""), i.push("layout {"), i.push(...l.map((d) => `  ${d}`)), i.push("}"));
@@ -1737,7 +1764,7 @@ function xt(w, t) {
   return s(w, ""), e.join(`
 `);
 }
-class Ft {
+class Wt {
   constructor(t, e, s) {
     this.currentView = null, this.views = /* @__PURE__ */ new Map(), this.tabButtons = /* @__PURE__ */ new Map(), this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.lightingToggleButton = null, this.tileTypeButton = null, this.moonToggleButton = null, this.fitCenterButton = null, this.deleteBendButton = null, this.undoButton = null, this.redoButton = null, this.cancelEditButton = null, this.exportButton = null, this.tableContainer = null, this.nodesTableContainer = null, this.edgesTableContainer = null, this.groupsTableContainer = null, this.tableOptions = null, this.nodes = [], this.edges = [], this.groups = [], this.isExternalTableContainer = !1, this.hasEdges = !1, this.sharedAlwaysShowEdges = !1, this.sharedLightingEnabled = !1, this.sharedTime = null, this.sharedTileServerIndex = 0, this.showExportButton = !0, this.container = t, this.enabledViews = e, this.showExportButton = s?.showExportButton !== !1, Q(), this.container.style.display = "flex", this.container.style.flexDirection = "column", this.container.style.width = "100%", this.tabContainer = document.createElement("div"), this.tabContainer.style.display = "flex", this.tabContainer.style.gap = "4px", this.tabContainer.style.padding = "8px", this.tabContainer.style.borderBottom = "none", this.tabContainer.style.backgroundColor = "transparent", this.tabContainer.style.position = "absolute", this.tabContainer.style.top = "0", this.tabContainer.style.left = "0", this.tabContainer.style.right = "0", this.tabContainer.style.zIndex = "1000", this.tabContainer.style.pointerEvents = "auto", this.viewContainer = document.createElement("div"), this.viewContainer.style.flex = "1 1 0%", this.viewContainer.style.position = "relative", this.viewContainer.style.overflow = "hidden", this.viewContainer.style.minHeight = "0", this.createTabButtons(), this.createCommonControlsContainer(), this.container.appendChild(this.viewContainer), this.viewContainer.appendChild(this.tabContainer);
   }
@@ -1875,41 +1902,41 @@ class Ft {
         () => xt("info" in l ? l.info : void 0, "info")
       ), o = o.replace(
         /\{\{info\.([^}]+)\}\}/g,
-        (u, y) => String(Tt("info" in l ? l.info : void 0, y) ?? "")
+        (g, y) => String(Tt("info" in l ? l.info : void 0, y) ?? "")
       ), o = o.replace(
         /\{\{meta\}\}/g,
         () => xt("meta" in l ? l.meta : void 0, "meta")
       ), o = o.replace(
         /\{\{meta\.([^}]+)\}\}/g,
-        (u, y) => String(Tt("meta" in l ? l.meta : void 0, y) ?? "")
+        (g, y) => String(Tt("meta" in l ? l.meta : void 0, y) ?? "")
       ), o = o.replace(/\{\{id\}\}/g, String(l.id || "")), o = o.replace(/\{\{label\}\}/g, String("label" in l && l.label || "")), "position" in l && l.position && typeof l.position == "object") {
-        const u = l.position;
-        o = o.replace(/\{\{position\.x\}\}/g, String(u.x ?? "")), o = o.replace(/\{\{position\.y\}\}/g, String(u.y ?? "")), o = o.replace(/\{\{x\}\}/g, String(u.x ?? "")), o = o.replace(/\{\{y\}\}/g, String(u.y ?? ""));
+        const g = l.position;
+        o = o.replace(/\{\{position\.x\}\}/g, String(g.x ?? "")), o = o.replace(/\{\{position\.y\}\}/g, String(g.y ?? "")), o = o.replace(/\{\{x\}\}/g, String(g.x ?? "")), o = o.replace(/\{\{y\}\}/g, String(g.y ?? ""));
       }
       if ("coordinates" in l && l.coordinates && (o = o.replace(/\{\{coordinates\.0\}\}/g, String(l.coordinates[0] || "")), o = o.replace(/\{\{coordinates\.1\}\}/g, String(l.coordinates[1] || "")), o = o.replace(/\{\{lat\}\}/g, String(l.coordinates[0] || "")), o = o.replace(/\{\{lon\}\}/g, String(l.coordinates[1] || "")), o = o.replace(/\{\{latitude\}\}/g, String(l.coordinates[0] || "")), o = o.replace(/\{\{longitude\}\}/g, String(l.coordinates[1] || ""))), l.style && typeof l.style == "object") {
-        const u = l.style;
-        o = o.replace(/\{\{style\.color\}\}/g, String(u.color ?? "")), o = o.replace(/\{\{style\.borderColor\}\}/g, String(u.borderColor ?? "")), o = o.replace(/\{\{style\.width\}\}/g, String(u.width ?? "")), o = o.replace(/\{\{style\.height\}\}/g, String(u.height ?? "")), o = o.replace(/\{\{style\.weight\}\}/g, String(u.weight ?? "")), o = o.replace(/\{\{style\.label\}\}/g, String(u.label ?? "")), o = o.replace(/\{\{style\.srcLabel\}\}/g, String(u.srcLabel ?? "")), o = o.replace(/\{\{style\.dstLabel\}\}/g, String(u.dstLabel ?? "")), o = o.replace(/\{\{style\.borderDash\}\}/g, String(u.borderDash ?? "")), o = o.replace(/\{\{style\.dash\}\}/g, String(u.borderDash ?? "")), o = o.replace(/\{\{weight\}\}/g, String(u.weight ?? ""));
+        const g = l.style;
+        o = o.replace(/\{\{style\.color\}\}/g, String(g.color ?? "")), o = o.replace(/\{\{style\.borderColor\}\}/g, String(g.borderColor ?? "")), o = o.replace(/\{\{style\.width\}\}/g, String(g.width ?? "")), o = o.replace(/\{\{style\.height\}\}/g, String(g.height ?? "")), o = o.replace(/\{\{style\.weight\}\}/g, String(g.weight ?? "")), o = o.replace(/\{\{style\.label\}\}/g, String(g.label ?? "")), o = o.replace(/\{\{style\.srcLabel\}\}/g, String(g.srcLabel ?? "")), o = o.replace(/\{\{style\.dstLabel\}\}/g, String(g.dstLabel ?? "")), o = o.replace(/\{\{style\.borderDash\}\}/g, String(g.borderDash ?? "")), o = o.replace(/\{\{style\.dash\}\}/g, String(g.borderDash ?? "")), o = o.replace(/\{\{weight\}\}/g, String(g.weight ?? ""));
       }
       if (!("nodeIds" in l) && l.style && typeof l.style == "object") {
-        const u = l.style;
-        o = o.replace(/\{\{w\}\}/g, String(u.width ?? "")), o = o.replace(/\{\{h\}\}/g, String(u.height ?? ""));
+        const g = l.style;
+        o = o.replace(/\{\{w\}\}/g, String(g.width ?? "")), o = o.replace(/\{\{h\}\}/g, String(g.height ?? ""));
       }
       "src" in l && (o = o.replace(/\{\{src\}\}/g, String(l.src || "")), o = o.replace(/\{\{dst\}\}/g, String(l.dst || "")), o = o.replace(/\{\{relType\}\}/g, String(l.relType || "")));
-      const g = l, p = g.srcAnchor ?? g.anchors?.src, f = g.dstAnchor ?? g.anchors?.dst;
+      const u = l, p = u.srcAnchor ?? u.anchors?.src, f = u.dstAnchor ?? u.anchors?.dst;
       if (o = o.replace(/\{\{src_side\}\}/g, String(p?.side ?? "")), o = o.replace(/\{\{src_t\}\}/g, String(p?.t ?? "")), o = o.replace(/\{\{dst_side\}\}/g, String(f?.side ?? "")), o = o.replace(/\{\{dst_t\}\}/g, String(f?.t ?? "")), o = o.replace(/\{\{src\.x\}\}/g, ""), o = o.replace(/\{\{src\.y\}\}/g, ""), o = o.replace(/\{\{dst\.x\}\}/g, ""), o = o.replace(/\{\{dst\.y\}\}/g, ""), "src" in l) {
-        const u = l.bends, y = Array.isArray(u) && u.length > 0 ? u.map((m) => `{x=${m.x},y=${m.y}}`).join(", ") : "";
+        const g = l.bends, y = Array.isArray(g) && g.length > 0 ? g.map((m) => `{x=${m.x},y=${m.y}}`).join(", ") : "";
         o = o.replace(/\{\{bends\}\}/g, y);
       }
       if ("nodeIds" in l) {
-        const u = l, y = Array.isArray(i) ? i.filter((m) => m.parentId === u.id).map((m) => m.id) : [];
-        o = o.replace(/\{\{nodeIds\}\}/g, String(u.nodeIds?.join(", ") || "")), o = o.replace(/\{\{nodeCount\}\}/g, String(u.nodeIds?.length || 0)), o = o.replace(/\{\{groupIds\}\}/g, String(y.join(", ") || "")), o = o.replace(/\{\{groupCount\}\}/g, String(y.length || 0)), o = o.replace(/\{\{parentId\}\}/g, String(u.parentId || "")), u.layout && (o = o.replace(/\{\{layout\.position\.x\}\}/g, String(u.layout.position.x || "")), o = o.replace(/\{\{layout\.position\.y\}\}/g, String(u.layout.position.y || "")), o = o.replace(/\{\{layout\.size\.width\}\}/g, String(u.layout.size.width || "")), o = o.replace(/\{\{layout\.size\.height\}\}/g, String(u.layout.size.height || "")), o = o.replace(/\{\{x\}\}/g, String(u.layout.position.x ?? "")), o = o.replace(/\{\{y\}\}/g, String(u.layout.position.y ?? "")), o = o.replace(/\{\{w\}\}/g, String(u.layout.size.width ?? "")), o = o.replace(/\{\{h\}\}/g, String(u.layout.size.height ?? "")));
+        const g = l, y = Array.isArray(i) ? i.filter((m) => m.parentId === g.id).map((m) => m.id) : [];
+        o = o.replace(/\{\{nodeIds\}\}/g, String(g.nodeIds?.join(", ") || "")), o = o.replace(/\{\{nodeCount\}\}/g, String(g.nodeIds?.length || 0)), o = o.replace(/\{\{groupIds\}\}/g, String(y.join(", ") || "")), o = o.replace(/\{\{groupCount\}\}/g, String(y.length || 0)), o = o.replace(/\{\{parentId\}\}/g, String(g.parentId || "")), g.layout && (o = o.replace(/\{\{layout\.position\.x\}\}/g, String(g.layout.position.x || "")), o = o.replace(/\{\{layout\.position\.y\}\}/g, String(g.layout.position.y || "")), o = o.replace(/\{\{layout\.size\.width\}\}/g, String(g.layout.size.width || "")), o = o.replace(/\{\{layout\.size\.height\}\}/g, String(g.layout.size.height || "")), o = o.replace(/\{\{x\}\}/g, String(g.layout.position.x ?? "")), o = o.replace(/\{\{y\}\}/g, String(g.layout.position.y ?? "")), o = o.replace(/\{\{w\}\}/g, String(g.layout.size.width ?? "")), o = o.replace(/\{\{h\}\}/g, String(g.layout.size.height ?? "")));
       }
       o = o.replace(/\{\{[^}]*\}\}/g, ""), d.innerHTML = o, d.addEventListener("click", () => {
         if (n === "node") {
           if (this.highlightAndScrollToRow(d), !this.currentView)
             return;
-          const u = this.views.get(this.currentView);
-          u?.selectNode && u.selectNode(l.id);
+          const g = this.views.get(this.currentView);
+          g?.selectNode && g.selectNode(l.id);
         }
       }), c.appendChild(d);
     }
@@ -2620,13 +2647,13 @@ const lt = class lt {
     const a = (e + i) / 2, r = (s + n) / 2, c = i - e, l = n - s, d = this.container.getBoundingClientRect();
     if (d.width <= 0 || d.height <= 0 || !isFinite(c) || !isFinite(l) || c <= 0 || l <= 0)
       return;
-    const o = d.width / c, g = d.height / l;
-    if (!isFinite(o) || !isFinite(g))
+    const o = d.width / c, u = d.height / l;
+    if (!isFinite(o) || !isFinite(u))
       return;
-    const p = Math.min(o, g, 1);
+    const p = Math.min(o, u, 1);
     this.zoom = p;
-    const f = d.width / (2 * this.zoom), u = d.height / (2 * this.zoom);
-    !isFinite(a) || !isFinite(r) || !isFinite(f) || !isFinite(u) || (this.offsetX = a - f, this.offsetY = r - u, this.svg.removeAttribute("viewBox"), this.updateTransform(), this.render());
+    const f = d.width / (2 * this.zoom), g = d.height / (2 * this.zoom);
+    !isFinite(a) || !isFinite(r) || !isFinite(f) || !isFinite(g) || (this.offsetX = a - f, this.offsetY = r - g, this.svg.removeAttribute("viewBox"), this.updateTransform(), this.render());
   }
   /**
    * Fit and center with animation
@@ -2650,11 +2677,11 @@ const lt = class lt {
     const a = (e + i) / 2, r = (s + n) / 2, c = i - e, l = n - s, d = this.container.getBoundingClientRect();
     if (d.width <= 0 || d.height <= 0 || !isFinite(c) || !isFinite(l) || c <= 0 || l <= 0)
       return;
-    const o = d.width / c, g = d.height / l;
-    if (!isFinite(o) || !isFinite(g))
+    const o = d.width / c, u = d.height / l;
+    if (!isFinite(o) || !isFinite(u))
       return;
-    const p = Math.min(o, g, 1), f = d.width / 2, u = d.height / 2;
-    this.animateZoomToPoint(p, f, u, a, r);
+    const p = Math.min(o, u, 1), f = d.width / 2, g = d.height / 2;
+    this.animateZoomToPoint(p, f, g, a, r);
   }
   /**
    * Setup event listeners (using Pointer Events for touch support)
@@ -2670,15 +2697,15 @@ const lt = class lt {
         if (l) {
           const d = n.getAttribute("data-node-id");
           if (d) {
-            const o = this.nodes.find((g) => g.id === d);
+            const o = this.nodes.find((u) => u.id === d);
             if (o?.position) {
               this.pushUndoState();
-              const g = o.style || {}, p = g.width || this.DEFAULT_NODE_WIDTH, f = g.height || this.DEFAULT_NODE_HEIGHT, u = this.screenToSvg(i.clientX, i.clientY);
+              const u = o.style || {}, p = u.width || this.DEFAULT_NODE_WIDTH, f = u.height || this.DEFAULT_NODE_HEIGHT, g = this.screenToSvg(i.clientX, i.clientY);
               this.resizingNode = {
                 nodeId: d,
                 side: l,
-                startX: u.x,
-                startY: u.y,
+                startX: g.x,
+                startY: g.y,
                 startWidth: p,
                 startHeight: f,
                 startNodeX: o.position.x,
@@ -2703,9 +2730,9 @@ const lt = class lt {
         } else if (c !== null) {
           const d = n.getAttribute("data-edge-id");
           if (d) {
-            const o = this.screenToSvg(i.clientX, i.clientY), g = this.edges.find((p) => p.id === d);
-            if (g) {
-              const [p, f] = g.src < g.dst ? [g.src, g.dst] : [g.dst, g.src], u = `${p}||${f}`, y = this.groupEdgesByPair(this.edges).find((m) => m.key === u);
+            const o = this.screenToSvg(i.clientX, i.clientY), u = this.edges.find((p) => p.id === d);
+            if (u) {
+              const [p, f] = u.src < u.dst ? [u.src, u.dst] : [u.dst, u.src], g = `${p}||${f}`, y = this.groupEdgesByPair(this.edges).find((m) => m.key === g);
               if (y && y.bends) {
                 const m = parseInt(c, 10);
                 if (m >= 0 && m < y.bends.length) {
@@ -2725,9 +2752,9 @@ const lt = class lt {
         } else if (r) {
           const d = n.getAttribute("data-edge-id");
           if (d) {
-            const o = this.screenToSvg(i.clientX, i.clientY), g = this.edges.find((p) => p.id === d);
-            if (g) {
-              const [p, f] = g.src < g.dst ? [g.src, g.dst] : [g.dst, g.src], u = `${p}||${f}`, y = this.groupEdgesByPair(this.edges).find((m) => m.key === u);
+            const o = this.screenToSvg(i.clientX, i.clientY), u = this.edges.find((p) => p.id === d);
+            if (u) {
+              const [p, f] = u.src < u.dst ? [u.src, u.dst] : [u.dst, u.src], g = `${p}||${f}`, y = this.groupEdgesByPair(this.edges).find((m) => m.key === g);
               if (y) {
                 const m = r === "src" ? y.a : y.b, b = this.nodes.find((C) => C.id === m);
                 if (b) {
@@ -2812,7 +2839,7 @@ const lt = class lt {
       }
     }), this.svg.addEventListener("pointermove", (i) => {
       if (i.pointerType === "touch" && s.set(i.pointerId, i), this.pinchDistance !== null && this.pinchCenter !== null && s.size === 2) {
-        const c = Array.from(s.values()), [l, d] = c, g = Math.hypot(d.clientX - l.clientX, d.clientY - l.clientY) / this.pinchDistance, p = Math.pow(g, 1.5), f = Math.max(0.1, Math.min(5, this.initialZoom * p));
+        const c = Array.from(s.values()), [l, d] = c, u = Math.hypot(d.clientX - l.clientX, d.clientY - l.clientY) / this.pinchDistance, p = Math.pow(u, 1.5), f = Math.max(0.1, Math.min(5, this.initialZoom * p));
         this.zoomToPoint(f, this.pinchCenter.x, this.pinchCenter.y), this.updateTransform(), this.render(), i.preventDefault();
         return;
       }
@@ -2926,8 +2953,8 @@ const lt = class lt {
       return;
     const i = e.style || {}, n = i.width || this.DEFAULT_NODE_WIDTH, h = i.height || this.DEFAULT_NODE_HEIGHT, a = e.position.x + n / 2, r = e.position.y + h / 2;
     n * this.zoom, h * this.zoom;
-    const c = Math.min(s.width * 0.3, s.height * 0.3), l = c / n, d = c / h, o = Math.min(l, d), f = Math.max(0.5, Math.min(3, o)), u = s.width / 2, y = s.height / 2;
-    this.animateZoomToPoint(f, u, y, a, r);
+    const c = Math.min(s.width * 0.3, s.height * 0.3), l = c / n, d = c / h, o = Math.min(l, d), f = Math.max(0.5, Math.min(3, o)), g = s.width / 2, y = s.height / 2;
+    this.animateZoomToPoint(f, g, y, a, r);
   }
   /**
    * Zoom to specified point with animation
@@ -2938,15 +2965,15 @@ const lt = class lt {
    * @param targetSvgY Target SVG Y coordinate
    */
   animateZoomToPoint(t, e, s, i, n) {
-    const h = this.zoom, a = this.offsetX, r = this.offsetY, c = this.container.getBoundingClientRect(), l = c.width / (2 * t), d = c.height / (2 * t), o = i - l, g = n - d, p = 500, f = performance.now(), u = (y) => {
-      const m = y - f, b = Math.min(m / p, 1), C = 1 - Math.pow(1 - b, 3), B = h + (t - h) * C, v = a + (o - a) * C, T = r + (g - r) * C;
+    const h = this.zoom, a = this.offsetX, r = this.offsetY, c = this.container.getBoundingClientRect(), l = c.width / (2 * t), d = c.height / (2 * t), o = i - l, u = n - d, p = 500, f = performance.now(), g = (y) => {
+      const m = y - f, b = Math.min(m / p, 1), C = 1 - Math.pow(1 - b, 3), B = h + (t - h) * C, v = a + (o - a) * C, T = r + (u - r) * C;
       if (this.zoom = B, this.offsetX = v, this.offsetY = T, this.updateTransform(), this.render(), b >= 1) {
         const A = this.container.getBoundingClientRect(), E = A.width / 2, S = A.height / 2;
         E / this.zoom - this.offsetX, S / this.zoom - this.offsetY;
       }
-      b < 1 && requestAnimationFrame(u);
+      b < 1 && requestAnimationFrame(g);
     };
-    requestAnimationFrame(u);
+    requestAnimationFrame(g);
   }
   /**
    * Ensure node position information (auto-layout if not present).
@@ -2959,7 +2986,7 @@ const lt = class lt {
     const t = this.nodes.filter((m) => m.coordinates && m.coordinates.length === 2), e = this.nodes.filter((m) => !m.coordinates || m.coordinates.length !== 2), s = this.nodes.filter((m) => !m.position), i = this.nodes.every((m) => m.position), n = this.groups.every((m) => m.layout);
     if (i && n || s.length === 0 && t.length === 0 && e.length === 0)
       return;
-    const h = this.AUTO_LAYOUT_REFERENCE_WIDTH, a = this.AUTO_LAYOUT_REFERENCE_HEIGHT, r = 2, c = h * r * 0.25, l = h * r * 0.75, d = a * r, o = c, g = a * r, p = 0, f = [];
+    const h = this.AUTO_LAYOUT_REFERENCE_WIDTH, a = this.AUTO_LAYOUT_REFERENCE_HEIGHT, r = 2, c = h * r * 0.25, l = h * r * 0.75, d = a * r, o = c, u = a * r, p = 0, f = [];
     for (const m of this.nodes)
       if (m.position) {
         const b = m.style || {}, C = b.width || this.DEFAULT_NODE_WIDTH, B = b.height || this.DEFAULT_NODE_HEIGHT;
@@ -2972,15 +2999,15 @@ const lt = class lt {
           const [v, T] = m.coordinates;
         }
       }
-    const u = [...t].sort((m, b) => m.id.localeCompare(b.id));
-    if (u.length > 0) {
-      const m = u.map((k) => k.coordinates[0]), b = u.map((k) => k.coordinates[1]), C = Math.min(...m), B = Math.max(...m), v = Math.min(...b), T = Math.max(...b), A = B - C, E = T - v, S = Math.max(A, E) * 0.1 || 0.01, I = {
+    const g = [...t].sort((m, b) => m.id.localeCompare(b.id));
+    if (g.length > 0) {
+      const m = g.map((k) => k.coordinates[0]), b = g.map((k) => k.coordinates[1]), C = Math.min(...m), B = Math.max(...m), v = Math.min(...b), T = Math.max(...b), A = B - C, E = T - v, S = Math.max(A, E) * 0.1 || 0.01, I = {
         minLat: C - S,
         maxLat: B + S,
         minLon: v - S,
         maxLon: T + S
       }, x = /* @__PURE__ */ new Map(), L = /* @__PURE__ */ new Map();
-      for (const k of u) {
+      for (const k of g) {
         const [N, M] = k.coordinates, _ = (M - I.minLon) / (I.maxLon - I.minLon), D = 1 - (N - I.minLat) / (I.maxLat - I.minLat), P = {
           x: o + _ * l,
           y: D * d
@@ -2997,7 +3024,7 @@ const lt = class lt {
     }
     const y = e.filter((m) => !m.position);
     if (y.length > 0) {
-      const b = [...y].sort((S, I) => S.id.localeCompare(I.id)), C = Math.ceil(Math.sqrt(b.length)), B = Math.ceil(b.length / C), v = c - 40, T = g - 40, A = v / C, E = T / B;
+      const b = [...y].sort((S, I) => S.id.localeCompare(I.id)), C = Math.ceil(Math.sqrt(b.length)), B = Math.ceil(b.length / C), v = c - 40, T = u - 40, A = v / C, E = T / B;
       b.forEach((S, I) => {
         const x = S.style || {}, L = x.width || this.DEFAULT_NODE_WIDTH, k = x.height || this.DEFAULT_NODE_HEIGHT, N = Math.floor(I / C), M = I % C, _ = p + 20 + (M + 0.5) * A, D = 20 + (N + 0.5) * E;
         S.position = { x: _, y: D }, f.push({
@@ -3053,7 +3080,7 @@ const lt = class lt {
         height: m.height
       });
     }
-    const g = (y) => {
+    const u = (y) => {
       const m = [];
       for (const b of this.groups) {
         const C = /* @__PURE__ */ new Set(), B = (v) => {
@@ -3115,9 +3142,9 @@ const lt = class lt {
     for (let y = 0; y < 100; y++) {
       let m = !1;
       for (let b = 0; b < f.length; b++) {
-        const [C, B] = f[b], v = d.get(C), T = o.get(C), A = g(C);
+        const [C, B] = f[b], v = d.get(C), T = o.get(C), A = u(C);
         for (let E = b + 1; E < f.length; E++) {
-          const [S, I] = f[E], x = d.get(S), L = o.get(S), k = g(S), N = e.get(C), M = e.get(S), _ = M.originalCenterX - N.originalCenterX, D = M.originalCenterY - N.originalCenterY, P = Math.sqrt(_ * _ + D * D);
+          const [S, I] = f[E], x = d.get(S), L = o.get(S), k = u(S), N = e.get(C), M = e.get(S), _ = M.originalCenterX - N.originalCenterX, D = M.originalCenterY - N.originalCenterY, P = Math.sqrt(_ * _ + D * D);
           if (P === 0) continue;
           const O = _ / P, H = D / P;
           let tt = !1, V = 0;
@@ -3178,8 +3205,8 @@ const lt = class lt {
       if (!m)
         break;
     }
-    const u = [...t.entries()].sort((y, m) => y[0].localeCompare(m[0]));
-    for (const [y, m] of u) {
+    const g = [...t.entries()].sort((y, m) => y[0].localeCompare(m[0]));
+    for (const [y, m] of g) {
       if (c.has(y)) continue;
       const b = d.get(y);
       m.node.position = { x: b.centerX, y: b.centerY };
@@ -3203,22 +3230,22 @@ const lt = class lt {
   resolveGroupPositionsWithOrderConstraints(t) {
     const i = [], n = (r) => {
       const c = /* @__PURE__ */ new Set(), l = (p) => {
-        for (const u of p.nodeIds)
-          c.add(u);
-        const f = this.groups.filter((u) => u.parentId === p.id);
-        for (const u of f)
-          l(u);
+        for (const g of p.nodeIds)
+          c.add(g);
+        const f = this.groups.filter((g) => g.parentId === p.id);
+        for (const g of f)
+          l(g);
       };
       if (l(r), c.size === 0)
         return null;
-      let d = 0, o = 0, g = 0;
+      let d = 0, o = 0, u = 0;
       for (const p of c) {
         const f = t.get(p);
-        f && (d += f.originalCenterX, o += f.originalCenterY, g++);
+        f && (d += f.originalCenterX, o += f.originalCenterY, u++);
       }
-      return g === 0 ? null : {
-        x: d / g,
-        y: o / g
+      return u === 0 ? null : {
+        x: d / u,
+        y: o / u
       };
     }, h = (r) => {
       if (!r.parentId) return 0;
@@ -3245,21 +3272,21 @@ const lt = class lt {
     for (const [r, c] of a)
       for (const [l, d] of c)
         if (!(d.length < 2)) {
-          d.sort((o, g) => {
-            const p = o.originalCenter.y - g.originalCenter.y;
-            return Math.abs(p) > 10 ? p : o.originalCenter.x - g.originalCenter.x;
+          d.sort((o, u) => {
+            const p = o.originalCenter.y - u.originalCenter.y;
+            return Math.abs(p) > 10 ? p : o.originalCenter.x - u.originalCenter.x;
           });
           for (let o = 0; o < 50; o++) {
-            let g = !1;
+            let u = !1;
             for (let p = 1; p < d.length; p++) {
-              const f = d[p], u = f.layout.position.x, y = u + f.layout.size.width;
+              const f = d[p], g = f.layout.position.x, y = g + f.layout.size.width;
               for (let m = 0; m < p; m++) {
                 const b = d[m], C = b.layout.position.x, B = C + b.layout.size.width;
-                if (u < B + 60 && y + 60 > C) {
+                if (g < B + 60 && y + 60 > C) {
                   const v = f.layout.position.y, T = v + f.layout.size.height, A = b.layout.position.y, E = A + b.layout.size.height;
                   if (v < E + 60 && T + 60 > A) {
-                    g = !0;
-                    const S = B + 60 - u;
+                    u = !0;
+                    const S = B + 60 - g;
                     f.layout.position.x += S;
                     const I = this.calculateGroupBounds(f.group.nodeIds, f.group.id);
                     I && (f.layout.size = {
@@ -3271,14 +3298,14 @@ const lt = class lt {
               }
             }
             for (let p = 1; p < d.length; p++) {
-              const f = d[p], u = f.layout.position.y, y = u + f.layout.size.height;
+              const f = d[p], g = f.layout.position.y, y = g + f.layout.size.height;
               for (let m = 0; m < p; m++) {
                 const b = d[m], C = b.layout.position.y, B = C + b.layout.size.height;
-                if (u < B + 60 && y + 60 > C) {
+                if (g < B + 60 && y + 60 > C) {
                   const v = f.layout.position.x, T = v + f.layout.size.width, A = b.layout.position.x, E = A + b.layout.size.width;
                   if (v < E + 60 && T + 60 > A) {
-                    g = !0;
-                    const S = B + 60 - u;
+                    u = !0;
+                    const S = B + 60 - g;
                     f.layout.position.y += S;
                     const I = this.calculateGroupBounds(f.group.nodeIds, f.group.id);
                     I && (f.layout.size = {
@@ -3289,7 +3316,7 @@ const lt = class lt {
                 }
               }
             }
-            if (!g)
+            if (!u)
               break;
           }
           for (const o of d)
@@ -3304,19 +3331,19 @@ const lt = class lt {
   compactLayout(t) {
     const i = (r) => {
       const c = /* @__PURE__ */ new Set(), l = (p) => {
-        for (const u of p.nodeIds)
-          c.add(u);
-        const f = this.groups.filter((u) => u.parentId === p.id);
-        for (const u of f)
-          l(u);
+        for (const g of p.nodeIds)
+          c.add(g);
+        const f = this.groups.filter((g) => g.parentId === p.id);
+        for (const g of f)
+          l(g);
       };
       if (l(r), c.size === 0) return null;
-      let d = 0, o = 0, g = 0;
+      let d = 0, o = 0, u = 0;
       for (const p of c) {
         const f = t.get(p);
-        f && (d += f.originalCenterX, o += f.originalCenterY, g++);
+        f && (d += f.originalCenterX, o += f.originalCenterY, u++);
       }
-      return g > 0 ? { x: d / g, y: o / g } : null;
+      return u > 0 ? { x: d / u, y: o / u } : null;
     }, n = (r) => {
       if (!r.parentId) return 0;
       const c = this.groups.find((l) => l.id === r.parentId);
@@ -3332,15 +3359,15 @@ const lt = class lt {
       const c = h[r];
       if (!c.position) continue;
       const d = (c.style || {}).width || this.DEFAULT_NODE_WIDTH, o = c.position.x - d / 2;
-      let g = -1 / 0;
+      let u = -1 / 0;
       for (let p = 0; p < r; p++) {
         const f = h[p];
         if (!f.position) continue;
         const y = (f.style || {}).width || this.DEFAULT_NODE_WIDTH, m = f.position.x + y / 2;
-        g = Math.max(g, m);
+        u = Math.max(u, m);
       }
-      if (g > -1 / 0) {
-        const p = g + 20;
+      if (u > -1 / 0) {
+        const p = u + 20;
         if (o > p) {
           const f = p - o;
           c.position.x += f;
@@ -3351,15 +3378,15 @@ const lt = class lt {
       const c = h[r];
       if (!c.position) continue;
       const d = (c.style || {}).height || this.DEFAULT_NODE_HEIGHT, o = c.position.y - d / 2;
-      let g = -1 / 0;
+      let u = -1 / 0;
       for (let p = 0; p < r; p++) {
         const f = h[p];
         if (!f.position) continue;
         const y = (f.style || {}).height || this.DEFAULT_NODE_HEIGHT, m = f.position.y + y / 2;
-        g = Math.max(g, m);
+        u = Math.max(u, m);
       }
-      if (g > -1 / 0) {
-        const p = g + 20;
+      if (u > -1 / 0) {
+        const p = u + 20;
         if (o > p) {
           const f = p - o;
           c.position.y += f;
@@ -3376,47 +3403,47 @@ const lt = class lt {
     for (const [r, c] of a)
       for (const [l, d] of c)
         if (!(d.length < 2)) {
-          d.sort((o, g) => {
-            const p = i(o), f = i(g);
+          d.sort((o, u) => {
+            const p = i(o), f = i(u);
             if (!p || !f) return 0;
-            const u = p.y - f.y;
-            return Math.abs(u) > 10 ? u : p.x - f.x;
+            const g = p.y - f.y;
+            return Math.abs(g) > 10 ? g : p.x - f.x;
           });
           for (let o = 1; o < d.length; o++) {
-            const g = d[o], p = this.getGroupLayout(g);
+            const u = d[o], p = this.getGroupLayout(u);
             if (!p) continue;
             const f = p.position.x;
-            let u = -1 / 0;
+            let g = -1 / 0;
             for (let y = 0; y < o; y++) {
               const m = d[y], b = this.getGroupLayout(m);
               if (!b) continue;
               const C = b.position.x + b.size.width;
-              u = Math.max(u, C);
+              g = Math.max(g, C);
             }
-            if (u > -1 / 0) {
-              const y = u + 60;
+            if (g > -1 / 0) {
+              const y = g + 60;
               if (f > y) {
                 const m = y - f;
-                p.position.x += m, g.layout = p;
+                p.position.x += m, u.layout = p;
               }
             }
           }
           for (let o = 1; o < d.length; o++) {
-            const g = d[o], p = this.getGroupLayout(g);
+            const u = d[o], p = this.getGroupLayout(u);
             if (!p) continue;
             const f = p.position.y;
-            let u = -1 / 0;
+            let g = -1 / 0;
             for (let y = 0; y < o; y++) {
               const m = d[y], b = this.getGroupLayout(m);
               if (!b) continue;
               const C = b.position.y + b.size.height;
-              u = Math.max(u, C);
+              g = Math.max(g, C);
             }
-            if (u > -1 / 0) {
-              const y = u + 60;
+            if (g > -1 / 0) {
+              const y = g + 60;
               if (f > y) {
                 const m = y - f;
-                p.position.y += m, g.layout = p;
+                p.position.y += m, u.layout = p;
               }
             }
           }
@@ -3428,12 +3455,12 @@ const lt = class lt {
    */
   adjustNodePosition(t, e, s, i, n = 20) {
     let a = t.x, r = t.y;
-    const c = t.width, l = t.height, d = s?.originalX ?? t.x, o = s?.originalY ?? t.y, g = e.map((p, f) => {
-      const u = p.width || this.DEFAULT_NODE_WIDTH, y = p.height || this.DEFAULT_NODE_HEIGHT, m = p.x + u / 2, b = p.y + y / 2, C = m - d, B = b - o;
+    const c = t.width, l = t.height, d = s?.originalX ?? t.x, o = s?.originalY ?? t.y, u = e.map((p, f) => {
+      const g = p.width || this.DEFAULT_NODE_WIDTH, y = p.height || this.DEFAULT_NODE_HEIGHT, m = p.x + g / 2, b = p.y + y / 2, C = m - d, B = b - o;
       return {
         x: p.x,
         y: p.y,
-        width: u,
+        width: g,
         height: y,
         centerX: m,
         centerY: b,
@@ -3446,8 +3473,8 @@ const lt = class lt {
       };
     });
     for (let p = 0; p < n; p++) {
-      let f = !1, u = a, y = r, m = 1 / 0;
-      for (const b of g)
+      let f = !1, g = a, y = r, m = 1 / 0;
+      for (const b of u)
         if (a < b.x + b.width + 20 && a + c + 20 > b.x && r < b.y + b.height + 20 && r + l + 20 > b.y) {
           f = !0;
           const C = a + c / 2, B = r + l / 2, v = b.centerX - C, T = b.centerY - B, A = Math.sqrt(v * v + T * T);
@@ -3469,7 +3496,7 @@ const lt = class lt {
             let P = 0;
             (b.relativeDx > 0 && _ < b.relativeDx || b.relativeDx < 0 && _ > b.relativeDx) && (P += 1e3), (b.relativeDy > 0 && D < b.relativeDy || b.relativeDy < 0 && D > b.relativeDy) && (P += 1e3);
             const O = k + P;
-            O < m && (m = O, u = x, y = L);
+            O < m && (m = O, g = x, y = L);
           } else {
             const E = (c + b.width) / 2 + 20;
             let S = 0, I = 0;
@@ -3483,12 +3510,12 @@ const lt = class lt {
             const x = a + S, L = r + I, k = Math.sqrt(
               Math.pow(x - d, 2) + Math.pow(L - o, 2)
             );
-            k < m && (m = k, u = x, y = L);
+            k < m && (m = k, g = x, y = L);
           }
         }
       if (!f)
         break;
-      a = u, r = y;
+      a = g, r = y;
     }
     return { x: a, y: r };
   }
@@ -3524,14 +3551,14 @@ const lt = class lt {
    * Calculate EdgePair path (based on A->B direction)
    */
   calculateEdgePairPath(t) {
-    const e = this.nodes.find((u) => u.id === t.a), s = this.nodes.find((u) => u.id === t.b);
+    const e = this.nodes.find((g) => g.id === t.a), s = this.nodes.find((g) => g.id === t.b);
     if (!e?.position || !s?.position)
       return "";
-    const i = t.srcAnchor || this.estimateAnchor(e, s), n = t.dstAnchor || this.estimateAnchor(s, e), h = e.style || {}, a = s.style || {}, r = h.width || this.DEFAULT_NODE_WIDTH, c = h.height || this.DEFAULT_NODE_HEIGHT, l = a.width || this.DEFAULT_NODE_WIDTH, d = a.height || this.DEFAULT_NODE_HEIGHT, o = this.calculateAnchorPosition(e, i, r, c), g = this.calculateAnchorPosition(s, n, l, d), p = [o];
-    t.bends && p.push(...t.bends), p.push(g);
+    const i = t.srcAnchor || this.estimateAnchor(e, s), n = t.dstAnchor || this.estimateAnchor(s, e), h = e.style || {}, a = s.style || {}, r = h.width || this.DEFAULT_NODE_WIDTH, c = h.height || this.DEFAULT_NODE_HEIGHT, l = a.width || this.DEFAULT_NODE_WIDTH, d = a.height || this.DEFAULT_NODE_HEIGHT, o = this.calculateAnchorPosition(e, i, r, c), u = this.calculateAnchorPosition(s, n, l, d), p = [o];
+    t.bends && p.push(...t.bends), p.push(u);
     const f = [`M ${p[0].x} ${p[0].y}`];
-    for (let u = 1; u < p.length; u++)
-      f.push(`L ${p[u].x} ${p[u].y}`);
+    for (let g = 1; g < p.length; g++)
+      f.push(`L ${p[g].x} ${p[g].y}`);
     return f.join(" ");
   }
   /**
@@ -3581,8 +3608,8 @@ const lt = class lt {
     const e = this.nodes.find((f) => f.id === t.src), s = this.nodes.find((f) => f.id === t.dst);
     if (!e?.position || !s?.position)
       return [];
-    const i = t.srcAnchor || this.estimateAnchor(e, s), n = t.dstAnchor || this.estimateAnchor(s, e), h = e.style || {}, a = s.style || {}, r = h.width || this.DEFAULT_NODE_WIDTH, c = h.height || this.DEFAULT_NODE_HEIGHT, l = a.width || this.DEFAULT_NODE_WIDTH, d = a.height || this.DEFAULT_NODE_HEIGHT, o = this.calculateAnchorPosition(e, i, r, c), g = this.calculateAnchorPosition(s, n, l, d), p = [o];
-    return t.bends && p.push(...t.bends), p.push(g), p;
+    const i = t.srcAnchor || this.estimateAnchor(e, s), n = t.dstAnchor || this.estimateAnchor(s, e), h = e.style || {}, a = s.style || {}, r = h.width || this.DEFAULT_NODE_WIDTH, c = h.height || this.DEFAULT_NODE_HEIGHT, l = a.width || this.DEFAULT_NODE_WIDTH, d = a.height || this.DEFAULT_NODE_HEIGHT, o = this.calculateAnchorPosition(e, i, r, c), u = this.calculateAnchorPosition(s, n, l, d), p = [o];
+    return t.bends && p.push(...t.bends), p.push(u), p;
   }
   /**
    * Calculate edge path (considering anchors, supporting bend points)
@@ -3653,8 +3680,8 @@ const lt = class lt {
     const h = this.nodes.find((m) => m.id === n.a), a = this.nodes.find((m) => m.id === n.b);
     if (!h || !a)
       return;
-    const r = n.srcAnchor || this.estimateAnchor(h, a), c = n.dstAnchor || this.estimateAnchor(a, h), l = h.style || {}, d = a.style || {}, o = l.width || this.DEFAULT_NODE_WIDTH, g = l.height || this.DEFAULT_NODE_HEIGHT, p = d.width || this.DEFAULT_NODE_WIDTH, f = d.height || this.DEFAULT_NODE_HEIGHT, u = this.calculateAnchorPosition(h, r, o, g), y = this.calculateAnchorPosition(a, c, p, f);
-    this.createAnchorHandle(t.id, "src", u.x, u.y), this.createAnchorHandle(t.id, "dst", y.x, y.y), this.anchorHandlesGroup.style.display = "block", this.anchorHandlesGroup.style.pointerEvents = "auto";
+    const r = n.srcAnchor || this.estimateAnchor(h, a), c = n.dstAnchor || this.estimateAnchor(a, h), l = h.style || {}, d = a.style || {}, o = l.width || this.DEFAULT_NODE_WIDTH, u = l.height || this.DEFAULT_NODE_HEIGHT, p = d.width || this.DEFAULT_NODE_WIDTH, f = d.height || this.DEFAULT_NODE_HEIGHT, g = this.calculateAnchorPosition(h, r, o, u), y = this.calculateAnchorPosition(a, c, p, f);
+    this.createAnchorHandle(t.id, "src", g.x, g.y), this.createAnchorHandle(t.id, "dst", y.x, y.y), this.anchorHandlesGroup.style.display = "block", this.anchorHandlesGroup.style.pointerEvents = "auto";
   }
   /**
    * Update bend point handles
@@ -3740,13 +3767,13 @@ const lt = class lt {
     }
     const r = this.nodeElements.get(e.id);
     if (r) {
-      const c = e.style || {}, l = c.width || this.DEFAULT_NODE_WIDTH, d = c.height || this.DEFAULT_NODE_HEIGHT, o = e.position.x - l / 2, g = e.position.y - d / 2;
-      r.setAttribute("x", String(o)), r.setAttribute("y", String(g)), r.setAttribute("width", String(l)), r.setAttribute("height", String(d));
+      const c = e.style || {}, l = c.width || this.DEFAULT_NODE_WIDTH, d = c.height || this.DEFAULT_NODE_HEIGHT, o = e.position.x - l / 2, u = e.position.y - d / 2;
+      r.setAttribute("x", String(o)), r.setAttribute("y", String(u)), r.setAttribute("width", String(l)), r.setAttribute("height", String(d));
       const p = r.parentElement;
       if (p) {
         const f = p.querySelector("foreignObject");
         if (f) {
-          const u = e.style || {}, y = u.width || this.DEFAULT_NODE_WIDTH, m = u.height || this.DEFAULT_NODE_HEIGHT, b = e.position.x - y / 2, C = e.position.y - m / 2;
+          const g = e.style || {}, y = g.width || this.DEFAULT_NODE_WIDTH, m = g.height || this.DEFAULT_NODE_HEIGHT, b = e.position.x - y / 2, C = e.position.y - m / 2;
           f.setAttribute("x", String(b)), f.setAttribute("y", String(C));
         }
         e.position && p.querySelectorAll("[data-resize-side]").forEach((y) => {
@@ -3928,10 +3955,10 @@ const lt = class lt {
     const a = this.draggingAnchor.type === "src" ? h.a : h.b, r = this.nodes.find((B) => B.id === a);
     if (!r?.position)
       return;
-    const c = this.screenToSvg(t.clientX, t.clientY), l = c.x - this.draggingAnchor.offsetX, d = c.y - this.draggingAnchor.offsetY, o = r.position.x, g = r.position.y, p = r.style || {}, f = p.width || this.DEFAULT_NODE_WIDTH, u = p.height || this.DEFAULT_NODE_HEIGHT, y = {
-      top: Math.abs(d - (g - u / 2)),
+    const c = this.screenToSvg(t.clientX, t.clientY), l = c.x - this.draggingAnchor.offsetX, d = c.y - this.draggingAnchor.offsetY, o = r.position.x, u = r.position.y, p = r.style || {}, f = p.width || this.DEFAULT_NODE_WIDTH, g = p.height || this.DEFAULT_NODE_HEIGHT, y = {
+      top: Math.abs(d - (u - g / 2)),
       right: Math.abs(l - (o + f / 2)),
-      bottom: Math.abs(d - (g + u / 2)),
+      bottom: Math.abs(d - (u + g / 2)),
       left: Math.abs(l - (o - f / 2))
     };
     let m = "right", b = y.right;
@@ -3945,7 +3972,7 @@ const lt = class lt {
         break;
       case "left":
       case "right":
-        C = (d - (g - u / 2)) / u;
+        C = (d - (u - g / 2)) / g;
         break;
     }
     C = Math.max(0, Math.min(1, C)), this.draggingAnchor.type === "src" ? h.srcAnchor = { side: m, t: C } : h.dstAnchor = { side: m, t: C };
@@ -3985,10 +4012,10 @@ const lt = class lt {
     const [i, n] = s.src < s.dst ? [s.src, s.dst] : [s.dst, s.src], h = `${i}||${n}`, a = this.groupEdgesByPair(this.edges).find((L) => L.key === h);
     if (!a)
       return;
-    const r = this.svg.getBoundingClientRect(), c = e.clientX - r.left, l = e.clientY - r.top, d = [], o = this.nodes.find((L) => L.id === a.a), g = this.nodes.find((L) => L.id === a.b);
-    if (!o?.position || !g?.position)
+    const r = this.svg.getBoundingClientRect(), c = e.clientX - r.left, l = e.clientY - r.top, d = [], o = this.nodes.find((L) => L.id === a.a), u = this.nodes.find((L) => L.id === a.b);
+    if (!o?.position || !u?.position)
       return;
-    const p = a.srcAnchor || this.estimateAnchor(o, g), f = a.dstAnchor || this.estimateAnchor(g, o), u = o.style || {}, y = g.style || {}, m = u.width || this.DEFAULT_NODE_WIDTH, b = u.height || this.DEFAULT_NODE_HEIGHT, C = y.width || this.DEFAULT_NODE_WIDTH, B = y.height || this.DEFAULT_NODE_HEIGHT, v = this.calculateAnchorPosition(o, p, m, b), T = this.calculateAnchorPosition(g, f, C, B);
+    const p = a.srcAnchor || this.estimateAnchor(o, u), f = a.dstAnchor || this.estimateAnchor(u, o), g = o.style || {}, y = u.style || {}, m = g.width || this.DEFAULT_NODE_WIDTH, b = g.height || this.DEFAULT_NODE_HEIGHT, C = y.width || this.DEFAULT_NODE_WIDTH, B = y.height || this.DEFAULT_NODE_HEIGHT, v = this.calculateAnchorPosition(o, p, m, b), T = this.calculateAnchorPosition(u, f, C, B);
     d.push(v), a.bends && d.push(...a.bends), d.push(T);
     let A = 0, E = 1 / 0;
     for (let L = 0; L < d.length - 1; L++) {
@@ -4051,13 +4078,13 @@ const lt = class lt {
     this.updateTransform(), this.nodeElements.clear(), this.edgeElements.clear(), this.edgesGroup.innerHTML = "", this.groupsGroup.innerHTML = "", this.nodesGroup.innerHTML = "", this.edgeLabelsGroup.innerHTML = "";
     const t = this.groupEdgesByPair(this.edges);
     for (const e of t) {
-      const s = e.edges.some((B) => B.id === this.selectedEdgeId), i = this.mode === "view" && e.key === this.hoveredEdgePairKey, n = this.mode === "view" && e.key === this.tappedEdgePairKey, h = this.alwaysShowEdges || s || i || n, r = e.edges[0].style || {}, c = r.color || this.EDGE_DEFAULT_COLOR, l = r.weight || 1, d = Math.max(this.EDGE_MIN_WEIGHT, Math.min(this.EDGE_MAX_WEIGHT, l)), o = this.EDGE_DEFAULT_WIDTH + (d - 1) * 0.5, g = h ? Math.max(o, this.EDGE_HOVER_WIDTH) : o, p = s ? "#2196f3" : c, f = h ? 1 : 0.3, u = this.calculateEdgePairPath(e);
-      if (!u)
+      const s = e.edges.some((B) => B.id === this.selectedEdgeId), i = this.mode === "view" && e.key === this.hoveredEdgePairKey, n = this.mode === "view" && e.key === this.tappedEdgePairKey, h = this.alwaysShowEdges || s || i || n, r = e.edges[0].style || {}, c = r.color || this.EDGE_DEFAULT_COLOR, l = r.weight || 1, d = Math.max(this.EDGE_MIN_WEIGHT, Math.min(this.EDGE_MAX_WEIGHT, l)), o = this.EDGE_DEFAULT_WIDTH + (d - 1) * 0.5, u = h ? Math.max(o, this.EDGE_HOVER_WIDTH) : o, p = s ? "#2196f3" : c, f = h ? 1 : 0.3, g = this.calculateEdgePairPath(e);
+      if (!g)
         continue;
       const y = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      y.setAttribute("d", u), y.setAttribute("stroke", "transparent"), y.setAttribute("stroke-width", String(this.HIT_PATH_WIDTH)), y.setAttribute("fill", "none"), y.setAttribute("data-hit-edge-pair-key", e.key), y.style.cursor = "pointer", y.style.pointerEvents = "stroke", this.edgesGroup.appendChild(y);
+      y.setAttribute("d", g), y.setAttribute("stroke", "transparent"), y.setAttribute("stroke-width", String(this.HIT_PATH_WIDTH)), y.setAttribute("fill", "none"), y.setAttribute("data-hit-edge-pair-key", e.key), y.style.cursor = "pointer", y.style.pointerEvents = "stroke", this.edgesGroup.appendChild(y);
       const m = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      m.setAttribute("d", u), m.setAttribute("stroke", p), m.setAttribute("stroke-width", String(g)), m.setAttribute("stroke-opacity", String(f)), m.setAttribute("fill", "none"), m.setAttribute("data-edge-pair-key", e.key), m.style.pointerEvents = "none", m.style.transition = "stroke-opacity 0.2s, stroke-width 0.2s";
+      m.setAttribute("d", g), m.setAttribute("stroke", p), m.setAttribute("stroke-width", String(u)), m.setAttribute("stroke-opacity", String(f)), m.setAttribute("fill", "none"), m.setAttribute("data-edge-pair-key", e.key), m.style.pointerEvents = "none", m.style.transition = "stroke-opacity 0.2s, stroke-width 0.2s";
       const b = this.getEdgePairMarkerAttributes(e);
       if (b.markerStart && m.setAttribute("marker-start", b.markerStart), b.markerEnd && m.setAttribute("marker-end", b.markerEnd), this.edgeElements.set(e.key, m), this.edgesGroup.appendChild(m), this.mode === "view")
         this.setupEdgeInteraction(y, e, r);
@@ -4099,22 +4126,22 @@ const lt = class lt {
       c.setAttribute("x", String(l)), c.setAttribute("y", String(d)), c.setAttribute("width", String(i)), c.setAttribute("height", String(n));
       const o = h.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
       if (o) {
-        const u = parseInt(o[1], 16), y = parseInt(o[2], 16), m = parseInt(o[3], 16);
-        c.setAttribute("fill", `rgba(${u}, ${y}, ${m}, 0.5)`);
+        const g = parseInt(o[1], 16), y = parseInt(o[2], 16), m = parseInt(o[3], 16);
+        c.setAttribute("fill", `rgba(${g}, ${y}, ${m}, 0.5)`);
       } else
         c.setAttribute("fill", h);
-      const g = this.selectedNodeId === e.id;
-      c.setAttribute("stroke", g ? "#2196f3" : a), c.setAttribute("stroke-width", g ? "4" : "2"), c.setAttribute("rx", "4"), c.style.cursor = this.mode === "view" ? "pointer" : "move";
+      const u = this.selectedNodeId === e.id;
+      c.setAttribute("stroke", u ? "#2196f3" : a), c.setAttribute("stroke-width", u ? "4" : "2"), c.setAttribute("rx", "4"), c.style.cursor = this.mode === "view" ? "pointer" : "move";
       const p = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
       p.setAttribute("x", String(l)), p.setAttribute("y", String(d)), p.setAttribute("width", String(i)), p.setAttribute("height", String(n));
       const f = document.createElement("div");
-      f.style.width = "100%", f.style.height = "100%", f.style.display = "flex", f.style.alignItems = "flex-start", f.style.justifyContent = "center", f.style.textAlign = "center", f.style.fontSize = "14px", f.style.color = "#333", f.style.padding = "4px", f.style.wordWrap = "break-word", f.style.overflowWrap = "break-word", f.style.whiteSpace = "normal", f.style.overflow = "hidden", f.style.textOverflow = "ellipsis", f.textContent = e.label, p.appendChild(f), r.appendChild(c), r.appendChild(p), this.mode === "edit" && this.addResizeHandles(r, e, i, n), this.nodesGroup.appendChild(r), this.nodeElements.set(e.id, c), this.mode === "view" && this.onNodeClick && r.addEventListener("click", (u) => {
-        u.stopPropagation(), u.preventDefault();
-        const y = this.svg.getBoundingClientRect(), m = u.clientX - y.left, b = u.clientY - y.top;
+      f.style.width = "100%", f.style.height = "100%", f.style.display = "flex", f.style.alignItems = "flex-start", f.style.justifyContent = "center", f.style.textAlign = "center", f.style.fontSize = "14px", f.style.color = "#333", f.style.padding = "4px", f.style.wordWrap = "break-word", f.style.overflowWrap = "break-word", f.style.whiteSpace = "normal", f.style.overflow = "hidden", f.style.textOverflow = "ellipsis", f.textContent = e.label, p.appendChild(f), r.appendChild(c), r.appendChild(p), this.mode === "edit" && this.addResizeHandles(r, e, i, n), this.nodesGroup.appendChild(r), this.nodeElements.set(e.id, c), this.mode === "view" && this.onNodeClick && r.addEventListener("click", (g) => {
+        g.stopPropagation(), g.preventDefault();
+        const y = this.svg.getBoundingClientRect(), m = g.clientX - y.left, b = g.clientY - y.top;
         this.onNodeClick({
           node: e,
           position: { x: m, y: b },
-          originalEvent: u
+          originalEvent: g
         });
       }, !0);
     }
@@ -4129,8 +4156,8 @@ const lt = class lt {
     let h = 1 / 0, a = -1 / 0, r = 1 / 0, c = -1 / 0, l = !1;
     const d = e ? this.groups.some((f) => f.parentId === e) : !1, o = /* @__PURE__ */ new Set();
     if (d && e) {
-      const f = this.groups.filter((u) => u.parentId === e);
-      for (const u of f) {
+      const f = this.groups.filter((g) => g.parentId === e);
+      for (const g of f) {
         const y = (m) => {
           for (const C of m.nodeIds)
             o.add(C);
@@ -4138,23 +4165,23 @@ const lt = class lt {
           for (const C of b)
             y(C);
         };
-        y(u);
+        y(g);
       }
     }
     for (const f of t) {
       if (d && o.has(f))
         continue;
-      const u = this.nodes.find((A) => A.id === f);
-      if (!u || !u.position)
+      const g = this.nodes.find((A) => A.id === f);
+      if (!g || !g.position)
         continue;
       l = !0;
-      const y = u.style || {}, m = y.width || this.DEFAULT_NODE_WIDTH, b = y.height || this.DEFAULT_NODE_HEIGHT, C = u.position.x - m / 2, B = u.position.x + m / 2, v = u.position.y - b / 2, T = u.position.y + b / 2;
+      const y = g.style || {}, m = y.width || this.DEFAULT_NODE_WIDTH, b = y.height || this.DEFAULT_NODE_HEIGHT, C = g.position.x - m / 2, B = g.position.x + m / 2, v = g.position.y - b / 2, T = g.position.y + b / 2;
       h = Math.min(h, C), a = Math.max(a, B), r = Math.min(r, v), c = Math.max(c, T);
     }
     if (d && e) {
-      const f = this.groups.filter((u) => u.parentId === e);
-      for (const u of f) {
-        const y = this.getGroupLayout(u);
+      const f = this.groups.filter((g) => g.parentId === e);
+      for (const g of f) {
+        const y = this.getGroupLayout(g);
         if (y) {
           l = !0;
           const m = y.position.x, b = y.position.x + y.size.width, C = y.position.y, B = y.position.y + y.size.height;
@@ -4164,13 +4191,13 @@ const lt = class lt {
     }
     if (!l)
       return null;
-    const g = d ? 50 : 30, p = g + 25;
+    const u = d ? 50 : 30, p = u + 25;
     return {
-      minX: h - g,
-      maxX: a + g,
+      minX: h - u,
+      maxX: a + u,
       minY: r - p,
       // Extra top padding for label
-      maxY: c + g
+      maxY: c + u
     };
   }
   /**
@@ -4368,7 +4395,7 @@ const lt = class lt {
         if (this.mode !== "edit")
           return;
         o.stopPropagation(), o.preventDefault(), a.setPointerCapture(o.pointerId);
-        const g = this.screenToSvg(o.clientX, o.clientY), p = g.x, f = g.y;
+        const u = this.screenToSvg(o.clientX, o.clientY), p = u.x, f = u.y;
         e.layout && (this.pushUndoState(), this.resizingGroup = {
           groupId: e.id,
           side: h,
@@ -4390,8 +4417,8 @@ const lt = class lt {
     for (const s of e) {
       const i = this.edgeElements.get(s.key);
       if (!i) continue;
-      const n = s.edges.some((m) => m.id === this.selectedEdgeId), h = this.mode === "view" && s.key === this.hoveredEdgePairKey, a = this.mode === "view" && s.key === this.tappedEdgePairKey, r = this.alwaysShowEdges || n || h || a, l = s.edges[0].style || {}, d = l.color || this.EDGE_DEFAULT_COLOR, o = l.weight || 1, g = Math.max(this.EDGE_MIN_WEIGHT, Math.min(this.EDGE_MAX_WEIGHT, o)), p = this.EDGE_DEFAULT_WIDTH + (g - 1) * 0.5, f = r ? Math.max(p, this.EDGE_HOVER_WIDTH) : p, u = n ? "#2196f3" : d, y = r ? 1 : 0.3;
-      i.setAttribute("stroke", u), i.setAttribute("stroke-width", String(f)), i.setAttribute("stroke-opacity", String(y)), r ? (this.edgeLabelsGroup.querySelectorAll(`[data-edge-pair-key="${s.key}"]`).forEach((b) => b.remove()), this.renderEdgeLabels(s, l)) : this.edgeLabelsGroup.querySelectorAll(`[data-edge-pair-key="${s.key}"]`).forEach((b) => b.remove());
+      const n = s.edges.some((m) => m.id === this.selectedEdgeId), h = this.mode === "view" && s.key === this.hoveredEdgePairKey, a = this.mode === "view" && s.key === this.tappedEdgePairKey, r = this.alwaysShowEdges || n || h || a, l = s.edges[0].style || {}, d = l.color || this.EDGE_DEFAULT_COLOR, o = l.weight || 1, u = Math.max(this.EDGE_MIN_WEIGHT, Math.min(this.EDGE_MAX_WEIGHT, o)), p = this.EDGE_DEFAULT_WIDTH + (u - 1) * 0.5, f = r ? Math.max(p, this.EDGE_HOVER_WIDTH) : p, g = n ? "#2196f3" : d, y = r ? 1 : 0.3;
+      i.setAttribute("stroke", g), i.setAttribute("stroke-width", String(f)), i.setAttribute("stroke-opacity", String(y)), r ? (this.edgeLabelsGroup.querySelectorAll(`[data-edge-pair-key="${s.key}"]`).forEach((b) => b.remove()), this.renderEdgeLabels(s, l)) : this.edgeLabelsGroup.querySelectorAll(`[data-edge-pair-key="${s.key}"]`).forEach((b) => b.remove());
     }
   }
   /**
@@ -4468,12 +4495,12 @@ const lt = class lt {
       return;
     const s = this.screenToSvg(t.clientX, t.clientY), i = s.x, n = s.y, h = i - this.draggingGroup.offsetX, a = n - this.draggingGroup.offsetY, r = h - e.layout.position.x, c = a - e.layout.position.y, l = /* @__PURE__ */ new Set(), d = this.groups.filter((o) => o.parentId === e.id);
     for (const o of d)
-      for (const g of o.nodeIds)
-        l.add(g);
+      for (const u of o.nodeIds)
+        l.add(u);
     for (const o of e.nodeIds)
       if (!l.has(o)) {
-        const g = this.nodes.find((p) => p.id === o);
-        g && g.position && (g.position.x += r, g.position.y += c);
+        const u = this.nodes.find((p) => p.id === o);
+        u && u.position && (u.position.x += r, u.position.y += c);
       }
     this.moveDescendantGroups(e.id, r, c), e.layout.position.x = h, e.layout.position.y = a, this.updateGroupLayouts(void 0, e.id, !0), this.render(), this.updateAnchorHandles(), this.updateBendHandles();
   }
@@ -4515,20 +4542,20 @@ const lt = class lt {
       if (c && (c.setAttribute("x", String(e.layout.position.x)), c.setAttribute("y", String(e.layout.position.y)), c.setAttribute("width", String(e.layout.size.width)), c.setAttribute("height", String(e.layout.size.height))), !e.layout)
         return;
       const l = r.querySelectorAll("[data-resize-side]"), d = e.layout;
-      l.forEach((g) => {
-        const p = g.getAttribute("data-resize-side"), f = d.position.x, u = d.position.y, y = d.size.width, m = d.size.height;
+      l.forEach((u) => {
+        const p = u.getAttribute("data-resize-side"), f = d.position.x, g = d.position.y, y = d.size.width, m = d.size.height;
         switch (p) {
           case "top":
-            g.setAttribute("cx", String(f + y / 2)), g.setAttribute("cy", String(u));
+            u.setAttribute("cx", String(f + y / 2)), u.setAttribute("cy", String(g));
             break;
           case "right":
-            g.setAttribute("cx", String(f + y)), g.setAttribute("cy", String(u + m / 2));
+            u.setAttribute("cx", String(f + y)), u.setAttribute("cy", String(g + m / 2));
             break;
           case "bottom":
-            g.setAttribute("cx", String(f + y / 2)), g.setAttribute("cy", String(u + m));
+            u.setAttribute("cx", String(f + y / 2)), u.setAttribute("cy", String(g + m));
             break;
           case "left":
-            g.setAttribute("cx", String(f)), g.setAttribute("cy", String(u + m / 2));
+            u.setAttribute("cx", String(f)), u.setAttribute("cy", String(g + m / 2));
             break;
         }
       });
@@ -4572,9 +4599,9 @@ const lt = class lt {
     const s = this.nodes.find((v) => v.id === t.a), i = this.nodes.find((v) => v.id === t.b);
     if (!s?.position || !i?.position)
       return;
-    const n = s.style || {}, h = i.style || {}, a = n.width || this.DEFAULT_NODE_WIDTH, r = n.height || this.DEFAULT_NODE_HEIGHT, c = h.width || this.DEFAULT_NODE_WIDTH, l = h.height || this.DEFAULT_NODE_HEIGHT, d = t.srcAnchor || this.estimateAnchor(s, i), o = t.dstAnchor || this.estimateAnchor(i, s), g = this.calculateAnchorPosition(s, d, a, r), p = this.calculateAnchorPosition(i, o, c, l), f = this.calculateEdgePairPath(t), u = t.edges.find((v) => v.src === t.a && v.dst === t.b), y = t.edges.find((v) => v.src === t.b && v.dst === t.a), m = u?.style?.label || u?.relType || "", b = y?.style?.label || y?.relType || "", C = m !== b && m && b, B = m === b && m;
+    const n = s.style || {}, h = i.style || {}, a = n.width || this.DEFAULT_NODE_WIDTH, r = n.height || this.DEFAULT_NODE_HEIGHT, c = h.width || this.DEFAULT_NODE_WIDTH, l = h.height || this.DEFAULT_NODE_HEIGHT, d = t.srcAnchor || this.estimateAnchor(s, i), o = t.dstAnchor || this.estimateAnchor(i, s), u = this.calculateAnchorPosition(s, d, a, r), p = this.calculateAnchorPosition(i, o, c, l), f = this.calculateEdgePairPath(t), g = t.edges.find((v) => v.src === t.a && v.dst === t.b), y = t.edges.find((v) => v.src === t.b && v.dst === t.a), m = g?.style?.label || g?.relType || "", b = y?.style?.label || y?.relType || "", C = m !== b && m && b, B = m === b && m;
     if (C) {
-      const T = this.getPointOnPath(f, 0.75), A = this.getPointOnPath(f, 0.25), E = T ? T.x : g.x + (p.x - g.x) * (1 - 0.25), S = T ? T.y : g.y + (p.y - g.y) * (1 - 0.25), I = A ? A.x : g.x + (p.x - g.x) * 0.25, x = A ? A.y : g.y + (p.y - g.y) * 0.25;
+      const T = this.getPointOnPath(f, 0.75), A = this.getPointOnPath(f, 0.25), E = T ? T.x : u.x + (p.x - u.x) * (1 - 0.25), S = T ? T.y : u.y + (p.y - u.y) * (1 - 0.25), I = A ? A.x : u.x + (p.x - u.x) * 0.25, x = A ? A.y : u.y + (p.y - u.y) * 0.25;
       if (m) {
         const L = document.createElementNS("http://www.w3.org/2000/svg", "text");
         L.setAttribute("x", String(E)), L.setAttribute("y", String(S - 8)), L.setAttribute("text-anchor", "middle"), L.setAttribute("dominant-baseline", "middle"), L.setAttribute("font-size", "12"), L.setAttribute("fill", "#333"), L.setAttribute("font-weight", "bold"), L.setAttribute("pointer-events", "none"), L.setAttribute("data-edge-pair-key", t.key);
@@ -4588,12 +4615,12 @@ const lt = class lt {
         k.setAttribute("x", String(I - N / 2 - 4)), k.setAttribute("y", String(x - 16)), k.setAttribute("width", String(N + 8)), k.setAttribute("height", "16"), k.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), k.setAttribute("rx", "2"), k.setAttribute("pointer-events", "none"), k.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(k), L.textContent = b, this.edgeLabelsGroup.appendChild(L);
       }
     } else if (B) {
-      const v = this.getPointOnPath(f, 0.5), T = v ? v.x : (g.x + p.x) / 2, A = v ? v.y : (g.y + p.y) / 2, E = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      const v = this.getPointOnPath(f, 0.5), T = v ? v.x : (u.x + p.x) / 2, A = v ? v.y : (u.y + p.y) / 2, E = document.createElementNS("http://www.w3.org/2000/svg", "text");
       E.setAttribute("x", String(T)), E.setAttribute("y", String(A)), E.setAttribute("text-anchor", "middle"), E.setAttribute("dominant-baseline", "middle"), E.setAttribute("data-edge-pair-key", t.key), E.setAttribute("font-size", "12"), E.setAttribute("fill", "#333"), E.setAttribute("font-weight", "bold"), E.setAttribute("pointer-events", "none");
       const S = document.createElementNS("http://www.w3.org/2000/svg", "rect"), I = m.length * 7;
       S.setAttribute("x", String(T - I / 2 - 4)), S.setAttribute("y", String(A - 8)), S.setAttribute("width", String(I + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), E.textContent = m, this.edgeLabelsGroup.appendChild(E);
     } else if (e.label) {
-      const v = this.getPointOnPath(f, 0.5), T = v ? v.x : (g.x + p.x) / 2, A = v ? v.y : (g.y + p.y) / 2, E = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      const v = this.getPointOnPath(f, 0.5), T = v ? v.x : (u.x + p.x) / 2, A = v ? v.y : (u.y + p.y) / 2, E = document.createElementNS("http://www.w3.org/2000/svg", "text");
       E.setAttribute("x", String(T)), E.setAttribute("y", String(A)), E.setAttribute("text-anchor", "middle"), E.setAttribute("dominant-baseline", "middle"), E.setAttribute("font-size", "12"), E.setAttribute("fill", "#333"), E.setAttribute("font-weight", "bold"), E.setAttribute("pointer-events", "none"), E.setAttribute("data-edge-pair-key", t.key);
       const S = document.createElementNS("http://www.w3.org/2000/svg", "rect"), I = e.label.length * 7;
       S.setAttribute("x", String(T - I / 2 - 4)), S.setAttribute("y", String(A - 8)), S.setAttribute("width", String(I + 8)), S.setAttribute("height", "16"), S.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), S.setAttribute("rx", "2"), S.setAttribute("pointer-events", "none"), S.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(S), E.textContent = e.label, this.edgeLabelsGroup.appendChild(E);
@@ -4703,16 +4730,16 @@ const lt = class lt {
     let t = 1 / 0, e = 1 / 0, s = -1 / 0, i = -1 / 0;
     for (const o of this.nodes) {
       if (!o.position) continue;
-      const g = o.style || {}, p = g.width ?? this.DEFAULT_NODE_WIDTH, f = g.height ?? this.DEFAULT_NODE_HEIGHT;
+      const u = o.style || {}, p = u.width ?? this.DEFAULT_NODE_WIDTH, f = u.height ?? this.DEFAULT_NODE_HEIGHT;
       t = Math.min(t, o.position.x - p / 2), e = Math.min(e, o.position.y - f / 2), s = Math.max(s, o.position.x + p / 2), i = Math.max(i, o.position.y + f / 2);
     }
     for (const o of this.groups) {
-      const g = this.getGroupLayout(o);
-      g && (t = Math.min(t, g.position.x), e = Math.min(e, g.position.y), s = Math.max(s, g.position.x + g.size.width), i = Math.max(i, g.position.y + g.size.height));
+      const u = this.getGroupLayout(o);
+      u && (t = Math.min(t, u.position.x), e = Math.min(e, u.position.y), s = Math.max(s, u.position.x + u.size.width), i = Math.max(i, u.position.y + u.size.height));
     }
     for (const o of this.edges) {
-      const g = this.getEdgePoints(o);
-      for (const p of g)
+      const u = this.getEdgePoints(o);
+      for (const p of u)
         t = Math.min(t, p.x), e = Math.min(e, p.y), s = Math.max(s, p.x), i = Math.max(i, p.y);
     }
     const n = 20;
@@ -4825,12 +4852,12 @@ const lt = class lt {
     const s = e.height || this.DEFAULT_NODE_HEIGHT, i = this.nodeElements.get(t.id);
     if (!i) {
       this.container.getBoundingClientRect(), this.svg.getBoundingClientRect();
-      const p = isFinite(this.zoom) && this.zoom > 0 ? this.zoom : 1, f = isFinite(this.offsetX) ? this.offsetX : 0, u = isFinite(this.offsetY) ? this.offsetY : 0, y = (t.position.x + f) * p, m = (t.position.y + u) * p, b = this.popupElement.getBoundingClientRect(), C = b.width || 200, B = b.height || 50, v = y - C / 2, T = m - s * p / 2 - B - 10;
+      const p = isFinite(this.zoom) && this.zoom > 0 ? this.zoom : 1, f = isFinite(this.offsetX) ? this.offsetX : 0, g = isFinite(this.offsetY) ? this.offsetY : 0, y = (t.position.x + f) * p, m = (t.position.y + g) * p, b = this.popupElement.getBoundingClientRect(), C = b.width || 200, B = b.height || 50, v = y - C / 2, T = m - s * p / 2 - B - 10;
       this.popupElement.style.left = `${v}px`, this.popupElement.style.top = `${T}px`;
       return;
     }
-    const n = i.getBoundingClientRect(), h = this.container.getBoundingClientRect(), a = n.left + n.width / 2 - h.left, r = n.top + n.height / 2 - h.top, c = this.popupElement.getBoundingClientRect(), l = c.width || 200, d = c.height || 50, o = a - l / 2, g = r - n.height / 2 - d - 10;
-    this.popupElement.style.left = `${o}px`, this.popupElement.style.top = `${g}px`;
+    const n = i.getBoundingClientRect(), h = this.container.getBoundingClientRect(), a = n.left + n.width / 2 - h.left, r = n.top + n.height / 2 - h.top, c = this.popupElement.getBoundingClientRect(), l = c.width || 200, d = c.height || 50, o = a - l / 2, u = r - n.height / 2 - d - 10;
+    this.popupElement.style.left = `${o}px`, this.popupElement.style.top = `${u}px`;
   }
   /**
    * Hide popup
@@ -4865,12 +4892,12 @@ const lt = class lt {
 };
 lt.MAX_UNDO_LEVELS = 50;
 let gt = lt;
-function Wt(w, t = 16) {
+function $t(w, t = 16) {
   return Q(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${w}"></use>
   </svg>`;
 }
-class $t {
+class Vt {
   // postRender event listener for popup position updates
   constructor(t, e, s, i, n, h) {
     this.viewer = null, this.Cesium = null, this.nodes = [], this.edges = [], this.selectedNodeId = null, this.lastSelectedNodeId = null, this.nodeEntities = /* @__PURE__ */ new Map(), this.edgeEntities = /* @__PURE__ */ new Map(), this.rectEntity = null, this.fitCenterButton = null, this.lightingToggleButton = null, this.alwaysShowEdgesButton = null, this.alwaysShowEdges = !0, this.tileTypeButton = null, this.baseImageryLayer = null, this.timeISO = null, this.customTileUrls = [], this.currentCustomTileIndex = 0, this.popupElement = null, this.popupEntity = null, this.popupUpdateListener = null, this.container = t, this.onNodeClick = e, this.cesiumLoader = s, this.globe3dOptions = i, this.onEdgeClick = h;
@@ -4920,16 +4947,16 @@ class $t {
     const t = this.viewer.canvas, e = this.viewer.scene.camera, s = 5e5, i = 4e7, n = (d) => {
       if (d.ctrlKey) {
         d.preventDefault(), d.stopPropagation();
-        const o = 1 - d.deltaY * 0.01, g = this.Cesium.Cartographic.fromCartesian(e.position);
-        let f = g.height / o;
+        const o = 1 - d.deltaY * 0.01, u = this.Cesium.Cartographic.fromCartesian(e.position);
+        let f = u.height / o;
         f = Math.max(s, Math.min(i, f));
-        const u = this.Cesium.Cartesian3.fromRadians(
-          g.longitude,
-          g.latitude,
+        const g = this.Cesium.Cartesian3.fromRadians(
+          u.longitude,
+          u.latitude,
           f
         );
         e.setView({
-          destination: u,
+          destination: g,
           orientation: {
             heading: e.heading,
             pitch: e.pitch,
@@ -4943,16 +4970,16 @@ class $t {
       d.preventDefault(), h = d.scale || 1, a = this.Cesium.Cartographic.fromCartesian(e.position).height;
     }, c = (d) => {
       d.preventDefault();
-      const g = (d.scale || 1) / h;
-      let p = a / g;
+      const u = (d.scale || 1) / h;
+      let p = a / u;
       p = Math.max(s, Math.min(i, p));
-      const f = this.Cesium.Cartographic.fromCartesian(e.position), u = this.Cesium.Cartesian3.fromRadians(
+      const f = this.Cesium.Cartographic.fromCartesian(e.position), g = this.Cesium.Cartesian3.fromRadians(
         f.longitude,
         f.latitude,
         p
       );
       e.setView({
-        destination: u,
+        destination: g,
         orientation: {
           heading: e.heading,
           pitch: e.pitch,
@@ -5239,14 +5266,14 @@ class $t {
       return !Number.isFinite(n) || !Number.isFinite(h);
     });
     if (s.length > 0) {
-      const r = Math.ceil(Math.sqrt(s.length)), l = 50 / (Math.ceil(s.length / r) + 1), d = 32 / (r + 1), o = s.findIndex((g) => g.id === t);
+      const r = Math.ceil(Math.sqrt(s.length)), l = 50 / (Math.ceil(s.length / r) + 1), d = 32 / (r + 1), o = s.findIndex((u) => u.id === t);
       if (o >= 0) {
-        const g = Math.floor(o / r), p = o % r, f = -50 + (g + 1) * l, u = -32 + (p + 1) * d, y = 3e6, m = this.nodeEntities.get(t);
+        const u = Math.floor(o / r), p = o % r, f = -50 + (u + 1) * l, g = -32 + (p + 1) * d, y = 3e6, m = this.nodeEntities.get(t);
         m && e && this.showPopup(m, e);
         const b = this._setIsFlying;
         b && b(!0), setTimeout(() => {
           this.viewer.camera.flyTo({
-            destination: this.Cesium.Cartesian3.fromDegrees(u, f, y),
+            destination: this.Cesium.Cartesian3.fromDegrees(g, f, y),
             orientation: {
               heading: this.Cesium.Math.toRadians(0),
               // Look north
@@ -5297,10 +5324,10 @@ class $t {
         }
       });
       const c = Math.ceil(Math.sqrt(t.length)), d = 50 / (Math.ceil(t.length / c) + 1), o = 32 / (c + 1);
-      t.forEach((g, p) => {
-        const f = Math.floor(p / c), u = p % c, y = -50 + (f + 1) * d, m = -32 + (u + 1) * o;
-        s.set(g.id, [y, m]);
-        const b = this.selectedNodeId === g.id, C = g.style?.color || "#ffffff", B = b ? "#2196f3" : g.style?.borderColor || "#333333";
+      t.forEach((u, p) => {
+        const f = Math.floor(p / c), g = p % c, y = -50 + (f + 1) * d, m = -32 + (g + 1) * o;
+        s.set(u.id, [y, m]);
+        const b = this.selectedNodeId === u.id, C = u.style?.color || "#ffffff", B = b ? "#2196f3" : u.style?.borderColor || "#333333";
         let v;
         const T = C.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
         if (T) {
@@ -5318,7 +5345,7 @@ class $t {
             heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND
           },
           label: {
-            text: g.label,
+            text: u.label,
             font: "14px sans-serif",
             fillColor: this.Cesium.Color.WHITE,
             outlineColor: this.Cesium.Color.BLACK,
@@ -5329,9 +5356,9 @@ class $t {
             heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND,
             show: !1
           },
-          nodeId: g.id
+          nodeId: u.id
         });
-        this.nodeEntities.set(g.id, E);
+        this.nodeEntities.set(u.id, E);
       });
     }
     for (const i of e) {
@@ -5341,11 +5368,11 @@ class $t {
       let l;
       const d = r.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
       if (d) {
-        const p = parseInt(d[1], 16) / 255, f = parseInt(d[2], 16) / 255, u = parseInt(d[3], 16) / 255;
-        l = new this.Cesium.Color(p, f, u, 1);
+        const p = parseInt(d[1], 16) / 255, f = parseInt(d[2], 16) / 255, g = parseInt(d[3], 16) / 255;
+        l = new this.Cesium.Color(p, f, g, 1);
       } else
         l = this.Cesium.Color.fromCssColorString(r), l = l.withAlpha(1);
-      const o = this.Cesium.Color.fromCssColorString(c), g = this.viewer.entities.add({
+      const o = this.Cesium.Color.fromCssColorString(c), u = this.viewer.entities.add({
         position: this.Cesium.Cartesian3.fromDegrees(h, n, 0),
         point: {
           pixelSize: a ? 15 : 10,
@@ -5372,20 +5399,20 @@ class $t {
         nodeId: i.id
         // For hit testing
       });
-      this.nodeEntities.set(i.id, g);
+      this.nodeEntities.set(i.id, u);
     }
     if (this.alwaysShowEdges)
       for (const i of this.edges) {
         const n = s.get(i.src), h = s.get(i.dst);
         if (!n || !h)
           continue;
-        const [a, r] = n, [c, l] = h, d = i.style?.color || "#999999", o = i.style?.weight || 1, g = Math.max(1, Math.min(5, o)), p = this.viewer.entities.add({
+        const [a, r] = n, [c, l] = h, d = i.style?.color || "#999999", o = i.style?.weight || 1, u = Math.max(1, Math.min(5, o)), p = this.viewer.entities.add({
           polyline: {
             positions: [
               this.Cesium.Cartesian3.fromDegrees(r, a, 0),
               this.Cesium.Cartesian3.fromDegrees(l, c, 0)
             ],
-            width: g,
+            width: u,
             material: this.Cesium.Color.fromCssColorString(d),
             clampToGround: !0
           },
@@ -5453,10 +5480,10 @@ class $t {
         }
       });
       const c = Math.ceil(Math.sqrt(t.length)), d = 50 / (Math.ceil(t.length / c) + 1), o = 32 / (c + 1);
-      t.forEach((g, p) => {
-        const f = Math.floor(p / c), u = p % c, y = -50 + (f + 1) * d, m = -32 + (u + 1) * o;
-        s.set(g.id, [y, m]);
-        const b = this.selectedNodeId === g.id, C = g.style?.color || "#ffffff", B = b ? "#2196f3" : g.style?.borderColor || "#333333";
+      t.forEach((u, p) => {
+        const f = Math.floor(p / c), g = p % c, y = -50 + (f + 1) * d, m = -32 + (g + 1) * o;
+        s.set(u.id, [y, m]);
+        const b = this.selectedNodeId === u.id, C = u.style?.color || "#ffffff", B = b ? "#2196f3" : u.style?.borderColor || "#333333";
         let v;
         const T = C.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
         if (T) {
@@ -5474,7 +5501,7 @@ class $t {
             heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND
           },
           label: {
-            text: g.label,
+            text: u.label,
             font: "14px sans-serif",
             fillColor: this.Cesium.Color.WHITE,
             outlineColor: this.Cesium.Color.BLACK,
@@ -5485,9 +5512,9 @@ class $t {
             heightReference: this.Cesium.HeightReference.CLAMP_TO_GROUND,
             show: !1
           },
-          nodeId: g.id
+          nodeId: u.id
         });
-        this.nodeEntities.set(g.id, E);
+        this.nodeEntities.set(u.id, E);
       });
     }
     for (const i of e) {
@@ -5497,11 +5524,11 @@ class $t {
       let l;
       const d = r.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
       if (d) {
-        const p = parseInt(d[1], 16) / 255, f = parseInt(d[2], 16) / 255, u = parseInt(d[3], 16) / 255;
-        l = new this.Cesium.Color(p, f, u, 1);
+        const p = parseInt(d[1], 16) / 255, f = parseInt(d[2], 16) / 255, g = parseInt(d[3], 16) / 255;
+        l = new this.Cesium.Color(p, f, g, 1);
       } else
         l = this.Cesium.Color.fromCssColorString(r), l = l.withAlpha(1);
-      const o = this.Cesium.Color.fromCssColorString(c), g = this.viewer.entities.add({
+      const o = this.Cesium.Color.fromCssColorString(c), u = this.viewer.entities.add({
         position: this.Cesium.Cartesian3.fromDegrees(h, n, 0),
         point: {
           pixelSize: a ? 15 : 10,
@@ -5525,20 +5552,20 @@ class $t {
         },
         nodeId: i.id
       });
-      this.nodeEntities.set(i.id, g);
+      this.nodeEntities.set(i.id, u);
     }
     if (this.alwaysShowEdges)
       for (const i of this.edges) {
         const n = s.get(i.src), h = s.get(i.dst);
         if (!n || !h)
           continue;
-        const [a, r] = n, [c, l] = h, d = i.style?.color || "#999999", o = i.style?.weight || 1, g = Math.max(1, Math.min(5, o)), p = this.viewer.entities.add({
+        const [a, r] = n, [c, l] = h, d = i.style?.color || "#999999", o = i.style?.weight || 1, u = Math.max(1, Math.min(5, o)), p = this.viewer.entities.add({
           polyline: {
             positions: [
               this.Cesium.Cartesian3.fromDegrees(r, a, 0),
               this.Cesium.Cartesian3.fromDegrees(l, c, 0)
             ],
-            width: g,
+            width: u,
             material: this.Cesium.Color.fromCssColorString(d),
             clampToGround: !0
           },
@@ -5565,7 +5592,7 @@ class $t {
     if (!this.viewer || !this.Cesium)
       return;
     const e = (a, r, c, l = !1) => {
-      const d = (g) => String(g).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"), o = `<a href="${d(c)}" target="_blank" rel="noopener noreferrer">${d(r)}</a>`;
+      const d = (u) => String(u).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"), o = `<a href="${d(c)}" target="_blank" rel="noopener noreferrer">${d(r)}</a>`;
       return new a.Credit(o, l);
     };
     if (this.baseImageryLayer)
@@ -5577,8 +5604,8 @@ class $t {
       const a = this.customTileUrls[this.currentCustomTileIndex], r = a.url.includes("NaturalEarthII"), c = a.maximumLevel ?? (r ? 2 : 19);
       let l;
       if (a.credit) {
-        const g = a.credit;
-        g.href ? l = e(this.Cesium, g.label, g.href, g.showOnScreen ?? !1) : l = new this.Cesium.Credit(g.label, g.showOnScreen ?? !1);
+        const u = a.credit;
+        u.href ? l = e(this.Cesium, u.label, u.href, u.showOnScreen ?? !1) : l = new this.Cesium.Credit(u.label, u.showOnScreen ?? !1);
       } else
         l = new this.Cesium.Credit(
           `Custom tile server (${this.currentCustomTileIndex + 1}/${this.customTileUrls.length})`
@@ -5646,7 +5673,7 @@ class $t {
     if (!this.lightingToggleButton)
       return;
     const t = this.isLightingEnabled();
-    this.lightingToggleButton.innerHTML = Wt("icon-sun", 16), t ? (this.lightingToggleButton.style.backgroundColor = "#fff9c4", this.lightingToggleButton.style.boxShadow = "inset 0 2px 4px rgba(0, 0, 0, 0.2)", this.lightingToggleButton.style.transform = "translateY(1px)") : (this.lightingToggleButton.style.backgroundColor = "#fff", this.lightingToggleButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.lightingToggleButton.style.transform = "translateY(0)"), this.lightingToggleButton.style.color = "#333";
+    this.lightingToggleButton.innerHTML = $t("icon-sun", 16), t ? (this.lightingToggleButton.style.backgroundColor = "#fff9c4", this.lightingToggleButton.style.boxShadow = "inset 0 2px 4px rgba(0, 0, 0, 0.2)", this.lightingToggleButton.style.transform = "translateY(1px)") : (this.lightingToggleButton.style.backgroundColor = "#fff", this.lightingToggleButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.lightingToggleButton.style.transform = "translateY(0)"), this.lightingToggleButton.style.color = "#333";
   }
   /**
    * Fit and center view (for View interface)
@@ -5683,7 +5710,7 @@ class $t {
     }
     if (s.length === 0)
       return;
-    const n = Math.min(...s), h = Math.max(...s), a = Math.min(...i), r = Math.max(...i), c = (n + h) / 2, l = (a + r) / 2, d = h - n, o = r - a, g = Math.max(d, o), p = Math.max(1e6, g * 111e3 * 2), y = Math.max(5e5, Math.min(4e7, p)), m = () => new Promise((C) => {
+    const n = Math.min(...s), h = Math.max(...s), a = Math.min(...i), r = Math.max(...i), c = (n + h) / 2, l = (a + r) / 2, d = h - n, o = r - a, u = Math.max(d, o), p = Math.max(1e6, u * 111e3 * 2), y = Math.max(5e5, Math.min(4e7, p)), m = () => new Promise((C) => {
       if (!this.baseImageryLayer) {
         C();
         return;
@@ -5855,12 +5882,12 @@ class $t {
     return !1;
   }
 }
-function Vt(w, t = 16) {
+function jt(w, t = 16) {
   return Q(), `<svg width="${t}" height="${t}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <use href="#${w}"></use>
   </svg>`;
 }
-class jt {
+class qt {
   // Current index in customTileUrls array
   constructor(t, e, s, i, n, h) {
     this.map = null, this.Leaflet = null, this.nodes = [], this.edges = [], this.selectedNodeId = null, this.lastSelectedNodeId = null, this.markers = /* @__PURE__ */ new Map(), this.polylines = /* @__PURE__ */ new Map(), this.rectLayer = null, this.fitCenterButton = null, this.lightingToggleButton = null, this.alwaysShowEdgesButton = null, this.alwaysShowEdges = !0, this.tileTypeButton = null, this.baseTileLayer = null, this.nightShadeLayer = null, this.nightShadeDebugLayer = null, this.lightingEnabled = !1, this.timeISO = null, this.moonToggleButton = null, this.moonEnabled = !1, this.moonMarker = null, this.customTileUrls = [], this.currentCustomTileIndex = 0, this.container = t, this.onNodeClick = e, this.leafletLoader = s, this.map2dOptions = n, this.onEdgeClick = h;
@@ -6042,17 +6069,17 @@ class jt {
     if (!i || i.length === 0)
       return;
     const n = this.unwrapLongitudes(i);
-    let h = n.map((g) => [g.lat, g.lng]);
+    let h = n.map((u) => [u.lat, u.lng]);
     h.length > 0 && (h[0][0] !== h[h.length - 1][0] || h[0][1] !== h[h.length - 1][1]) && h.push([h[0][0], h[0][1]]);
-    const a = h.map(([g, p]) => ({ lat: g, lng: p }));
+    const a = h.map(([u, p]) => ({ lat: u, lng: p }));
     this.isCounterClockwise(a) && h.reverse();
-    const c = h.map(([g, p]) => ({ lat: g, lng: p }));
+    const c = h.map(([u, p]) => ({ lat: u, lng: p }));
     if (this.isCounterClockwise(c)) {
       h.reverse();
-      const g = h.map(([p, f]) => ({ lat: p, lng: f }));
-      this.isCounterClockwise(g);
+      const u = h.map(([p, f]) => ({ lat: p, lng: f }));
+      this.isCounterClockwise(u);
     }
-    const d = n.map((g) => [g.lat, g.lng]);
+    const d = n.map((u) => [u.lat, u.lng]);
     d.length > 0 && (d[0][0] !== d[d.length - 1][0] || d[0][1] !== d[d.length - 1][1]) && d.push([d[0][0], d[0][1]]);
     const o = this.Leaflet.polygon(d, {
       fillColor: "#000000",
@@ -6062,13 +6089,13 @@ class jt {
       interactive: !1
     });
     if (o.addTo(this.map), this.nightShadeLayer = o, this.map2dOptions?.debugNightShading) {
-      const g = this.Leaflet.polyline(h, {
+      const u = this.Leaflet.polyline(h, {
         color: "#ff0000",
         weight: 2,
         opacity: 0.8,
         interactive: !1
       });
-      g.addTo(this.map), this.nightShadeDebugLayer = g;
+      u.addTo(this.map), this.nightShadeDebugLayer = u;
     }
   }
   /**
@@ -6186,7 +6213,7 @@ class jt {
         return null;
       const n = this.julian(i), h = this.GMST(n), a = this.sunEclipticPosition(n), r = this.eclipticObliquity(n), c = this.sunEquatorialPosition(a.lambda, r), l = [];
       for (let d = 0; d <= e * s; d++) {
-        const o = -e / 2 + d / s, g = this.hourAngle(o, c, h), p = this.terminatorLatitude(g, c);
+        const o = -e / 2 + d / s, u = this.hourAngle(o, c, h), p = this.terminatorLatitude(u, c);
         l.push({ lat: p, lng: o });
       }
       return c.delta < 0 ? (l.unshift({ lat: 90, lng: -e / 2 }), l.push({ lat: 90, lng: e / 2 })) : (l.unshift({ lat: -90, lng: -e / 2 }), l.push({ lat: -90, lng: e / 2 })), l.length > 0 ? l : null;
@@ -6263,10 +6290,10 @@ class jt {
       return !Number.isFinite(n) || !Number.isFinite(h);
     });
     if (s.length > 0) {
-      const r = Math.ceil(Math.sqrt(s.length)), l = 50 / (Math.ceil(s.length / r) + 1), d = 32 / (r + 1), o = s.findIndex((g) => g.id === t);
+      const r = Math.ceil(Math.sqrt(s.length)), l = 50 / (Math.ceil(s.length / r) + 1), d = 32 / (r + 1), o = s.findIndex((u) => u.id === t);
       if (o >= 0) {
-        const g = Math.floor(o / r), p = o % r, f = -50 + (g + 1) * l, u = -32 + (p + 1) * d;
-        this.renderWithoutFit(), this.map.flyTo([f, u], 4, {
+        const u = Math.floor(o / r), p = o % r, f = -50 + (u + 1) * l, g = -32 + (p + 1) * d;
+        this.renderWithoutFit(), this.map.flyTo([f, g], 4, {
           duration: 1,
           // 1 second animation
           easeLinearity: 0.25
@@ -6318,9 +6345,9 @@ class jt {
         weight: 1,
         dashArray: "5,5"
       }), this.rectLayer.addTo(this.map);
-      const l = Math.ceil(Math.sqrt(e.length)), o = 50 / (Math.ceil(e.length / l) + 1), g = 32 / (l + 1);
+      const l = Math.ceil(Math.sqrt(e.length)), o = 50 / (Math.ceil(e.length / l) + 1), u = 32 / (l + 1);
       e.forEach((p, f) => {
-        const u = Math.floor(f / l), y = f % l, m = -50 + (u + 1) * o, b = -32 + (y + 1) * g;
+        const g = Math.floor(f / l), y = f % l, m = -50 + (g + 1) * o, b = -32 + (y + 1) * u;
         i.set(p.id, [m, b]);
         const C = this.selectedNodeId === p.id, B = p.style?.color || "#ffffff", v = C ? "#2196f3" : p.style?.borderColor || "#333333", T = `
           <div style="
@@ -6369,11 +6396,11 @@ class jt {
         className: "relatos-node-marker",
         iconSize: [r ? 15 : 10, r ? 15 : 10],
         iconAnchor: [r ? 7.5 : 5, r ? 7.5 : 5]
-      }), g = this.Leaflet.marker([h, a], { icon: o });
-      g.bindPopup(n.label, {
+      }), u = this.Leaflet.marker([h, a], { icon: o });
+      u.bindPopup(n.label, {
         closeButton: !1,
         offset: [0, -10]
-      }), g.on("click", (p) => {
+      }), u.on("click", (p) => {
         if (this.onNodeClick) {
           const f = p.latlng;
           this.onNodeClick({
@@ -6383,14 +6410,14 @@ class jt {
             view: "map2d"
           });
         }
-      }), g.addTo(this.map), this.markers.set(n.id, g);
+      }), u.addTo(this.map), this.markers.set(n.id, u);
     }
     if (this.alwaysShowEdges)
       for (const n of this.edges) {
         const h = i.get(n.src), a = i.get(n.dst);
         if (!h || !a)
           continue;
-        const [r, c] = h, [l, d] = a, o = n.style?.color || "#999999", g = n.style?.weight || 1, p = Math.max(1, Math.min(5, g)), f = this.Leaflet.polyline(
+        const [r, c] = h, [l, d] = a, o = n.style?.color || "#999999", u = n.style?.weight || 1, p = Math.max(1, Math.min(5, u)), f = this.Leaflet.polyline(
           [[r, c], [l, d]],
           {
             color: o,
@@ -6409,10 +6436,10 @@ class jt {
             });
           }
         });
-        const u = this.polylines.get(n.id);
-        if (u && this.map)
+        const g = this.polylines.get(n.id);
+        if (g && this.map)
           try {
-            this.map.hasLayer(u) && this.map.removeLayer(u);
+            this.map.hasLayer(g) && this.map.removeLayer(g);
           } catch {
           }
         f.addTo(this.map), this.polylines.set(n.id, f);
@@ -6457,9 +6484,9 @@ class jt {
         weight: 1,
         dashArray: "5,5"
       }), this.rectLayer.addTo(this.map);
-      const l = Math.ceil(Math.sqrt(e.length)), o = 50 / (Math.ceil(e.length / l) + 1), g = 32 / (l + 1);
+      const l = Math.ceil(Math.sqrt(e.length)), o = 50 / (Math.ceil(e.length / l) + 1), u = 32 / (l + 1);
       e.forEach((p, f) => {
-        const u = Math.floor(f / l), y = f % l, m = -50 + (u + 1) * o, b = -32 + (y + 1) * g;
+        const g = Math.floor(f / l), y = f % l, m = -50 + (g + 1) * o, b = -32 + (y + 1) * u;
         i.set(p.id, [m, b]);
         const C = this.selectedNodeId === p.id, B = p.style?.color || "#ffffff", v = C ? "#2196f3" : p.style?.borderColor || "#333333", T = `
           <div style="
@@ -6509,11 +6536,11 @@ class jt {
         className: "relatos-node-marker",
         iconSize: [r ? 15 : 10, r ? 15 : 10],
         iconAnchor: [r ? 7.5 : 5, r ? 7.5 : 5]
-      }), g = this.Leaflet.marker([h, a], { icon: o });
-      g.bindPopup(n.label, {
+      }), u = this.Leaflet.marker([h, a], { icon: o });
+      u.bindPopup(n.label, {
         closeButton: !1,
         offset: [0, -10]
-      }), g.on("click", (p) => {
+      }), u.on("click", (p) => {
         if (this.onNodeClick) {
           const f = p.latlng;
           this.onNodeClick({
@@ -6522,14 +6549,14 @@ class jt {
             originalEvent: p.originalEvent
           });
         }
-      }), g.addTo(this.map), this.markers.set(n.id, g);
+      }), u.addTo(this.map), this.markers.set(n.id, u);
     }
     if (this.alwaysShowEdges)
       for (const n of this.edges) {
         const h = i.get(n.src), a = i.get(n.dst);
         if (!h || !a)
           continue;
-        const [r, c] = h, [l, d] = a, o = n.style?.color || "#999999", g = n.style?.weight || 1, p = Math.max(1, Math.min(5, g)), f = this.Leaflet.polyline(
+        const [r, c] = h, [l, d] = a, o = n.style?.color || "#999999", u = n.style?.weight || 1, p = Math.max(1, Math.min(5, u)), f = this.Leaflet.polyline(
           [[r, c], [l, d]],
           {
             color: o,
@@ -6548,10 +6575,10 @@ class jt {
             });
           }
         });
-        const u = this.polylines.get(n.id);
-        if (u && this.map)
+        const g = this.polylines.get(n.id);
+        if (g && this.map)
           try {
-            this.map.hasLayer(u) && this.map.removeLayer(u);
+            this.map.hasLayer(g) && this.map.removeLayer(g);
           } catch {
           }
         f.addTo(this.map), this.polylines.set(n.id, f);
@@ -6604,19 +6631,19 @@ class jt {
       Math.cos(a)
     ), l = Math.asin(
       Math.sin(0) * Math.cos(r) + Math.cos(0) * Math.sin(r) * Math.sin(a)
-    ), d = (218.316 + 13.176396 * s) * Math.PI / 180, o = (134.963 + 13.064993 * s) * Math.PI / 180, g = (93.272 + 13.22935 * s) * Math.PI / 180, p = d + 6.289 * Math.sin(o) * Math.PI / 180, f = 5.128 * Math.sin(g) * Math.PI / 180, u = Math.atan2(
+    ), d = (218.316 + 13.176396 * s) * Math.PI / 180, o = (134.963 + 13.064993 * s) * Math.PI / 180, u = (93.272 + 13.22935 * s) * Math.PI / 180, p = d + 6.289 * Math.sin(o) * Math.PI / 180, f = 5.128 * Math.sin(u) * Math.PI / 180, g = Math.atan2(
       Math.sin(p) * Math.cos(r) - Math.tan(f) * Math.sin(r),
       Math.cos(p)
     ), y = Math.asin(
       Math.sin(f) * Math.cos(r) + Math.cos(f) * Math.sin(r) * Math.sin(p)
     ), m = 385001 - 20905 * Math.cos(o), b = 149598e3, C = Math.acos(
-      Math.sin(l) * Math.sin(y) + Math.cos(l) * Math.cos(y) * Math.cos(c - u)
+      Math.sin(l) * Math.sin(y) + Math.cos(l) * Math.cos(y) * Math.cos(c - g)
     ), B = Math.atan2(
       b * Math.sin(C),
       m - b * Math.cos(C)
     ), v = Math.atan2(
-      Math.cos(l) * Math.sin(c - u),
-      Math.sin(l) * Math.cos(y) - Math.cos(l) * Math.sin(y) * Math.cos(c - u)
+      Math.cos(l) * Math.sin(c - g),
+      Math.sin(l) * Math.cos(y) - Math.cos(l) * Math.sin(y) * Math.cos(c - g)
     );
     return {
       fraction: (1 + Math.cos(B)) / 2,
@@ -6652,11 +6679,11 @@ class jt {
       const i = this.julian(t), n = i - 2451545, h = (218.316 + 13.176396 * n) * Math.PI / 180, a = (134.963 + 13.064993 * n) * Math.PI / 180, r = (93.272 + 13.22935 * n) * Math.PI / 180, c = h + 6.289 * Math.sin(a) * Math.PI / 180, l = 5.128 * Math.sin(r) * Math.PI / 180, d = 23.4397 * Math.PI / 180, o = Math.atan2(
         Math.sin(c) * Math.cos(d) - Math.tan(l) * Math.sin(d),
         Math.cos(c)
-      ), g = Math.asin(
+      ), u = Math.asin(
         Math.sin(l) * Math.cos(d) + Math.cos(l) * Math.sin(d) * Math.sin(c)
-      ), f = this.GMST(i) * Math.PI / 12, u = g;
+      ), f = this.GMST(i) * Math.PI / 12, g = u;
       let y = o - f;
-      const m = u * 180 / Math.PI;
+      const m = g * 180 / Math.PI;
       let b = y * 180 / Math.PI;
       return b = b % 360, b > 180 ? b -= 360 : b < -180 && (b += 360), [m, b];
     } catch {
@@ -6720,7 +6747,7 @@ class jt {
     if (!this.lightingToggleButton)
       return;
     const t = this.isLightingEnabled();
-    this.lightingToggleButton.innerHTML = Vt("icon-sun", 16), t ? (this.lightingToggleButton.style.backgroundColor = "#fff9c4", this.lightingToggleButton.style.boxShadow = "inset 0 2px 4px rgba(0, 0, 0, 0.2)", this.lightingToggleButton.style.transform = "translateY(1px)") : (this.lightingToggleButton.style.backgroundColor = "#fff", this.lightingToggleButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.lightingToggleButton.style.transform = "translateY(0)"), this.lightingToggleButton.style.color = "#333";
+    this.lightingToggleButton.innerHTML = jt("icon-sun", 16), t ? (this.lightingToggleButton.style.backgroundColor = "#fff9c4", this.lightingToggleButton.style.boxShadow = "inset 0 2px 4px rgba(0, 0, 0, 0.2)", this.lightingToggleButton.style.transform = "translateY(1px)") : (this.lightingToggleButton.style.backgroundColor = "#fff", this.lightingToggleButton.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)", this.lightingToggleButton.style.transform = "translateY(0)"), this.lightingToggleButton.style.color = "#333";
   }
   /**
    * Fit and center view (for View interface)
@@ -6749,9 +6776,9 @@ class jt {
         Number.isFinite(d) && Number.isFinite(o) && (s.push(d), i.push(o));
       }
     }), e.length > 0) {
-      const p = Math.ceil(Math.sqrt(e.length)), u = 50 / (Math.ceil(e.length / p) + 1), y = 32 / (p + 1);
+      const p = Math.ceil(Math.sqrt(e.length)), g = 50 / (Math.ceil(e.length / p) + 1), y = 32 / (p + 1);
       e.forEach((m, b) => {
-        const C = Math.floor(b / p), B = b % p, v = -50 + (C + 1) * u, T = -32 + (B + 1) * y;
+        const C = Math.floor(b / p), B = b % p, v = -50 + (C + 1) * g, T = -32 + (B + 1) * y;
         s.push(v), i.push(T);
       });
     }
@@ -6834,12 +6861,12 @@ class jt {
     return !1;
   }
 }
-const qt = 120, Kt = 60, Zt = 30, Jt = 50, Qt = 25;
+const Kt = 120, Zt = 60, Jt = 30, Qt = 50, te = 25;
 function it(w) {
   const t = w.style || {};
   return {
-    width: t.width ?? qt,
-    height: t.height ?? Kt
+    width: t.width ?? Kt,
+    height: t.height ?? Zt
   };
 }
 function Bt(w, t) {
@@ -6872,39 +6899,39 @@ function vt(w, t, e, s) {
   }
   return { x: h, y: a };
 }
-function te(w, t) {
+function ee(w, t) {
   const e = t.find((d) => d.id === w.src), s = t.find((d) => d.id === w.dst);
   if (!e?.position || !s?.position)
     return [];
   const i = w.srcAnchor ?? Bt(e, s), n = w.dstAnchor ?? Bt(s, e), h = it(e), a = it(s), r = vt(e, i, h.width, h.height), c = vt(s, n, a.width, a.height), l = [r];
   return w.bends?.length && l.push(...w.bends), l.push(c), l;
 }
-function ee(w, t, e, s) {
-  const i = e.some((g) => g.parentId === w.id), n = /* @__PURE__ */ new Set();
+function ie(w, t, e, s) {
+  const i = e.some((u) => u.parentId === w.id), n = /* @__PURE__ */ new Set();
   if (i) {
-    const g = e.filter((f) => f.parentId === w.id), p = (f) => {
-      f.nodeIds.forEach((u) => n.add(u)), e.filter((u) => u.parentId === f.id).forEach(p);
+    const u = e.filter((f) => f.parentId === w.id), p = (f) => {
+      f.nodeIds.forEach((g) => n.add(g)), e.filter((g) => g.parentId === f.id).forEach(p);
     };
-    g.forEach(p);
+    u.forEach(p);
   }
   let h = 1 / 0, a = -1 / 0, r = 1 / 0, c = -1 / 0, l = !1;
-  for (const g of w.nodeIds) {
-    if (i && n.has(g)) continue;
-    const p = t.find((b) => b.id === g);
+  for (const u of w.nodeIds) {
+    if (i && n.has(u)) continue;
+    const p = t.find((b) => b.id === u);
     if (!p?.position) continue;
     l = !0;
-    const { width: f, height: u } = it(p), y = p.position.x - f / 2, m = p.position.y - u / 2;
-    h = Math.min(h, y), a = Math.max(a, y + f), r = Math.min(r, m), c = Math.max(c, m + u);
+    const { width: f, height: g } = it(p), y = p.position.x - f / 2, m = p.position.y - g / 2;
+    h = Math.min(h, y), a = Math.max(a, y + f), r = Math.min(r, m), c = Math.max(c, m + g);
   }
   if (i) {
-    const g = e.filter((p) => p.parentId === w.id);
-    for (const p of g) {
+    const u = e.filter((p) => p.parentId === w.id);
+    for (const p of u) {
       const f = s(p);
       f && (l = !0, h = Math.min(h, f.position.x), a = Math.max(a, f.position.x + f.size.width), r = Math.min(r, f.position.y), c = Math.max(c, f.position.y + f.size.height));
     }
   }
   if (!l) return null;
-  const d = i ? Jt : Zt, o = d + Qt;
+  const d = i ? Qt : Jt, o = d + te;
   return {
     minX: h - d,
     maxX: a + d,
@@ -6915,7 +6942,7 @@ function ee(w, t, e, s) {
 function At(w, t, e, s) {
   if (w.layout)
     return w.layout;
-  const i = ee(
+  const i = ie(
     w,
     t,
     e,
@@ -6929,28 +6956,28 @@ function At(w, t, e, s) {
     }
   } : null;
 }
-function ie(w, t, e = []) {
+function se(w, t, e = []) {
   const s = w, i = t, n = [];
   let h = 1 / 0, a = -1 / 0, r = 1 / 0, c = -1 / 0;
   for (const p of s) {
     if (!p.position) continue;
-    const { width: f, height: u } = it(p), y = p.position.x - f / 2, m = p.position.y - u / 2, b = p.style || {};
+    const { width: f, height: g } = it(p), y = p.position.x - f / 2, m = p.position.y - g / 2, b = p.style || {};
     n.push({
       id: p.id,
       label: p.label,
       left: y,
       top: m,
       width: f,
-      height: u,
+      height: g,
       fillColor: b.color,
       strokeColor: b.borderColor
-    }), h = Math.min(h, y), a = Math.max(a, y + f), r = Math.min(r, m), c = Math.max(c, m + u);
+    }), h = Math.min(h, y), a = Math.max(a, y + f), r = Math.min(r, m), c = Math.max(c, m + g);
   }
   const l = (p) => At(p, s, e), d = [];
   for (const p of e) {
     const f = l(p);
     if (!f) continue;
-    const u = p.style;
+    const g = p.style;
     d.push({
       id: p.id,
       label: p.label,
@@ -6960,30 +6987,30 @@ function ie(w, t, e = []) {
       height: f.size.height,
       nodeIds: [...p.nodeIds],
       childGroupIds: e.filter((y) => y.parentId === p.id).map((y) => y.id) || void 0,
-      fillColor: u?.color,
-      strokeColor: u?.borderColor,
-      strokeWidth: u?.borderWidth,
-      strokeDash: u?.borderDash
+      fillColor: g?.color,
+      strokeColor: g?.borderColor,
+      strokeWidth: g?.borderWidth,
+      strokeDash: g?.borderDash
     }), h = Math.min(h, f.position.x), a = Math.max(a, f.position.x + f.size.width), r = Math.min(r, f.position.y), c = Math.max(c, f.position.y + f.size.height);
   }
   const o = [];
   for (const p of i) {
-    const f = te(p, s);
+    const f = ee(p, s);
     if (f.length < 2) continue;
-    const u = p.style || {};
+    const g = p.style || {};
     o.push({
       id: p.id,
       srcId: p.src,
       dstId: p.dst,
       points: f,
-      label: u.label ?? p.relType,
-      srcLabel: u.srcLabel,
-      dstLabel: u.dstLabel,
-      color: u.color,
-      weight: u.weight
+      label: g.label ?? p.relType,
+      srcLabel: g.srcLabel,
+      dstLabel: g.dstLabel,
+      color: g.color,
+      weight: g.weight
     });
   }
-  const g = n.length > 0 || d.length > 0 ? {
+  const u = n.length > 0 || d.length > 0 ? {
     left: h,
     top: r,
     width: a - h,
@@ -6993,13 +7020,13 @@ function ie(w, t, e = []) {
     nodes: n,
     edges: o,
     groups: d,
-    bounds: g
+    bounds: u
   };
 }
-const se = 'The "data" option has been removed. Use initialRelat (relat text from importRelat/exportRelat) instead.';
-function oe(w, t = {}) {
+const oe = 'The "data" option has been removed. Use initialRelat (relat text from importRelat/exportRelat) instead.';
+function ne(w, t = {}) {
   if (t.data !== void 0 && t.data !== null)
-    throw new Error(se);
+    throw new Error(oe);
   Q();
   let e;
   if (typeof w == "string") {
@@ -7009,7 +7036,7 @@ function oe(w, t = {}) {
     e = o;
   } else
     e = w;
-  const s = t.enabledViews || ["graph", "map2d", "globe3d"], i = t.initialView || (s.includes("map2d") ? "map2d" : s[0]), n = t.graph?.mode || "view", h = t.graph?.editable || !1, a = t.tileServers, r = new Ft(e, s, {
+  const s = t.enabledViews || ["graph", "map2d", "globe3d"], i = t.initialView || (s.includes("map2d") ? "map2d" : s[0]), n = t.graph?.mode || "view", h = t.graph?.editable || !1, a = t.tileServers, r = new Wt(e, s, {
     showExportButton: t.showExportButton
   });
   t.time && r.setTime(t.time), typeof t.enableLighting == "boolean" && r.setLightingEnabled(t.enableLighting), t.tables && r.setTableOptions(t.tables), t.events?.onNodeClick && r.setOnNodeClickCallback(t.events.onNodeClick);
@@ -7023,7 +7050,7 @@ function oe(w, t = {}) {
   if (s.includes("graph")) {
     const o = document.createElement("div");
     o.style.width = "100%", o.style.height = "100%", r.getViewContainer().appendChild(o);
-    const g = new gt(
+    const u = new gt(
       o,
       c || t.events?.onNodeClick,
       t.events?.onSave,
@@ -7031,18 +7058,18 @@ function oe(w, t = {}) {
       l,
       d
     );
-    g.setModeChangeCallback(() => {
+    u.setModeChangeCallback(() => {
       r.updateEditToggleButton(), r.updateGraphButtons();
-    }), g.setAlwaysShowEdgesChangeCallback((p) => {
+    }), u.setAlwaysShowEdgesChangeCallback((p) => {
       r.setAlwaysShowEdges(p);
-    }), g.setGraphButtonsUpdateCallback(() => {
+    }), u.setGraphButtonsUpdateCallback(() => {
       r.updateGraphButtons();
-    }), g.setMode(n), r.registerView("graph", g);
+    }), u.setMode(n), r.registerView("graph", u);
   }
   if (s.includes("map2d") && t.loaders?.leaflet) {
     const o = document.createElement("div");
     o.style.width = "100%", o.style.height = "100%", r.getViewContainer().appendChild(o);
-    const g = new jt(
+    const u = new qt(
       o,
       c || t.events?.onNodeClick,
       t.loaders.leaflet,
@@ -7050,17 +7077,17 @@ function oe(w, t = {}) {
       t.map2d,
       l
     );
-    g.setAlwaysShowEdgesChangeCallback((p) => {
+    u.setAlwaysShowEdgesChangeCallback((p) => {
       r.setAlwaysShowEdges(p);
-    }), g.setLightingChangeCallback((p) => {
+    }), u.setLightingChangeCallback((p) => {
       r.setLightingEnabled(p);
-    }), r.registerView("map2d", g);
+    }), r.registerView("map2d", u);
   }
   if (s.includes("globe3d") && t.loaders?.cesium)
     try {
       const o = document.createElement("div");
       o.style.width = "100%", o.style.height = "100%", r.getViewContainer().appendChild(o);
-      const g = new $t(
+      const u = new Vt(
         o,
         c || t.events?.onNodeClick,
         t.loaders.cesium,
@@ -7071,20 +7098,20 @@ function oe(w, t = {}) {
         a,
         l
       );
-      g.setAlwaysShowEdgesChangeCallback((p) => {
+      u.setAlwaysShowEdgesChangeCallback((p) => {
         r.setAlwaysShowEdges(p);
-      }), g.setLightingChangeCallback((p) => {
+      }), u.setLightingChangeCallback((p) => {
         r.setLightingEnabled(p);
-      }), r.registerView("globe3d", g);
+      }), r.registerView("globe3d", u);
     } catch {
     }
   if (r.setInitialView(i), t.initialRelat) {
-    const o = t.onWarnings ? { onWarnings: t.onWarnings } : void 0, g = Et(t.initialRelat, o), p = r.getView("graph");
-    p && p.setData(g.nodes, g.edges, g.groups);
+    const o = t.onWarnings ? { onWarnings: t.onWarnings } : void 0, u = Et(t.initialRelat, o), p = r.getView("graph");
+    p && p.setData(u.nodes, u.edges, u.groups);
     const f = r.getView("map2d");
-    f && f.setData(g.nodes, g.edges);
-    const u = r.getView("globe3d");
-    u && u.setData(g.nodes, g.edges), r.setData(g.nodes, g.edges, g.groups);
+    f && f.setData(u.nodes, u.edges);
+    const g = r.getView("globe3d");
+    g && g.setData(u.nodes, u.edges), r.setData(u.nodes, u.edges, u.groups);
   }
   return {
     setView(o) {
@@ -7097,8 +7124,8 @@ function oe(w, t = {}) {
       return o;
     },
     setMode(o) {
-      const g = r.getView("graph");
-      g && g.setMode(o);
+      const u = r.getView("graph");
+      u && u.setMode(o);
     },
     getMode() {
       const o = r.getView("graph");
@@ -7111,8 +7138,8 @@ function oe(w, t = {}) {
       r.destroy();
     },
     selectNode(o) {
-      const g = r.getView("graph");
-      g && g.selectNode && g.selectNode(o);
+      const u = r.getView("graph");
+      u && u.selectNode && u.selectNode(o);
       const p = r.getView("map2d");
       p && p.selectNode && p.selectNode(o);
       const f = r.getView("globe3d");
@@ -7124,36 +7151,36 @@ function oe(w, t = {}) {
     setLighting(o) {
       r.setLightingEnabled(o);
     },
-    importRelat(o, g) {
-      const p = Et(o, g), f = r.getView("graph");
+    importRelat(o, u) {
+      const p = Et(o, u), f = r.getView("graph");
       f && f.setData(p.nodes, p.edges, p.groups);
-      const u = r.getView("map2d");
-      u && u.setData(p.nodes, p.edges);
+      const g = r.getView("map2d");
+      g && g.setData(p.nodes, p.edges);
       const y = r.getView("globe3d");
       y && y.setData(p.nodes, p.edges), r.setData(p.nodes, p.edges, p.groups);
     },
     exportRelat(o) {
-      const { nodes: g, edges: p, groups: f } = r.getData();
-      return ut(g, p, f, o);
+      const { nodes: u, edges: p, groups: f } = r.getData();
+      return ut(u, p, f, o);
     },
     getShapeDataForOffice() {
-      const { nodes: o, edges: g, groups: p } = r.getData();
-      return ie(o, g, p);
+      const { nodes: o, edges: u, groups: p } = r.getData();
+      return se(o, u, p);
     },
     getViewAsSvg() {
       const o = r.getCurrentView();
       return o ? r.getView(o)?.getViewAsSvg?.() ?? null : null;
     },
-    async exportViewToImage(o, g) {
+    async exportViewToImage(o, u) {
       const p = r.getCurrentView();
-      return p ? r.getView(p)?.exportViewToImage?.(o, g) ?? Promise.resolve(null) : null;
+      return p ? r.getView(p)?.exportViewToImage?.(o, u) ?? Promise.resolve(null) : null;
     }
   };
 }
 export {
-  oe as createRelatosViewer,
+  ne as createRelatosViewer,
   ut as exportRelat,
-  ie as getShapeDataForOffice,
+  se as getShapeDataForOffice,
   Et as importRelat,
   Rt as irToRelatosData,
   Pt as parseRelat

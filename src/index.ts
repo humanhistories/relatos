@@ -16,7 +16,7 @@ import { GraphView } from './views/graph/view';
 import { Globe3DView } from './views/globe3d/view';
 import { Map2DView } from './views/map2d/view';
 import { injectSvgSprite } from './assets/icons/icons-embedded';
-import { importRelat, exportRelat } from './utils/relat';
+import { importRelat, exportRelat, type RelatImportOptions } from './utils/relat';
 import { getShapeDataForOffice } from './utils/office-shapes';
 
 /**
@@ -284,7 +284,7 @@ export function createRelatosViewer(
       viewContainer.setLightingEnabled(enabled);
     },
 
-    importRelat(relatText: string, opts?: { onWarnings?: (warnings: string[]) => void }): void {
+    importRelat(relatText: string, opts?: RelatImportOptions): void {
       const data = importRelat(relatText, opts);
       const graphView = viewContainer.getView('graph') as GraphView | undefined;
       if (graphView) {
@@ -331,7 +331,7 @@ export function createRelatosViewer(
 export type * from './types';
 
 export { importRelat, exportRelat, irToRelatosData } from './utils/relat';
-export type { RelatImportResult, RelatExportOptions } from './utils/relat';
+export type { RelatImportResult, RelatExportOptions, RelatImportOptions } from './utils/relat';
 export { parseRelat } from './utils/relat-parser';
 export type { RelatIR } from './utils/relat-parser';
 export { getShapeDataForOffice } from './utils/office-shapes';

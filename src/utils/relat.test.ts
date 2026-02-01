@@ -34,6 +34,51 @@ layout {
   });
 });
 
+describe('importRelat (layoutPayload option)', () => {
+  it('applies layout from layoutPayload when provided', () => {
+    const relatText = 'Foo\nBar\nFoo-->Bar';
+    const dataWithoutPayload = importRelat(relatText);
+    expect(dataWithoutPayload.nodes.find(n => n.id === 'Foo')?.position).toBeUndefined();
+
+    const layoutPayload = {
+      nodes: [
+        { id: 'Foo', label: 'Foo', position: { x: 10, y: 20 } },
+        { id: 'Bar', label: 'Bar', position: { x: 100, y: 120 } },
+      ],
+      edges: [
+        {
+          id: 'e_Foo_Bar',
+          src: 'Foo',
+          dst: 'Bar',
+          relType: 'link',
+          bends: [{ x: 50, y: 70 }],
+        },
+      ],
+      groups: [],
+    };
+    const dataWithPayload = importRelat(relatText, { layoutPayload });
+    expect(dataWithPayload.nodes.find(n => n.id === 'Foo')?.position).toEqual({ x: 10, y: 20 });
+    expect(dataWithPayload.nodes.find(n => n.id === 'Bar')?.position).toEqual({ x: 100, y: 120 });
+    expect(dataWithPayload.edges[0]?.bends).toEqual([{ x: 50, y: 70 }]);
+  });
+
+  it('layoutPayload overrides layout block in relat text', () => {
+    const relatText = `A B
+A-->B
+layout { node A {x=0 y=0} node B {x=50 y=50} }`;
+    const layoutPayload = {
+      nodes: [
+        { id: 'A', label: 'A', position: { x: 100, y: 200 } },
+        { id: 'B', label: 'B', position: { x: 300, y: 400 } },
+      ],
+      edges: [{ id: 'e_A_B', src: 'A', dst: 'B', relType: 'link' }],
+    };
+    const data = importRelat(relatText, { layoutPayload });
+    expect(data.nodes.find(n => n.id === 'A')?.position).toEqual({ x: 100, y: 200 });
+    expect(data.nodes.find(n => n.id === 'B')?.position).toEqual({ x: 300, y: 400 });
+  });
+});
+
 describe('importRelat / exportRelat (edge relID)', () => {
   it('export: edge uses : relID (not : "string")', () => {
     const data = importRelat('Tokyo-->NewYork : flight\nNewYork-->London : flight');

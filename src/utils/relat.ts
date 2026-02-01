@@ -5,6 +5,7 @@
 
 import type { Node, Edge, NodeStyle, EdgeStyle, NodeSide } from '../types';
 import type { Group, GroupStyle } from '../types/data';
+import type { SavePayload } from '../types/events';
 import { parseRelat, type RelatIR } from './relat-parser';
 
 /** Result of importRelat */
@@ -293,19 +294,83 @@ function irStyleToEdgeStyle(s: Record<string, unknown>): EdgeStyle | undefined {
 export interface RelatImportOptions {
   /** Called when the parser produced warnings (syntax issues, recovery). Message may include " (line N, column M)". */
   onWarnings?: (warnings: string[]) => void;
+  /**
+   * When provided, layout from this payload (e.g. from onSave callback) is applied to the imported data.
+   * Node positions/sizes, edge anchors/bends, and group layouts are merged by id.
+   */
+  layoutPayload?: SavePayload;
+}
+
+/**
+ * Merge layout from SavePayload into imported result (by id).
+ * Only layout-related fields are applied; payload takes precedence over relat layout block when both exist.
+ */
+function applyLayoutPayload(
+  result: RelatImportResult,
+  payload: SavePayload
+): RelatImportResult {
+  const nodeMap = new Map(payload.nodes.map((n) => [n.id, n]));
+  const edgeMap = new Map(payload.edges.map((e) => [e.id, e]));
+  const groupMap = new Map(
+    (payload.groups ?? []).map((g) => [g.id, g])
+  );
+
+  const nodes: Node[] = result.nodes.map((node) => {
+    const p = nodeMap.get(node.id);
+    if (!p) return node;
+    const nodeWithStyle = node as Node & { style?: NodeStyle };
+    const payloadWithStyle = p as Node & { style?: { width?: number; height?: number } };
+    const position = p.position ?? node.position;
+    let style = nodeWithStyle.style;
+    if (payloadWithStyle.style?.width !== undefined || payloadWithStyle.style?.height !== undefined) {
+      style = { ...style } as NodeStyle;
+      if (payloadWithStyle.style.width !== undefined) (style as NodeStyle).width = payloadWithStyle.style.width;
+      if (payloadWithStyle.style.height !== undefined) (style as NodeStyle).height = payloadWithStyle.style.height;
+    }
+    return { ...node, position, style };
+  });
+
+  const edges: Edge[] = result.edges.map((edge) => {
+    const p = edgeMap.get(edge.id);
+    if (!p) return edge;
+    const payloadEdge = p as Edge & {
+      srcAnchor?: { side: string; t: number };
+      dstAnchor?: { side: string; t: number };
+      bends?: Array<{ x: number; y: number }>;
+    };
+    return {
+      ...edge,
+      srcAnchor: payloadEdge.srcAnchor ?? (edge as Edge & { srcAnchor?: unknown }).srcAnchor,
+      dstAnchor: payloadEdge.dstAnchor ?? (edge as Edge & { dstAnchor?: unknown }).dstAnchor,
+      bends: payloadEdge.bends ?? edge.bends,
+    };
+  });
+
+  const groups: Group[] = result.groups.map((group) => {
+    const p = groupMap.get(group.id);
+    if (!p) return group;
+    return { ...group, layout: p.layout ?? group.layout };
+  });
+
+  return { nodes, edges, groups };
 }
 
 /**
  * Import relat text to Relatos data (nodes, edges, groups).
  * Uses parseRelat (tokenizer + parser) then converts IR to Relatos format.
  * If onWarnings is provided and the parser produced warnings, they are reported there (with line/column when available).
+ * If layoutPayload is provided, layout from it is applied (overriding layout from relat layout block).
  */
 export function importRelat(relatText: string, options?: RelatImportOptions): RelatImportResult {
   const ir = parseRelat(relatText);
   if (options?.onWarnings && ir.warnings.length > 0) {
     options.onWarnings(ir.warnings);
   }
-  return irToRelatosData(ir);
+  const result = irToRelatosData(ir);
+  if (options?.layoutPayload) {
+    return applyLayoutPayload(result, options.layoutPayload);
+  }
+  return result;
 }
 
 /**
