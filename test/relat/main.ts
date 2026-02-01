@@ -1,7 +1,7 @@
 /**
- * Relatos relat テスト
- * テキストエリアに relat を入力し、ボタンで Relatos に表示する。
- * Graph / Map2D / Globe3D の全ビューを表示する。
+ * Relatos relat test
+ * Enter relat text in the textarea and click the button to display in Relatos.
+ * All views (Graph / Map2D / Globe3D) are available.
  */
 
 import { createRelatosViewer } from '../../src/index';
@@ -55,24 +55,24 @@ async function loadCesium(): Promise<any> {
 }
 
 /**
- * ノード・エッジ・グループ一覧（主要属性・スタイル・レイアウトに分離）
- * 仕様: 関係性とレイアウト・スタイルを完全に分離した情報構造
+ * Node / edge / group tables (main attributes, style, layout separated)
+ * Spec: data structure that fully separates relationship, layout, and style
  */
 const TABLE_OPTIONS = {
   container: '#tables-container',
   nodes: {
-    sectionTitle: 'ノード一覧',
-    header: '<tr><th colspan="5">主要</th><th>スタイル</th><th colspan="4">レイアウト</th></tr><tr><th>id</th><th>label</th><th>latitude</th><th>longitude</th><th>info</th><th>color</th><th>x</th><th>y</th><th>w</th><th>h</th></tr>',
-    format: '<td>{{id}}</td><td>{{label}}</td><td>{{latitude}}</td><td>{{longitude}}</td><td style="white-space:pre-wrap;font-size:12px;">{{info}}</td><td>{{style.color}}</td><td>{{x}}</td><td>{{y}}</td><td>{{w}}</td><td>{{h}}</td>',
+    sectionTitle: 'Nodes',
+    header: '<tr><th colspan="5">Main</th><th>Style</th><th colspan="4">Layout</th></tr><tr><th>id</th><th>label</th><th>lat</th><th>lon</th><th>info</th><th>color</th><th>x</th><th>y</th><th>w</th><th>h</th></tr>',
+    format: '<td>{{id}}</td><td>{{label}}</td><td>{{lat}}</td><td>{{lon}}</td><td style="white-space:pre-wrap;font-size:12px;">{{info}}</td><td>{{style.color}}</td><td>{{x}}</td><td>{{y}}</td><td>{{w}}</td><td>{{h}}</td>',
   },
   edges: {
-    sectionTitle: 'エッジ一覧',
-    header: '<tr><th colspan="6">主要</th><th>スタイル</th><th colspan="5">レイアウト</th></tr><tr><th>id</th><th>src</th><th>dst</th><th>relID</th><th>weight</th><th>info</th><th>color</th><th>src_side</th><th>src_t</th><th>dst_side</th><th>dst_t</th><th>bends</th></tr>',
+    sectionTitle: 'Edges',
+    header: '<tr><th colspan="6">Main</th><th>Style</th><th colspan="5">Layout</th></tr><tr><th>id</th><th>src</th><th>dst</th><th>relID</th><th>weight</th><th>info</th><th>color</th><th>src_side</th><th>src_t</th><th>dst_side</th><th>dst_t</th><th>bends</th></tr>',
     format: '<td>{{id}}</td><td>{{src}}</td><td>{{dst}}</td><td>{{relType}}</td><td>{{weight}}</td><td style="white-space:pre-wrap;font-size:12px;">{{info}}</td><td>{{style.color}}</td><td>{{src_side}}</td><td>{{src_t}}</td><td>{{dst_side}}</td><td>{{dst_t}}</td><td style="white-space:pre-wrap;font-size:11px;">{{bends}}</td>',
   },
   groups: {
-    sectionTitle: 'グループ一覧',
-    header: '<tr><th colspan="5">主要</th><th>スタイル</th><th colspan="4">レイアウト</th></tr><tr><th>id</th><th>label</th><th>nodeIds</th><th>groupIds</th><th>info</th><th>color</th><th>x</th><th>y</th><th>w</th><th>h</th></tr>',
+    sectionTitle: 'Groups',
+    header: '<tr><th colspan="5">Main</th><th>Style</th><th colspan="4">Layout</th></tr><tr><th>id</th><th>label</th><th>nodeIds</th><th>groupIds</th><th>info</th><th>color</th><th>x</th><th>y</th><th>w</th><th>h</th></tr>',
     format: '<td>{{id}}</td><td>{{label}}</td><td>{{nodeIds}}</td><td>{{groupIds}}</td><td style="white-space:pre-wrap;font-size:12px;">{{info}}</td><td>{{style.color}}</td><td>{{x}}</td><td>{{y}}</td><td>{{w}}</td><td>{{h}}</td>',
   },
 };
@@ -119,19 +119,19 @@ function downloadBlob(blob: Blob, filename: string) {
 btnApply?.addEventListener('click', () => {
   const text = textarea?.value?.trim() ?? '';
   if (!text) {
-    setStatus('relat テキストを入力してください。', 'error');
+    setStatus('Please enter relat text.', 'error');
     return;
   }
   try {
     viewer.importRelat(text, {
       onWarnings: (warnings) => {
-        setStatus(`構文の警告: ${warnings.join('; ')}`, 'error');
+        setStatus(`Parse warnings: ${warnings.join('; ')}`, 'error');
       },
     });
-    setStatus('Relatos に反映しました。Graph / Map2D / Globe3D タブで表示を切り替えられます。', 'success');
+    setStatus('Applied to Relatos. Switch tabs for Graph / Map2D / Globe3D.', 'success');
     setTimeout(() => viewer.resize(), 100);
   } catch (err) {
-    setStatus(`読み込みエラー: ${err instanceof Error ? err.message : String(err)}`, 'error');
+    setStatus(`Load error: ${err instanceof Error ? err.message : String(err)}`, 'error');
   }
 });
 
@@ -139,7 +139,7 @@ document.getElementById('btn-shape-office')?.addEventListener('click', () => {
   try {
     const shape = viewer.getShapeDataForOffice();
     showOutput(JSON.stringify(shape, null, 2));
-    setStatus('getShapeDataForOffice() – 出力欄を参照してください。', 'success');
+    setStatus('getShapeDataForOffice() – see output area.', 'success');
   } catch (e) {
     setStatus(String(e), 'error');
   }
@@ -156,30 +156,30 @@ document.getElementById('btn-svg')?.addEventListener('click', () => {
   if (svg) {
     const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
     downloadBlob(blob, 'relatos-view.svg');
-    setStatus('SVG をダウンロードしました。', 'success');
+    setStatus('SVG downloaded.', 'success');
   } else {
-    setStatus('getViewAsSvg() が null を返しました。', 'error');
+    setStatus('getViewAsSvg() returned null.', 'error');
   }
 });
 
 document.getElementById('btn-png')?.addEventListener('click', async () => {
-  setStatus('PNG をエクスポート中...', '');
+  setStatus('Exporting PNG...', '');
   const blob = await viewer.exportViewToImage('png');
   if (!blob) {
-    setStatus('exportViewToImage(png) が null を返しました。', 'error');
+    setStatus('exportViewToImage(png) returned null.', 'error');
     return;
   }
   downloadBlob(blob, 'relatos-view.png');
-  setStatus('PNG をダウンロードしました。', 'success');
+  setStatus('PNG downloaded.', 'success');
 });
 
 document.getElementById('btn-webp')?.addEventListener('click', async () => {
-  setStatus('WebP をエクスポート中...', '');
+  setStatus('Exporting WebP...', '');
   const blob = await viewer.exportViewToImage('webp', { quality: 0.9 });
   if (!blob) {
-    setStatus('exportViewToImage(webp) が null を返しました。', 'error');
+    setStatus('exportViewToImage(webp) returned null.', 'error');
     return;
   }
   downloadBlob(blob, 'relatos-view.webp');
-  setStatus('WebP をダウンロードしました。', 'success');
+  setStatus('WebP downloaded.', 'success');
 });

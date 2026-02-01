@@ -63,7 +63,9 @@ export function createRelatosViewer(
   const sharedTileServers = options.tileServers;
 
   // Create ViewContainer
-  const viewContainer = new ViewContainer(container, enabledViews);
+  const viewContainer = new ViewContainer(container, enabledViews, {
+    showExportButton: options.showExportButton,
+  });
 
   // Set shared time and lighting if specified
   if (options.time) {
@@ -299,7 +301,7 @@ export function createRelatosViewer(
       viewContainer.setData(data.nodes, data.edges, data.groups);
     },
 
-    exportRelat(options?: { includeLayout?: boolean }): string {
+    exportRelat(options?: { includeLayout?: boolean; includeStyle?: boolean }): string {
       const { nodes, edges, groups } = viewContainer.getData();
       return exportRelat(nodes, edges, groups, options);
     },

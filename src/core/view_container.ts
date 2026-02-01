@@ -232,10 +232,12 @@ export class ViewContainer {
   private sharedTime: string | null = null; // Shared time for Map2D/Globe3D
   // Shared tile server index for Map2D/Globe3D custom tile servers
   private sharedTileServerIndex: number = 0;
+  private showExportButton: boolean = true;
 
-  constructor(container: HTMLElement, enabledViews: ViewType[]) {
+  constructor(container: HTMLElement, enabledViews: ViewType[], options?: { showExportButton?: boolean }) {
     this.container = container;
     this.enabledViews = enabledViews;
+    this.showExportButton = options?.showExportButton !== false;
     
     // Inject SVG sprite on initialization
     injectSvgSprite();
@@ -613,7 +615,7 @@ export class ViewContainer {
         }
       }
 
-      // 未解決の {{...}} プレースホルダーを空白に置換（値がない項目を info/nodeIds と同様に空白表示）
+      // Replace unresolved {{...}} placeholders with empty string (missing values shown blank like info/nodeIds)
       rowHtml = rowHtml.replace(/\{\{[^}]*\}\}/g, '');
 
       row.innerHTML = rowHtml;
@@ -1704,7 +1706,7 @@ export class ViewContainer {
     // Only include always show edges button if edges exist
     if (this.alwaysShowEdgesButton && this.hasEdges) buttons.push(this.alwaysShowEdgesButton);
     if (this.fitCenterButton) buttons.push(this.fitCenterButton);
-    if (this.exportButton) buttons.push(this.exportButton);
+    if (this.exportButton && this.showExportButton) buttons.push(this.exportButton);
     
     // Clear container
     while (this.commonControlsContainer.firstChild) {
@@ -1721,7 +1723,7 @@ export class ViewContainer {
       if (this.editToggleButton) this.commonControlsContainer.appendChild(this.editToggleButton);
       if (this.alwaysShowEdgesButton && this.hasEdges) this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton);
       if (this.fitCenterButton) this.commonControlsContainer.appendChild(this.fitCenterButton);
-      if (this.exportButton) this.commonControlsContainer.appendChild(this.exportButton);
+      if (this.exportButton && this.showExportButton) this.commonControlsContainer.appendChild(this.exportButton);
     } else if (isMap2DOrGlobe3D) {
       // Map2D/Globe3D order: Moon toggle (Map2D only), Lighting toggle, Tile type, Always show edges (if edges exist), Fit/Center, Export
       if (this.moonToggleButton && this.currentView === 'map2d') this.commonControlsContainer.appendChild(this.moonToggleButton);
@@ -1729,7 +1731,7 @@ export class ViewContainer {
       if (this.tileTypeButton) this.commonControlsContainer.appendChild(this.tileTypeButton);
       if (this.alwaysShowEdgesButton && this.hasEdges) this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton);
       if (this.fitCenterButton) this.commonControlsContainer.appendChild(this.fitCenterButton);
-      if (this.exportButton) this.commonControlsContainer.appendChild(this.exportButton);
+      if (this.exportButton && this.showExportButton) this.commonControlsContainer.appendChild(this.exportButton);
     }
   }
 

@@ -34,10 +34,23 @@ relatos/
 │   ├── basic/
 │   │   ├── index.html
 │   │   └── main.ts                 # Basic example: minimal setup
-│   └── airports/
+│   ├── airports/
+│   │   ├── index.html
+│   │   └── main.ts                 # Airports example: complete features
+│   └── networktraffic/
 │       ├── index.html
-│       └── main.ts                 # Airports example: complete features
+│       └── main.ts                 # Network traffic example: groups, layout save
+├── docs/
+│   ├── README.md                   # Documentation index
+│   ├── RELAT-SPEC.md               # relat text format specification
+│   ├── RELAT-EXPORT-SPEC.md        # Export rules
+│   ├── RELAT-STYLE-SPEC.md         # Style block specification
+│   ├── RELAT-LAYOUT-SPEC.md        # Layout block specification
+│   ├── GRAPH-EDIT-SPEC.md          # Graph edit mode specification
+│   ├── ARCHITECTURE.md             # This file
+│   └── TYPES.md                    # Type definitions overview
 ├── test/
+│   ├── relat/                      # relat text input, apply, view export
 │   ├── import/                     # relat import test page
 │   └── export/                     # Data & view export API test page
 ├── dist/                           # Build output

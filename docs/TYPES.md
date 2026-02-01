@@ -28,6 +28,7 @@ interface RelatosViewerOptions {
   map2d?: Map2DOptions;
   globe3d?: Globe3DOptions;
   tables?: TableOptions;
+  showExportButton?: boolean;             // When false, hide the "Export to relat" toolbar button (default: true)
   events?: Partial<RelatosEvents>;
 }
 ```
@@ -39,7 +40,7 @@ Viewer instance API.
 ```typescript
 interface RelatosViewer {
   importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void }): void;
-  exportRelat(options?: { includeLayout?: boolean }): string;
+  exportRelat(options?: { includeLayout?: boolean; includeStyle?: boolean }): string;
   getShapeDataForOffice(): OfficeShapeExport;  // For xlsx/pptx shape export
   getViewAsSvg(): string | null;              // Graph only
   exportViewToImage(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null>;

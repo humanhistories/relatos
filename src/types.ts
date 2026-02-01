@@ -231,6 +231,12 @@ export interface RelatosViewerOptions {
   };
 
   /**
+   * When true (default), the "Export to relat" toolbar button is shown.
+   * Set to false to hide it.
+   */
+  showExportButton?: boolean;
+
+  /**
    * Event handlers
    */
   events?: {
@@ -318,5 +324,5 @@ export interface RelatosViewer {
    * @param options Export options (optional)
    * @returns relat text string
    */
-  exportRelat(options?: { includeLayout?: boolean }): string;
+  exportRelat(options?: { includeLayout?: boolean; includeStyle?: boolean }): string;
 }

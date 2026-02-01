@@ -36,7 +36,7 @@ group-japan as "Japan" { group-tokyo as "Tokyo" { group-shibuya as "Shibuya" { i
 group-uk as "UK" { group-england as "England" { group-london as "London" { ip-203-0-113-1 } } }`;
 
 // Layout storage utilities
-// Key structure: <ページURLハッシュ>_<オブジェクトID>_<全オブジェクトIDのSUMハッシュ>
+// Key structure: <page URL hash>_<object ID>_<hash of all object IDs>
 
 /**
  * Calculate hash value from string

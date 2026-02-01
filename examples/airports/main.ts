@@ -415,7 +415,7 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
     time: timeInput.value,
     enableLighting: true, // Enable day/night shading on initial load
   },
-  // 共有タイルサーバ設定（Map2D / Globe3D 共通）
+  // Shared tile server config (Map2D / Globe3D)
   tileServers: [
     {
       // OpenStreetMap

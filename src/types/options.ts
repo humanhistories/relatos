@@ -197,7 +197,7 @@ export interface TableOptions {
    */
   nodes?: {
     /**
-     * Section title (e.g. "ノード一覧"). Shown above the table when specified.
+     * Section title (e.g. "Nodes"). Shown above the table when specified.
      */
     sectionTitle?: string;
     /**
@@ -218,7 +218,7 @@ export interface TableOptions {
    * Table is not output if format is null
    */
   edges?: {
-    /** Section title (e.g. "エッジ一覧"). */
+    /** Section title (e.g. "Edges"). */
     sectionTitle?: string;
     /**
      * Header HTML (optional)
@@ -238,7 +238,7 @@ export interface TableOptions {
    * Table is not output if format is null
    */
   groups?: {
-    /** Section title (e.g. "グループ一覧"). */
+    /** Section title (e.g. "Groups"). */
     sectionTitle?: string;
     /**
      * Header HTML (optional)
@@ -340,6 +340,12 @@ export interface RelatosViewerOptions {
    * Table display configuration
    */
   tables?: TableOptions;
+
+  /**
+   * When true (default), the "Export to relat" toolbar button is shown.
+   * Set to false to hide it.
+   */
+  showExportButton?: boolean;
 
   /**
    * Event handlers

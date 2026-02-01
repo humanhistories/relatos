@@ -1,6 +1,6 @@
 /**
  * Relatos Export Test
- * relat テキストを textarea で入力し、Apply でグラフに反映。ビュー export API の動作確認。
+ * Enter relat text in the textarea and click Apply to update the graph. Verifies view export APIs.
  */
 
 import { createRelatosViewer, importRelat } from '../../src/index';

@@ -30,7 +30,7 @@ accessible, and reusable.
   Icon-based controls designed for global use without localization dependencies.
 
 - **relat format**  
-  Data is loaded and saved via the relat text format (Relatos dedicated text language). Use `initialRelat` at creation or `importRelat()` / `exportRelat()` to load and export data.
+  Data is loaded and saved via the relat text format (Relatos dedicated text language). Use `initialRelat` at creation or `importRelat()` / `exportRelat()` to load and export data. See [docs/RELAT-SPEC.md](docs/RELAT-SPEC.md) for the format specification.
 
 - **Export APIs**  
   `getShapeDataForOffice()` (for xlsx/pptx shapes), `getViewAsSvg()`, `exportViewToImage('png'|'webp')`.
@@ -222,17 +222,25 @@ window.CESIUM_BASE_URL = '/node_modules/cesium/Build/Cesium/';
 
 **Note:** This approach is only suitable for development. In production, always use Option 1 or 2.
 
+## Documentation
+
+- **[docs/README.md](docs/README.md)** — Documentation index
+- **Specifications** — relat format, export, style, layout, and Graph edit mode: [docs/RELAT-SPEC.md](docs/RELAT-SPEC.md), [docs/RELAT-EXPORT-SPEC.md](docs/RELAT-EXPORT-SPEC.md), [docs/RELAT-STYLE-SPEC.md](docs/RELAT-STYLE-SPEC.md), [docs/RELAT-LAYOUT-SPEC.md](docs/RELAT-LAYOUT-SPEC.md), [docs/GRAPH-EDIT-SPEC.md](docs/GRAPH-EDIT-SPEC.md)
+- **Architecture & types** — [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/TYPES.md](docs/TYPES.md)
+
 ## Examples
 
 - **examples/basic/** — Minimal setup
 - **examples/airports/** — Full features (tables, time, tile servers)
+- **examples/networktraffic/** — Network traffic example with groups and layout save/restore
 
 ## Test Pages
 
-- **test/import/** — relat import (paste relat text and import)
+- **test/relat/** — relat text input, apply to viewer, view export (SVG, PNG, WebP)
 - **test/export/** — Data & view export: exportRelat, getShapeDataForOffice, getViewAsSvg, exportViewToImage (PNG/WebP)
+- **test/import/** — relat import (paste relat text and import)
 
-Run dev server and open `/test/export/` or `/test/import/` to verify export/import APIs.
+Run the dev server and open `/test/relat/`, `/test/export/`, or `/test/import/` to verify APIs.
 
 ## Browser Support
 

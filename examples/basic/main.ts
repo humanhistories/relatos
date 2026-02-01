@@ -95,6 +95,7 @@ const viewer = createRelatosViewer('#viewer-container', {
   enabledViews: ['graph', 'map2d', 'globe3d'],
   initialView: 'graph',
   initialRelat: SAMPLE_RELAT,
+  showExportButton: false,
   loaders: {
     leaflet: loadLeaflet,
     cesium: loadCesium,

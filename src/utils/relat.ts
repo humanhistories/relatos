@@ -1,6 +1,6 @@
 /**
  * relat - Relatos dedicated text format (import/export)
- * Spec: _xxxref/relatテキスト表記言語仕様.txt
+ * Spec: docs/RELAT-SPEC.md
  */
 
 import type { Node, Edge, NodeStyle, EdgeStyle, NodeSide } from '../types';
@@ -354,7 +354,7 @@ export function exportRelat(
     const stylePart = styleToRelatNodeStyle(n.style, true, n.coordinates, n.info);
     lines.push(`${labelPart}${stylePart}`);
   }
-  // relType ごとに「2本以上かつ全エッジが同じラベル」なら style にまとめる。1本のみは as "label" で個別に出す。
+  // When two or more edges share the same relType and same label, put in style block; single edge uses as "label" on line.
   const uniformRelLabels = new Map<string, string>();
   for (const relType of [...new Set(edges.map((e) => e.relType).filter(Boolean))] as string[]) {
     if (relType === 'link') continue;
@@ -373,11 +373,11 @@ export function exportRelat(
     const useUniformStyle = e.relType != null && uniformRelLabels.has(e.relType);
 
     if (useUniformStyle) {
-      // 同一 relType で全同じラベル → エッジ行に as を書かず、後で style に出す
+      // Same relType and same label → no as on edge line; output in style block
     } else if (hasCustomLabel) {
       line += ` as "${(displayLabel as string).replace(/"/g, '\\"')}"`;
     }
-    // as "label" で出した場合、および relID とラベルが同一の場合は [label=...] を付けない
+    // When as "label" is used, or relID equals label, do not add [label=...] on edge line
     const labelSameAsRelId = displayLabel != null && displayLabel === e.relType;
     const skipLabelInBracket = useUniformStyle || hasCustomLabel || labelSameAsRelId;
     const edgeBracket = styleToRelatEdgeStyle(e.style, skipLabelInBracket, e.info);
@@ -440,7 +440,7 @@ export function exportRelat(
       if (s) styleLines.push(`edge ${e.id} ${s}`);
     }
   }
-  // uniform な rel ラベルは style にまとめる（includeStyle の有無にかかわらず）
+  // Uniform rel labels go in style block (regardless of includeStyle)
   for (const [relType, label] of uniformRelLabels) {
     styleLines.push(`rel ${relType} [label=${JSON.stringify(label)}]`);
   }
