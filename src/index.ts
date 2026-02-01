@@ -65,6 +65,9 @@ export function createRelatosViewer(
   // Create ViewContainer
   const viewContainer = new ViewContainer(container, enabledViews, {
     showExportButton: options.showExportButton,
+    showMoonButton: options.showMoonButton,
+    showLightingButton: options.showLightingButton,
+    initialAlwaysShowEdges: options.initialAlwaysShowEdges,
   });
 
   // Set shared time and lighting if specified

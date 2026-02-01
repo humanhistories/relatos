@@ -1,6 +1,6 @@
 {
   "name": "relatos",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Relatos is a relational atlas visualization library developed by Human Histories.",
   "main": "./dist/relatos.umd.js",
   "module": "./dist/relatos.es.js",

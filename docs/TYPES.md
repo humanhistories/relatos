@@ -29,6 +29,9 @@ interface RelatosViewerOptions {
   globe3d?: Globe3DOptions;
   tables?: TableOptions;
   showExportButton?: boolean;             // When false, hide the "Export to relat" toolbar button (default: true)
+  showMoonButton?: boolean;               // When false, hide the "Show moon" button in Map2D (default: true)
+  showLightingButton?: boolean;           // When false, hide the "Toggle lighting" button in Map2D/Globe3D (default: true)
+  initialAlwaysShowEdges?: boolean;       // When true, "Show edges" is on at startup (default: false)
   events?: Partial<RelatosEvents>;
 }
 ```

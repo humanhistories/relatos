@@ -348,6 +348,24 @@ export interface RelatosViewerOptions {
   showExportButton?: boolean;
 
   /**
+   * When true (default), the "Show moon" toolbar button is shown in Map2D view.
+   * Set to false to hide it.
+   */
+  showMoonButton?: boolean;
+
+  /**
+   * When true (default), the "Toggle lighting" toolbar button is shown in Map2D and Globe3D views.
+   * Set to false to hide it.
+   */
+  showLightingButton?: boolean;
+
+  /**
+   * When true, the "Show edges" toggle is on at startup (edges visible in Map2D/Globe3D; always-show-edges on in Graph).
+   * When false (default), the toggle is off at startup.
+   */
+  initialAlwaysShowEdges?: boolean;
+
+  /**
    * Event handlers
    */
   events?: Partial<RelatosEvents>;

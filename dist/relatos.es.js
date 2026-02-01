@@ -1,4 +1,4 @@
-const kt = `<!-- relatos/src/assets/icons/icons.svg -->
+const Mt = `<!-- relatos/src/assets/icons/icons.svg -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
   <!-- =========================================
        Edit (pencil) : toggle "edit relations"
@@ -657,9 +657,9 @@ function Q() {
     return;
   }
   const w = document.createElement("div");
-  w.id = yt, w.style.display = "none", w.innerHTML = kt, document.body.appendChild(w), ct = !0;
+  w.id = yt, w.style.display = "none", w.innerHTML = Mt, document.body.appendChild(w), ct = !0;
 }
-async function Mt(w) {
+async function kt(w) {
   try {
     if (navigator.clipboard && window.isSecureContext)
       return await navigator.clipboard.writeText(w), !0;
@@ -1019,7 +1019,7 @@ function Pt(w) {
               t.push("Expected { after node ID in layout");
               continue;
             }
-            let I, x, L, k, N = !1;
+            let I, x, L, M, N = !1;
             for (; !g(
               5
               /* Rbrace */
@@ -1034,7 +1034,7 @@ function Pt(w) {
                 0
                 /* Id */
               )) {
-                const M = s[o.current].value;
+                const k = s[o.current].value;
                 if (o.current++, g(
                   9
                   /* Equals */
@@ -1045,15 +1045,15 @@ function Pt(w) {
                     const D = _.value;
                     o.current++;
                     const P = Number(D);
-                    M === "x" ? I = P : M === "y" ? x = P : M === "w" ? L = P : M === "h" ? k = P : M === "fixed" && (N = D === "true" || D === "1");
+                    k === "x" ? I = P : k === "y" ? x = P : k === "w" ? L = P : k === "h" ? M = P : k === "fixed" && (N = D === "true" || D === "1");
                   }
-                } else M === "fixed" && (N = !0);
+                } else k === "fixed" && (N = !0);
               } else
                 o.current++;
             g(
               5
               /* Rbrace */
-            ) && o.current++, I != null && x != null && (T[S] = { x: I, y: x, w: L, h: k, fixed: N || void 0 });
+            ) && o.current++, I != null && x != null && (T[S] = { x: I, y: x, w: L, h: M, fixed: N || void 0 });
           } else if (g(
             15
             /* GroupKw */
@@ -1073,7 +1073,7 @@ function Pt(w) {
               t.push("Expected { after group ID in layout");
               continue;
             }
-            let I, x, L, k;
+            let I, x, L, M;
             for (; !g(
               5
               /* Rbrace */
@@ -1094,12 +1094,12 @@ function Pt(w) {
                   /* Equals */
                 )) {
                   o.current++;
-                  const M = s[o.current];
-                  if (M && (M.type === 0 || M.type === 1)) {
-                    const _ = M.value;
+                  const k = s[o.current];
+                  if (k && (k.type === 0 || k.type === 1)) {
+                    const _ = k.value;
                     o.current++;
                     const D = Number(_);
-                    N === "x" ? I = D : N === "y" ? x = D : N === "w" ? L = D : N === "h" && (k = D);
+                    N === "x" ? I = D : N === "y" ? x = D : N === "w" ? L = D : N === "h" && (M = D);
                   }
                 }
               } else
@@ -1107,7 +1107,7 @@ function Pt(w) {
             g(
               5
               /* Rbrace */
-            ) && o.current++, I != null && x != null && L != null && k != null && (A[S] = { x: I, y: x, w: L, h: k });
+            ) && o.current++, I != null && x != null && L != null && M != null && (A[S] = { x: I, y: x, w: L, h: M });
           } else if (g(
             16
             /* EdgeKw */
@@ -1121,7 +1121,7 @@ function Pt(w) {
             }
             const S = s[o.current].value;
             o.current++, m();
-            let I, x, L, k;
+            let I, x, L, M;
             if (g(
               4
               /* Lbrace */
@@ -1140,7 +1140,7 @@ function Pt(w) {
                   0
                   /* Id */
                 )) {
-                  const M = s[o.current].value;
+                  const k = s[o.current].value;
                   if (o.current++, g(
                     9
                     /* Equals */
@@ -1151,7 +1151,7 @@ function Pt(w) {
                       const O = _.value;
                       o.current++;
                       const H = Number(O);
-                      M === "src_side" ? I = O : M === "src_t" ? x = Number.isNaN(H) ? void 0 : H : M === "dst_side" ? L = O : M === "dst_t" && (k = Number.isNaN(H) ? void 0 : H);
+                      k === "src_side" ? I = O : k === "src_t" ? x = Number.isNaN(H) ? void 0 : H : k === "dst_side" ? L = O : k === "dst_t" && (M = Number.isNaN(H) ? void 0 : H);
                     }
                   }
                 } else
@@ -1184,7 +1184,7 @@ function Pt(w) {
                   /* Lbrace */
                 )) {
                   o.current++;
-                  let M, _;
+                  let k, _;
                   for (; !g(
                     5
                     /* Rbrace */
@@ -1210,7 +1210,7 @@ function Pt(w) {
                           const O = P.value;
                           o.current++;
                           const H = Number(O);
-                          D === "x" ? M = H : D === "y" && (_ = H);
+                          D === "x" ? k = H : D === "y" && (_ = H);
                         }
                       }
                     } else
@@ -1218,16 +1218,16 @@ function Pt(w) {
                   g(
                     5
                     /* Rbrace */
-                  ) && o.current++, M != null && _ != null && N.push({ x: M, y: _ });
+                  ) && o.current++, k != null && _ != null && N.push({ x: k, y: _ });
                 }
               g(
                 5
                 /* Rbrace */
               ) && o.current++;
             }
-            if (N.length > 0 || I != null || x != null || L != null || k != null) {
-              const M = {};
-              N.length > 0 && (M.bends = N), I != null && (M.src_side = I), x != null && (M.src_t = x), L != null && (M.dst_side = L), k != null && (M.dst_t = k), E[S] = M;
+            if (N.length > 0 || I != null || x != null || L != null || M != null) {
+              const k = {};
+              N.length > 0 && (k.bends = N), I != null && (k.src_side = I), x != null && (k.src_t = x), L != null && (k.dst_side = L), M != null && (k.dst_t = M), E[S] = k;
             }
           } else
             o.current++;
@@ -1360,7 +1360,7 @@ function Pt(w) {
           }
           let x;
           s[o.current].type, x = s[o.current].value, o.current++, l(T, T), l(x, x);
-          let L, k;
+          let L, M;
           if (g(
             8
             /* Colon */
@@ -1375,17 +1375,17 @@ function Pt(w) {
               ) && (o.current++, g(
                 2
                 /* String */
-              ) && (k = s[o.current].value, o.current++));
+              ) && (M = s[o.current].value, o.current++));
             else if (g(
               2
               /* String */
             )) {
-              const M = s[o.current].value;
-              L = M, k = M, o.current++;
+              const k = s[o.current].value;
+              L = k, M = k, o.current++;
             }
           }
           const N = X(s, o) ?? void 0;
-          a.push({ from: T, to: x, relId: L, label: k, style: N });
+          a.push({ from: T, to: x, relId: L, label: M, style: N });
           return;
         }
         let E = A === 4;
@@ -1417,7 +1417,7 @@ function Pt(w) {
             2
             /* String */
           ) && (L = s[o.current].value, o.current++));
-          const k = X(s, o) ?? void 0;
+          const M = X(s, o) ?? void 0;
           if (!g(
             4
             /* Lbrace */
@@ -1430,7 +1430,7 @@ function Pt(w) {
             /* Lbrace */
           );
           const N = b(x);
-          d(x, L !== x ? L : x, k, N);
+          d(x, L !== x ? L : x, M, N);
           return;
         }
         o.current++;
@@ -1766,7 +1766,7 @@ function xt(w, t) {
 }
 class Wt {
   constructor(t, e, s) {
-    this.currentView = null, this.views = /* @__PURE__ */ new Map(), this.tabButtons = /* @__PURE__ */ new Map(), this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.lightingToggleButton = null, this.tileTypeButton = null, this.moonToggleButton = null, this.fitCenterButton = null, this.deleteBendButton = null, this.undoButton = null, this.redoButton = null, this.cancelEditButton = null, this.exportButton = null, this.tableContainer = null, this.nodesTableContainer = null, this.edgesTableContainer = null, this.groupsTableContainer = null, this.tableOptions = null, this.nodes = [], this.edges = [], this.groups = [], this.isExternalTableContainer = !1, this.hasEdges = !1, this.sharedAlwaysShowEdges = !1, this.sharedLightingEnabled = !1, this.sharedTime = null, this.sharedTileServerIndex = 0, this.showExportButton = !0, this.container = t, this.enabledViews = e, this.showExportButton = s?.showExportButton !== !1, Q(), this.container.style.display = "flex", this.container.style.flexDirection = "column", this.container.style.width = "100%", this.tabContainer = document.createElement("div"), this.tabContainer.style.display = "flex", this.tabContainer.style.gap = "4px", this.tabContainer.style.padding = "8px", this.tabContainer.style.borderBottom = "none", this.tabContainer.style.backgroundColor = "transparent", this.tabContainer.style.position = "absolute", this.tabContainer.style.top = "0", this.tabContainer.style.left = "0", this.tabContainer.style.right = "0", this.tabContainer.style.zIndex = "1000", this.tabContainer.style.pointerEvents = "auto", this.viewContainer = document.createElement("div"), this.viewContainer.style.flex = "1 1 0%", this.viewContainer.style.position = "relative", this.viewContainer.style.overflow = "hidden", this.viewContainer.style.minHeight = "0", this.createTabButtons(), this.createCommonControlsContainer(), this.container.appendChild(this.viewContainer), this.viewContainer.appendChild(this.tabContainer);
+    this.currentView = null, this.views = /* @__PURE__ */ new Map(), this.tabButtons = /* @__PURE__ */ new Map(), this.editToggleButton = null, this.alwaysShowEdgesButton = null, this.lightingToggleButton = null, this.tileTypeButton = null, this.moonToggleButton = null, this.fitCenterButton = null, this.deleteBendButton = null, this.undoButton = null, this.redoButton = null, this.cancelEditButton = null, this.exportButton = null, this.tableContainer = null, this.nodesTableContainer = null, this.edgesTableContainer = null, this.groupsTableContainer = null, this.tableOptions = null, this.nodes = [], this.edges = [], this.groups = [], this.isExternalTableContainer = !1, this.hasEdges = !1, this.sharedAlwaysShowEdges = !1, this.sharedLightingEnabled = !1, this.sharedTime = null, this.sharedTileServerIndex = 0, this.showExportButton = !0, this.showMoonButton = !0, this.showLightingButton = !0, this.container = t, this.enabledViews = e, this.showExportButton = s?.showExportButton !== !1, this.showMoonButton = s?.showMoonButton !== !1, this.showLightingButton = s?.showLightingButton !== !1, this.sharedAlwaysShowEdges = s?.initialAlwaysShowEdges === !0, Q(), this.container.style.display = "flex", this.container.style.flexDirection = "column", this.container.style.width = "100%", this.tabContainer = document.createElement("div"), this.tabContainer.style.display = "flex", this.tabContainer.style.gap = "4px", this.tabContainer.style.padding = "8px", this.tabContainer.style.borderBottom = "none", this.tabContainer.style.backgroundColor = "transparent", this.tabContainer.style.position = "absolute", this.tabContainer.style.top = "0", this.tabContainer.style.left = "0", this.tabContainer.style.right = "0", this.tabContainer.style.zIndex = "1000", this.tabContainer.style.pointerEvents = "auto", this.viewContainer = document.createElement("div"), this.viewContainer.style.flex = "1 1 0%", this.viewContainer.style.position = "relative", this.viewContainer.style.overflow = "hidden", this.viewContainer.style.minHeight = "0", this.createTabButtons(), this.createCommonControlsContainer(), this.container.appendChild(this.viewContainer), this.viewContainer.appendChild(this.tabContainer);
   }
   /**
    * Initialize table display options
@@ -2113,7 +2113,7 @@ class Wt {
     try {
       const e = ut(this.nodes, this.edges, this.groups, { includeLayout: !0 });
       console.log("Exported relat length:", e.length);
-      const s = await Mt(e);
+      const s = await kt(e);
       this.exportButton && (s ? (this.exportButton.style.backgroundColor = "#c8e6c9", this.exportButton.style.borderColor = "#4caf50", this.exportButton.setAttribute("title", "Copied to clipboard!"), setTimeout(() => {
         this.exportButton && (this.exportButton.style.backgroundColor = "#fff", this.exportButton.style.borderColor = "#ccc", this.exportButton.setAttribute("title", t));
       }, 2e3)) : (this.exportButton.style.backgroundColor = "#ffcdd2", this.exportButton.style.borderColor = "#f44336", this.exportButton.setAttribute("title", "Failed to copy"), setTimeout(() => {
@@ -2341,7 +2341,7 @@ class Wt {
    */
   updateCommonControlsVisibility() {
     const t = this.currentView === "graph", e = this.currentView === "map2d" || this.currentView === "globe3d";
-    this.cancelEditButton && e && (this.cancelEditButton.style.display = "none"), this.editToggleButton && e && (this.editToggleButton.style.display = "none"), this.deleteBendButton && (t ? this.updateDeleteBendButton() : this.deleteBendButton.style.display = "none"), this.lightingToggleButton && (this.lightingToggleButton.style.display = e ? "flex" : "none"), this.tileTypeButton && (this.tileTypeButton.style.display = e ? "flex" : "none"), this.moonToggleButton && (this.moonToggleButton.style.display = this.currentView === "map2d" ? "flex" : "none"), this.alwaysShowEdgesButton && (this.alwaysShowEdgesButton.style.display = this.hasEdges ? "flex" : "none"), this.fitCenterButton && (this.fitCenterButton.style.display = "flex"), this.reorderButtons();
+    this.cancelEditButton && e && (this.cancelEditButton.style.display = "none"), this.editToggleButton && e && (this.editToggleButton.style.display = "none"), this.deleteBendButton && (t ? this.updateDeleteBendButton() : this.deleteBendButton.style.display = "none"), this.lightingToggleButton && (this.lightingToggleButton.style.display = e && this.showLightingButton ? "flex" : "none"), this.tileTypeButton && (this.tileTypeButton.style.display = e ? "flex" : "none"), this.moonToggleButton && (this.moonToggleButton.style.display = this.currentView === "map2d" && this.showMoonButton ? "flex" : "none"), this.alwaysShowEdgesButton && (this.alwaysShowEdgesButton.style.display = this.hasEdges ? "flex" : "none"), this.fitCenterButton && (this.fitCenterButton.style.display = "flex"), this.reorderButtons();
   }
   /**
    * Reorder buttons based on current view
@@ -2355,7 +2355,7 @@ class Wt {
     const s = [];
     for (this.cancelEditButton && s.push(this.cancelEditButton), this.undoButton && s.push(this.undoButton), this.redoButton && s.push(this.redoButton), this.editToggleButton && s.push(this.editToggleButton), this.deleteBendButton && s.push(this.deleteBendButton), this.lightingToggleButton && s.push(this.lightingToggleButton), this.moonToggleButton && s.push(this.moonToggleButton), this.tileTypeButton && s.push(this.tileTypeButton), this.alwaysShowEdgesButton && this.hasEdges && s.push(this.alwaysShowEdgesButton), this.fitCenterButton && s.push(this.fitCenterButton), this.exportButton && this.showExportButton && s.push(this.exportButton); this.commonControlsContainer.firstChild; )
       this.commonControlsContainer.removeChild(this.commonControlsContainer.firstChild);
-    t ? (this.undoButton && this.commonControlsContainer.appendChild(this.undoButton), this.redoButton && this.commonControlsContainer.appendChild(this.redoButton), this.deleteBendButton && this.commonControlsContainer.appendChild(this.deleteBendButton), this.cancelEditButton && this.commonControlsContainer.appendChild(this.cancelEditButton), this.editToggleButton && this.commonControlsContainer.appendChild(this.editToggleButton), this.alwaysShowEdgesButton && this.hasEdges && this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton), this.fitCenterButton && this.commonControlsContainer.appendChild(this.fitCenterButton), this.exportButton && this.showExportButton && this.commonControlsContainer.appendChild(this.exportButton)) : e && (this.moonToggleButton && this.currentView === "map2d" && this.commonControlsContainer.appendChild(this.moonToggleButton), this.lightingToggleButton && this.commonControlsContainer.appendChild(this.lightingToggleButton), this.tileTypeButton && this.commonControlsContainer.appendChild(this.tileTypeButton), this.alwaysShowEdgesButton && this.hasEdges && this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton), this.fitCenterButton && this.commonControlsContainer.appendChild(this.fitCenterButton), this.exportButton && this.showExportButton && this.commonControlsContainer.appendChild(this.exportButton));
+    t ? (this.undoButton && this.commonControlsContainer.appendChild(this.undoButton), this.redoButton && this.commonControlsContainer.appendChild(this.redoButton), this.deleteBendButton && this.commonControlsContainer.appendChild(this.deleteBendButton), this.cancelEditButton && this.commonControlsContainer.appendChild(this.cancelEditButton), this.editToggleButton && this.commonControlsContainer.appendChild(this.editToggleButton), this.alwaysShowEdgesButton && this.hasEdges && this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton), this.fitCenterButton && this.commonControlsContainer.appendChild(this.fitCenterButton), this.exportButton && this.showExportButton && this.commonControlsContainer.appendChild(this.exportButton)) : e && (this.moonToggleButton && this.currentView === "map2d" && this.showMoonButton && this.commonControlsContainer.appendChild(this.moonToggleButton), this.lightingToggleButton && this.showLightingButton && this.commonControlsContainer.appendChild(this.lightingToggleButton), this.tileTypeButton && this.commonControlsContainer.appendChild(this.tileTypeButton), this.alwaysShowEdgesButton && this.hasEdges && this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton), this.fitCenterButton && this.commonControlsContainer.appendChild(this.fitCenterButton), this.exportButton && this.showExportButton && this.commonControlsContainer.appendChild(this.exportButton));
   }
   /**
    * Update always show edges button visibility based on edges existence
@@ -3001,19 +3001,19 @@ const lt = class lt {
       }
     const g = [...t].sort((m, b) => m.id.localeCompare(b.id));
     if (g.length > 0) {
-      const m = g.map((k) => k.coordinates[0]), b = g.map((k) => k.coordinates[1]), C = Math.min(...m), B = Math.max(...m), v = Math.min(...b), T = Math.max(...b), A = B - C, E = T - v, S = Math.max(A, E) * 0.1 || 0.01, I = {
+      const m = g.map((M) => M.coordinates[0]), b = g.map((M) => M.coordinates[1]), C = Math.min(...m), B = Math.max(...m), v = Math.min(...b), T = Math.max(...b), A = B - C, E = T - v, S = Math.max(A, E) * 0.1 || 0.01, I = {
         minLat: C - S,
         maxLat: B + S,
         minLon: v - S,
         maxLon: T + S
       }, x = /* @__PURE__ */ new Map(), L = /* @__PURE__ */ new Map();
-      for (const k of g) {
-        const [N, M] = k.coordinates, _ = (M - I.minLon) / (I.maxLon - I.minLon), D = 1 - (N - I.minLat) / (I.maxLat - I.minLat), P = {
+      for (const M of g) {
+        const [N, k] = M.coordinates, _ = (k - I.minLon) / (I.maxLon - I.minLon), D = 1 - (N - I.minLat) / (I.maxLat - I.minLat), P = {
           x: o + _ * l,
           y: D * d
-        }, O = k.style || {}, H = O.width || this.DEFAULT_NODE_WIDTH, tt = O.height || this.DEFAULT_NODE_HEIGHT, V = P.x, z = P.y;
-        x.set(k.id, { originalCenterX: V, originalCenterY: z }), L.set(k.id, {
-          node: k,
+        }, O = M.style || {}, H = O.width || this.DEFAULT_NODE_WIDTH, tt = O.height || this.DEFAULT_NODE_HEIGHT, V = P.x, z = P.y;
+        x.set(M.id, { originalCenterX: V, originalCenterY: z }), L.set(M.id, {
+          node: M,
           width: H,
           height: tt,
           originalCenterX: V,
@@ -3026,12 +3026,12 @@ const lt = class lt {
     if (y.length > 0) {
       const b = [...y].sort((S, I) => S.id.localeCompare(I.id)), C = Math.ceil(Math.sqrt(b.length)), B = Math.ceil(b.length / C), v = c - 40, T = u - 40, A = v / C, E = T / B;
       b.forEach((S, I) => {
-        const x = S.style || {}, L = x.width || this.DEFAULT_NODE_WIDTH, k = x.height || this.DEFAULT_NODE_HEIGHT, N = Math.floor(I / C), M = I % C, _ = p + 20 + (M + 0.5) * A, D = 20 + (N + 0.5) * E;
+        const x = S.style || {}, L = x.width || this.DEFAULT_NODE_WIDTH, M = x.height || this.DEFAULT_NODE_HEIGHT, N = Math.floor(I / C), k = I % C, _ = p + 20 + (k + 0.5) * A, D = 20 + (N + 0.5) * E;
         S.position = { x: _, y: D }, f.push({
           x: _ - L / 2,
-          y: D - k / 2,
+          y: D - M / 2,
           width: L,
-          height: k
+          height: M
         });
       });
     }
@@ -3105,12 +3105,12 @@ const lt = class lt {
       if (m) {
         const I = this.groups.filter((x) => x.parentId === y.id);
         for (const x of I) {
-          const L = (k) => {
-            for (const M of k.nodeIds)
-              b.add(M);
-            const N = this.groups.filter((M) => M.parentId === k.id);
-            for (const M of N)
-              L(M);
+          const L = (M) => {
+            for (const k of M.nodeIds)
+              b.add(k);
+            const N = this.groups.filter((k) => k.parentId === M.id);
+            for (const k of N)
+              L(k);
           };
           L(x);
         }
@@ -3144,14 +3144,14 @@ const lt = class lt {
       for (let b = 0; b < f.length; b++) {
         const [C, B] = f[b], v = d.get(C), T = o.get(C), A = u(C);
         for (let E = b + 1; E < f.length; E++) {
-          const [S, I] = f[E], x = d.get(S), L = o.get(S), k = u(S), N = e.get(C), M = e.get(S), _ = M.originalCenterX - N.originalCenterX, D = M.originalCenterY - N.originalCenterY, P = Math.sqrt(_ * _ + D * D);
+          const [S, I] = f[E], x = d.get(S), L = o.get(S), M = u(S), N = e.get(C), k = e.get(S), _ = k.originalCenterX - N.originalCenterX, D = k.originalCenterY - N.originalCenterY, P = Math.sqrt(_ * _ + D * D);
           if (P === 0) continue;
           const O = _ / P, H = D / P;
           let tt = !1, V = 0;
           for (const z of A) {
             const G = p(z);
             if (G)
-              for (const K of k) {
+              for (const K of M) {
                 let j = !1;
                 if (z.id === K.id)
                   j = !0;
@@ -3490,27 +3490,27 @@ const lt = class lt {
               }
             else
               S = v / A * E, I = T / A * E;
-            const x = a + S, L = r + I, k = Math.sqrt(
+            const x = a + S, L = r + I, M = Math.sqrt(
               Math.pow(x - d, 2) + Math.pow(L - o, 2)
-            ), N = x + c / 2, M = L + l / 2, _ = N - d, D = M - o;
+            ), N = x + c / 2, k = L + l / 2, _ = N - d, D = k - o;
             let P = 0;
             (b.relativeDx > 0 && _ < b.relativeDx || b.relativeDx < 0 && _ > b.relativeDx) && (P += 1e3), (b.relativeDy > 0 && D < b.relativeDy || b.relativeDy < 0 && D > b.relativeDy) && (P += 1e3);
-            const O = k + P;
+            const O = M + P;
             O < m && (m = O, g = x, y = L);
           } else {
             const E = (c + b.width) / 2 + 20;
             let S = 0, I = 0;
             if (b.relativeDx !== 0 || b.relativeDy !== 0) {
-              const N = b.relativeDx > 0 ? -1 : 1, M = b.relativeDy > 0 ? -1 : 1;
-              S = N * E, I = M * E;
+              const N = b.relativeDx > 0 ? -1 : 1, k = b.relativeDy > 0 ? -1 : 1;
+              S = N * E, I = k * E;
             } else {
               const N = Math.random() * Math.PI * 2;
               S = Math.cos(N) * E, I = Math.sin(N) * E;
             }
-            const x = a + S, L = r + I, k = Math.sqrt(
+            const x = a + S, L = r + I, M = Math.sqrt(
               Math.pow(x - d, 2) + Math.pow(L - o, 2)
             );
-            k < m && (m = k, g = x, y = L);
+            M < m && (m = M, g = x, y = L);
           }
         }
       if (!f)
@@ -4019,8 +4019,8 @@ const lt = class lt {
     d.push(v), a.bends && d.push(...a.bends), d.push(T);
     let A = 0, E = 1 / 0;
     for (let L = 0; L < d.length - 1; L++) {
-      const k = d[L], N = d[L + 1], M = this.pointToLineSegmentDistance(c, l, k.x, k.y, N.x, N.y);
-      M < E && (E = M, A = L);
+      const M = d[L], N = d[L + 1], k = this.pointToLineSegmentDistance(c, l, M.x, M.y, N.x, N.y);
+      k < E && (E = k, A = L);
     }
     const S = d[A], I = d[A + 1], x = {
       x: (S.x + I.x) / 2,
@@ -4605,14 +4605,14 @@ const lt = class lt {
       if (m) {
         const L = document.createElementNS("http://www.w3.org/2000/svg", "text");
         L.setAttribute("x", String(E)), L.setAttribute("y", String(S - 8)), L.setAttribute("text-anchor", "middle"), L.setAttribute("dominant-baseline", "middle"), L.setAttribute("font-size", "12"), L.setAttribute("fill", "#333"), L.setAttribute("font-weight", "bold"), L.setAttribute("pointer-events", "none"), L.setAttribute("data-edge-pair-key", t.key);
-        const k = document.createElementNS("http://www.w3.org/2000/svg", "rect"), N = m.length * 7;
-        k.setAttribute("x", String(E - N / 2 - 4)), k.setAttribute("y", String(S - 16)), k.setAttribute("width", String(N + 8)), k.setAttribute("height", "16"), k.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), k.setAttribute("rx", "2"), k.setAttribute("pointer-events", "none"), k.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(k), L.textContent = m, this.edgeLabelsGroup.appendChild(L);
+        const M = document.createElementNS("http://www.w3.org/2000/svg", "rect"), N = m.length * 7;
+        M.setAttribute("x", String(E - N / 2 - 4)), M.setAttribute("y", String(S - 16)), M.setAttribute("width", String(N + 8)), M.setAttribute("height", "16"), M.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), M.setAttribute("rx", "2"), M.setAttribute("pointer-events", "none"), M.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(M), L.textContent = m, this.edgeLabelsGroup.appendChild(L);
       }
       if (b) {
         const L = document.createElementNS("http://www.w3.org/2000/svg", "text");
         L.setAttribute("x", String(I)), L.setAttribute("y", String(x - 8)), L.setAttribute("text-anchor", "middle"), L.setAttribute("dominant-baseline", "middle"), L.setAttribute("font-size", "12"), L.setAttribute("fill", "#333"), L.setAttribute("font-weight", "bold"), L.setAttribute("pointer-events", "none"), L.setAttribute("data-edge-pair-key", t.key);
-        const k = document.createElementNS("http://www.w3.org/2000/svg", "rect"), N = b.length * 7;
-        k.setAttribute("x", String(I - N / 2 - 4)), k.setAttribute("y", String(x - 16)), k.setAttribute("width", String(N + 8)), k.setAttribute("height", "16"), k.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), k.setAttribute("rx", "2"), k.setAttribute("pointer-events", "none"), k.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(k), L.textContent = b, this.edgeLabelsGroup.appendChild(L);
+        const M = document.createElementNS("http://www.w3.org/2000/svg", "rect"), N = b.length * 7;
+        M.setAttribute("x", String(I - N / 2 - 4)), M.setAttribute("y", String(x - 16)), M.setAttribute("width", String(N + 8)), M.setAttribute("height", "16"), M.setAttribute("fill", "rgba(255, 255, 255, 0.9)"), M.setAttribute("rx", "2"), M.setAttribute("pointer-events", "none"), M.setAttribute("data-edge-pair-key", t.key), this.edgeLabelsGroup.appendChild(M), L.textContent = b, this.edgeLabelsGroup.appendChild(L);
       }
     } else if (B) {
       const v = this.getPointOnPath(f, 0.5), T = v ? v.x : (u.x + p.x) / 2, A = v ? v.y : (u.y + p.y) / 2, E = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -5704,8 +5704,8 @@ class Vt {
     }), e.length > 0) {
       const A = Math.ceil(Math.sqrt(e.length)), S = 50 / (Math.ceil(e.length / A) + 1), I = 32 / (A + 1);
       e.forEach((x, L) => {
-        const k = Math.floor(L / A), N = L % A, M = -50 + (k + 1) * S, _ = -32 + (N + 1) * I;
-        s.push(M), i.push(_);
+        const M = Math.floor(L / A), N = L % A, k = -50 + (M + 1) * S, _ = -32 + (N + 1) * I;
+        s.push(k), i.push(_);
       });
     }
     if (s.length === 0)
@@ -7037,7 +7037,10 @@ function ne(w, t = {}) {
   } else
     e = w;
   const s = t.enabledViews || ["graph", "map2d", "globe3d"], i = t.initialView || (s.includes("map2d") ? "map2d" : s[0]), n = t.graph?.mode || "view", h = t.graph?.editable || !1, a = t.tileServers, r = new Wt(e, s, {
-    showExportButton: t.showExportButton
+    showExportButton: t.showExportButton,
+    showMoonButton: t.showMoonButton,
+    showLightingButton: t.showLightingButton,
+    initialAlwaysShowEdges: t.initialAlwaysShowEdges
   });
   t.time && r.setTime(t.time), typeof t.enableLighting == "boolean" && r.setLightingEnabled(t.enableLighting), t.tables && r.setTableOptions(t.tables), t.events?.onNodeClick && r.setOnNodeClickCallback(t.events.onNodeClick);
   const c = t.events?.onNodeClick ? (o) => {

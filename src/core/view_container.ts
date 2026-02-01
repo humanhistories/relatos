@@ -233,11 +233,25 @@ export class ViewContainer {
   // Shared tile server index for Map2D/Globe3D custom tile servers
   private sharedTileServerIndex: number = 0;
   private showExportButton: boolean = true;
+  private showMoonButton: boolean = true;
+  private showLightingButton: boolean = true;
 
-  constructor(container: HTMLElement, enabledViews: ViewType[], options?: { showExportButton?: boolean }) {
+  constructor(
+    container: HTMLElement,
+    enabledViews: ViewType[],
+    options?: {
+      showExportButton?: boolean;
+      showMoonButton?: boolean;
+      showLightingButton?: boolean;
+      initialAlwaysShowEdges?: boolean;
+    }
+  ) {
     this.container = container;
     this.enabledViews = enabledViews;
     this.showExportButton = options?.showExportButton !== false;
+    this.showMoonButton = options?.showMoonButton !== false;
+    this.showLightingButton = options?.showLightingButton !== false;
+    this.sharedAlwaysShowEdges = options?.initialAlwaysShowEdges === true;
     
     // Inject SVG sprite on initialization
     injectSvgSprite();
@@ -1651,9 +1665,9 @@ export class ViewContainer {
       }
     }
     
-    // Lighting toggle button: hidden in Graph, visible in Map2D/Globe3D
+    // Lighting toggle button: hidden in Graph, visible in Map2D/Globe3D when showLightingButton is true
     if (this.lightingToggleButton) {
-      this.lightingToggleButton.style.display = isMap2DOrGlobe3D ? 'flex' : 'none';
+      this.lightingToggleButton.style.display = isMap2DOrGlobe3D && this.showLightingButton ? 'flex' : 'none';
     }
     
     // Tile type button: hidden in Graph, visible in Map2D/Globe3D
@@ -1661,9 +1675,9 @@ export class ViewContainer {
       this.tileTypeButton.style.display = isMap2DOrGlobe3D ? 'flex' : 'none';
     }
     
-    // Moon toggle button: visible in Map2D only
+    // Moon toggle button: visible in Map2D only when showMoonButton is true
     if (this.moonToggleButton) {
-      this.moonToggleButton.style.display = this.currentView === 'map2d' ? 'flex' : 'none';
+      this.moonToggleButton.style.display = this.currentView === 'map2d' && this.showMoonButton ? 'flex' : 'none';
     }
     
     // Always show edges button: visible only when edges exist
@@ -1725,9 +1739,9 @@ export class ViewContainer {
       if (this.fitCenterButton) this.commonControlsContainer.appendChild(this.fitCenterButton);
       if (this.exportButton && this.showExportButton) this.commonControlsContainer.appendChild(this.exportButton);
     } else if (isMap2DOrGlobe3D) {
-      // Map2D/Globe3D order: Moon toggle (Map2D only), Lighting toggle, Tile type, Always show edges (if edges exist), Fit/Center, Export
-      if (this.moonToggleButton && this.currentView === 'map2d') this.commonControlsContainer.appendChild(this.moonToggleButton);
-      if (this.lightingToggleButton) this.commonControlsContainer.appendChild(this.lightingToggleButton);
+      // Map2D/Globe3D order: Moon toggle (Map2D only, when showMoonButton), Lighting toggle (when showLightingButton), Tile type, Always show edges (if edges exist), Fit/Center, Export
+      if (this.moonToggleButton && this.currentView === 'map2d' && this.showMoonButton) this.commonControlsContainer.appendChild(this.moonToggleButton);
+      if (this.lightingToggleButton && this.showLightingButton) this.commonControlsContainer.appendChild(this.lightingToggleButton);
       if (this.tileTypeButton) this.commonControlsContainer.appendChild(this.tileTypeButton);
       if (this.alwaysShowEdgesButton && this.hasEdges) this.commonControlsContainer.appendChild(this.alwaysShowEdgesButton);
       if (this.fitCenterButton) this.commonControlsContainer.appendChild(this.fitCenterButton);
