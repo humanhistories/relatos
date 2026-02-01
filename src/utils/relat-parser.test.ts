@@ -81,9 +81,20 @@ describe('parseRelat', () => {
     expect(ir.nodes.NodeID).toEqual({ id: 'NodeID', label: 'NodeID', group: undefined, style: undefined });
   });
 
-  it('5) node with label: node "Node Label" as NodeID', () => {
-    const ir = parseRelat('node "Node Label" as NodeID');
+  it('5) node with label: node NodeID as "Node Label"', () => {
+    const ir = parseRelat('node NodeID as "Node Label"');
     expect(ir.nodes.NodeID).toEqual({ id: 'NodeID', label: 'Node Label', group: undefined, style: undefined });
+  });
+
+  it('5b) numeric node IDs: 1 as "Tokyo", 2 as "NY", 1-->2', () => {
+    const ir = parseRelat('1 as "Tokyo" [lat=35.68]\n2 as "NY" [lat=40.71]\n1-->2 : link');
+    expect(ir.nodes['1']).toBeDefined();
+    expect(ir.nodes['1']?.id).toBe('1');
+    expect(ir.nodes['1']?.label).toBe('Tokyo');
+    expect(ir.nodes['2']).toBeDefined();
+    expect(ir.nodes['2']?.id).toBe('2');
+    expect(ir.nodes['2']?.label).toBe('NY');
+    expect(ir.edges[0]).toMatchObject({ from: '1', to: '2' });
   });
 
   it('6) edge with label (backward compat): A-->B : "causes"', () => {
@@ -116,9 +127,14 @@ describe('parseRelat', () => {
     expect(ir.nodes.Foo?.style).toEqual({ color: 'red' });
   });
 
-  it('7b) node with latitude, longitude, info: Tokyo[latitude=35.68, longitude=139.69, info.country=Japan]', () => {
-    const ir = parseRelat('Tokyo[latitude=35.68, longitude=139.69, info.country=Japan]');
-    expect(ir.nodes.Tokyo?.style).toMatchObject({ latitude: 35.68, longitude: 139.69, 'info.country': 'Japan' });
+  it('7b) node with lat, lon, info: Tokyo[lat=35.68, lon=139.69, info.country=Japan]', () => {
+    const ir = parseRelat('Tokyo[lat=35.68, lon=139.69, info.country=Japan]');
+    expect(ir.nodes.Tokyo?.style).toMatchObject({ lat: 35.68, lon: 139.69, 'info.country': 'Japan' });
+  });
+
+  it('7b-backward) node with latitude, longitude still parsed: Tokyo[latitude=35.68, longitude=139.69]', () => {
+    const ir = parseRelat('Tokyo[latitude=35.68, longitude=139.69]');
+    expect(ir.nodes.Tokyo?.style).toMatchObject({ latitude: 35.68, longitude: 139.69 });
   });
 
   it('7c) edge with weight and info: A-->B : flight [weight=2, info.distance=1000]', () => {
@@ -164,8 +180,8 @@ describe('parseRelat', () => {
     expect(ir.nodes.Woo).toEqual({ id: 'Woo', label: 'Woo', group: undefined, style: undefined });
   });
 
-  it('13) "Label" as groupID { ... }', () => {
-    const ir = parseRelat('"Hong Kong" as HongKong { Foo Bar }');
+  it('13) GroupID as "label" { ... } (only id as "label" supported)', () => {
+    const ir = parseRelat('HongKong as "Hong Kong" { Foo Bar }');
     expect(ir.groups.HongKong?.label).toBe('Hong Kong');
     expect(ir.groups.HongKong?.members).toEqual(['Foo', 'Bar']);
   });
@@ -197,7 +213,7 @@ describe('parseRelat', () => {
   });
 
   it('14) same node ID twice merges style, label last wins', () => {
-    const ir = parseRelat('Foo[color=red]\nFoo[width=2]\nFoo\n"Final" as Foo');
+    const ir = parseRelat('Foo[color=red]\nFoo[width=2]\nFoo\nFoo as "Final"');
     expect(ir.nodes.Foo?.label).toBe('Final');
     expect(ir.nodes.Foo?.style).toEqual({ color: 'red', width: 2 });
   });

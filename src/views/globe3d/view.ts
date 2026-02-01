@@ -138,6 +138,7 @@ export class Globe3DView implements View {
       selectionIndicator: false,
       navigationHelpButton: false,
       requestRenderMode: false,
+      contextOptions: { preserveDrawingBuffer: true },
     });
     
     // Enable touch gestures (pinch zoom, pan) on mobile devices
@@ -1972,6 +1973,21 @@ export class Globe3DView implements View {
     
     this.popupElement.style.left = `${offsetX}px`;
     this.popupElement.style.top = `${offsetY}px`;
+  }
+
+  /**
+   * Get current view as SVG string. Globe3D has no native SVG; returns null.
+   * Use exportViewToImage for PNG/WebP download of the Cesium globe.
+   */
+  getViewAsSvg(): string | null {
+    return null;
+  }
+
+  /**
+   * Export current view as image blob. Globe3D returns null (not supported).
+   */
+  async exportViewToImage(_format: 'png' | 'webp', _options?: { quality?: number }): Promise<Blob | null> {
+    return null;
   }
 
   /**

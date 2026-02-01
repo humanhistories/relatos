@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatos Import Test - PlantUML Import</title>
+  <title>Relatos Import Test - relat Import</title>
   <style>
     * {
       margin: 0;
@@ -141,7 +141,7 @@
       min-height: 0;
     }
 
-    #plantuml-input {
+    #relat-input {
       flex: 1;
       width: 100%;
       padding: 12px;
@@ -153,13 +153,13 @@
       line-height: 1.5;
     }
 
-    #plantuml-input:focus {
+    #relat-input:focus {
       outline: none;
       border-color: #2196f3;
       box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
     }
 
-    #plantuml-input::placeholder {
+    #relat-input::placeholder {
       color: #999;
     }
 
@@ -205,13 +205,13 @@
 </head>
 <body>
   <header>
-    <h1>Relatos Import Test - PlantUML Import</h1>
+    <h1>Relatos Import Test - relat Import</h1>
   </header>
   <div class="main-content">
     <div id="viewer-container"></div>
     <div class="resizer" id="resizer"></div>
     <section class="import-section" id="import-section">
-      <h2>Import PlantUML</h2>
+      <h2>Import relat</h2>
       <div class="import-controls">
         <button id="import-btn">Import</button>
         <button id="clear-btn">Clear</button>
@@ -219,17 +219,14 @@
       </div>
       <div class="textarea-container">
         <textarea 
-          id="plantuml-input" 
-          placeholder="Paste PlantUML text here (plain format or deflate-encoded)...
+          id="relat-input" 
+          placeholder="Paste relat text here (Relatos dedicated text format)...
 
-Examples:
-- Plain PlantUML: @startuml ... @enduml
-- Deflate encoded: SyfFKj2rKt3CoKnELR1Io4ZDoSa70000"
+Example: Tokyo, NewYork, London&#10;Tokyo-->NewYork : flight&#10;NewYork-->London : flight"
         ></textarea>
       </div>
       <div class="status-bar">
         <span id="status-message"></span>
-        <span id="format-indicator"></span>
       </div>
     </section>
   </div>

@@ -104,6 +104,9 @@ export class GraphView implements View {
   // Default node size
   private readonly DEFAULT_NODE_WIDTH = 120;
   private readonly DEFAULT_NODE_HEIGHT = 60;
+  /** Reference size for auto-layout so setData and importRelat produce the same positions regardless of container visibility. */
+  private readonly AUTO_LAYOUT_REFERENCE_WIDTH = 1000;
+  private readonly AUTO_LAYOUT_REFERENCE_HEIGHT = 600;
   
   // Edge styling constants
   private readonly EDGE_DEFAULT_COLOR = '#999'; // Light gray for normal state
@@ -1678,9 +1681,11 @@ export class GraphView implements View {
   }
 
   /**
-   * Ensure node position information (auto-layout if not present)
-   * If coordinates (latitude/longitude) exist, place based on lat/lon,
-   * otherwise place in remaining 1/4 area
+   * Ensure node position information (auto-layout if not present).
+   * If coordinates (latitude/longitude) exist, place based on lat/lon (with collision resolution);
+   * otherwise place in remaining 1/4 area in a grid.
+   * When the relat text has no layout block, positions are recomputed here, so they can differ
+   * from an import of the same relat text with a layout block (which uses the saved x,y).
    */
   private ensureNodePositions(): void {
     const nodesWithCoords = this.nodes.filter(n => n.coordinates && n.coordinates.length === 2);
@@ -1701,10 +1706,10 @@ export class GraphView implements View {
       return;
     }
 
-    // Get container size
-    const containerRect = this.container.getBoundingClientRect();
-    const baseWidth = containerRect.width || 1000;
-    const baseHeight = containerRect.height || 600;
+    // Use fixed reference size for auto-layout so that setData (e.g. from initialRelat when graph is hidden)
+    // and importRelat (e.g. when graph is visible) produce the same node positions. fitAndCenter() then fits to the actual container.
+    const baseWidth = this.AUTO_LAYOUT_REFERENCE_WIDTH;
+    const baseHeight = this.AUTO_LAYOUT_REFERENCE_HEIGHT;
 
     // Make lat/lon area wide enough (to place in zoomed-out state)
     // Expand coordinate space, then zoom out with fitAndCenter
@@ -1746,10 +1751,12 @@ export class GraphView implements View {
     }
 
     // Calculate positions for nodes with lat/lon
-    if (nodesWithCoords.length > 0) {
+    // Use stable sort by node id so that the same relat text without layout always produces the same layout.
+    const nodesWithCoordsSorted = [...nodesWithCoords].sort((a, b) => a.id.localeCompare(b.id));
+    if (nodesWithCoordsSorted.length > 0) {
       // Calculate lat/lon range
-      const lats = nodesWithCoords.map(n => n.coordinates![0]);
-      const lons = nodesWithCoords.map(n => n.coordinates![1]);
+      const lats = nodesWithCoordsSorted.map(n => n.coordinates![0]);
+      const lons = nodesWithCoordsSorted.map(n => n.coordinates![1]);
       const minLat = Math.min(...lats);
       const maxLat = Math.max(...lats);
       const minLon = Math.min(...lons);
@@ -1773,7 +1780,7 @@ export class GraphView implements View {
       const nodeInfoMap: Map<string, { node: Node; width: number; height: number; originalCenterX: number; originalCenterY: number }> = new Map();
 
       // Calculate original center coordinates for all nodes (existing + new)
-      for (const node of nodesWithCoords) {
+      for (const node of nodesWithCoordsSorted) {
         const [lat, lon] = node.coordinates!;
         const normalizedX = (lon - bounds.minLon) / (bounds.maxLon - bounds.minLon);
         const normalizedY = 1 - (lat - bounds.minLat) / (bounds.maxLat - bounds.minLat); // Y axis is inverted
@@ -1811,16 +1818,16 @@ export class GraphView implements View {
     const nodesWithoutCoordsNeedingPosition = nodesWithoutCoords.filter(n => !n.position);
     if (nodesWithoutCoordsNeedingPosition.length > 0) {
       const padding = 20; // Padding between nodes
-      
-      // Grid layout (same as Map2D)
-      const cols = Math.ceil(Math.sqrt(nodesWithoutCoordsNeedingPosition.length));
-      const rows = Math.ceil(nodesWithoutCoordsNeedingPosition.length / cols);
+      // Sort by id so that the same relat without layout always produces the same grid order.
+      const sorted = [...nodesWithoutCoordsNeedingPosition].sort((a, b) => a.id.localeCompare(b.id));
+      const cols = Math.ceil(Math.sqrt(sorted.length));
+      const rows = Math.ceil(sorted.length / cols);
       const availableWidth = nonGeoAreaWidth - padding * 2;
       const availableHeight = nonGeoAreaHeight - padding * 2;
       const cellWidth = availableWidth / cols;
       const cellHeight = availableHeight / rows;
 
-      nodesWithoutCoordsNeedingPosition.forEach((node, index) => {
+      sorted.forEach((node, index) => {
         const nodeStyle = node.style || {};
         const nodeWidth = nodeStyle.width || this.DEFAULT_NODE_WIDTH;
         const nodeHeight = nodeStyle.height || this.DEFAULT_NODE_HEIGHT;
@@ -2029,12 +2036,12 @@ export class GraphView implements View {
       };
     };
 
-    // Iteratively resolve collisions
+    // Iteratively resolve collisions. Sort by node id so result is deterministic for the same data.
+    const nodeArray = [...nodeInfoMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
     for (let iteration = 0; iteration < maxIterations; iteration++) {
       let hasCollision = false;
 
       // Check all pairs of nodes
-      const nodeArray = Array.from(nodeInfoMap.entries());
       for (let i = 0; i < nodeArray.length; i++) {
         const [nodeIdA, nodeInfoA] = nodeArray[i];
         const centerA = currentCenters.get(nodeIdA)!;
@@ -2239,17 +2246,12 @@ export class GraphView implements View {
       }
     }
 
-    // Set final positions to nodes (only for nodes without saved positions)
-    for (const [nodeId, nodeInfo] of nodeInfoMap) {
-      // Skip nodes with saved positions (already have correct position)
-      if (nodesWithSavedPosition.has(nodeId)) {
-        continue;
-      }
+    // Set final positions to nodes (only for nodes without saved positions). Iterate in id order for determinism.
+    const writeBackOrder = [...nodeInfoMap.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    for (const [nodeId, nodeInfo] of writeBackOrder) {
+      if (nodesWithSavedPosition.has(nodeId)) continue;
       const center = currentCenters.get(nodeId)!;
-      nodeInfo.node.position = {
-        x: center.centerX,
-        y: center.centerY,
-      };
+      nodeInfo.node.position = { x: center.centerX, y: center.centerY };
     }
 
     // Calculate and store group layouts

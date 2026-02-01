@@ -49,12 +49,14 @@ describe('importRelat / exportRelat (edge relID)', () => {
     expect(data.edges[0]?.style?.label).toBe('flight');
   });
 
-  it('export: relID with display label uses : relID as "display"', () => {
+  it('export: relID with display label — single edge: as "label" on line, no [label=...] on line', () => {
     const data = importRelat('Tokyo-->NewYork : f as "flight"');
     expect(data.edges[0]?.relType).toBe('f');
     expect(data.edges[0]?.style?.label).toBe('flight');
     const exported = exportRelat(data.nodes, data.edges, data.groups);
     expect(exported).toContain('Tokyo-->NewYork : f as "flight"');
+    expect(exported).not.toMatch(/rel f \[label="flight"\]/);
+    expect(exported).not.toMatch(/Tokyo-->NewYork : f as "flight" \[label=/);
   });
 
   it('import: [label=...] in style is display label; : relID wins for relType', () => {
@@ -89,8 +91,23 @@ describe('importRelat (node/group label: ID as "label")', () => {
     expect(osaka?.label).toBe('Osaka');
   });
 
+  it('nested id as "label": inner group gets label (group-usa as "USA" { group-california as "California" { ... } })', () => {
+    const data = importRelat('group-usa as "USA" { group-california as "California" { group-sanfrancisco { ip-1 } } }');
+    const usa = data.groups.find(g => g.id === 'group-usa');
+    const california = data.groups.find(g => g.id === 'group-california');
+    expect(usa?.label).toBe('USA');
+    expect(california?.label).toBe('California');
+    expect(california?.parentId).toBe('group-usa');
+  });
+
+  it('bare reference does not overwrite explicit label (id as "label" first, then id in edge)', () => {
+    const data = importRelat('ip-192-0-2-1 as "192.0.2.1"\nip-192-0-2-1-->A');
+    const node = data.nodes.find(n => n.id === 'ip-192-0-2-1');
+    expect(node?.label).toBe('192.0.2.1');
+  });
+
   it('user export data: full layout with nodes/groups/edge bends imports without hanging', () => {
-    const text = `"The Earth" as Earth { Japan { Tokyo, Osaka }, Australia { Sydney, Melbourne }, US { NewYork }, UK { London } }
+    const text = `Earth as "The Earth" { Japan { Tokyo, Osaka }, Australia { Sydney, Melbourne }, US { NewYork }, UK { London } }
 syster { Osaka, Melbourne }
 Tokyo-->NewYork : flight
 NewYork-->London : flight
@@ -118,11 +135,27 @@ layout {
     expect(data.groups.find(g => g.id === 'syster')?.layout).toBeDefined();
   });
 
-  it('node latitude, longitude, info: Tokyo[latitude=35.68, longitude=139.69, info.country=Japan]', () => {
+  it('node lat, lon, info: Tokyo[lat=35.68, lon=139.69, info.country=Japan]', () => {
+    const data = importRelat('Tokyo[lat=35.68, lon=139.69, info.country=Japan]');
+    const tokyo = data.nodes.find(n => n.id === 'Tokyo');
+    expect(tokyo?.coordinates).toEqual([35.68, 139.69]);
+    expect(tokyo?.info).toEqual({ country: 'Japan' });
+  });
+
+  it('backward compat: node latitude, longitude still import to coordinates', () => {
     const data = importRelat('Tokyo[latitude=35.68, longitude=139.69, info.country=Japan]');
     const tokyo = data.nodes.find(n => n.id === 'Tokyo');
     expect(tokyo?.coordinates).toEqual([35.68, 139.69]);
     expect(tokyo?.info).toEqual({ country: 'Japan' });
+  });
+
+  it('export: node with coordinates outputs lat=, lon= (not latitude/longitude)', () => {
+    const data = importRelat('Tokyo[lat=35.68, lon=139.69, info.country=Japan]');
+    const exported = exportRelat(data.nodes, data.edges, data.groups);
+    expect(exported).toMatch(/lat=35\.68/);
+    expect(exported).toMatch(/lon=139\.69/);
+    expect(exported).not.toContain('latitude=');
+    expect(exported).not.toContain('longitude=');
   });
 
   it('edge weight and info: A-->B : flight [weight=2, info.distance=1000]', () => {
@@ -180,7 +213,8 @@ style {
     const exported = exportRelat(data.nodes, data.edges, data.groups, { includeStyle: true });
     expect(exported).toContain('style {');
     expect(exported).toMatch(/node Foo \[color=red\]/);
-    expect(exported).toMatch(/rel flight \[label="Flight"\]/);
+    expect(exported).toContain('A-->B : flight as "Flight"');
+    expect(exported).not.toMatch(/rel flight \[label="Flight"\]/);
   });
 });
 
@@ -230,6 +264,62 @@ describe('importRelat / exportRelat (export spec: layout w/h, rel label in style
     const data = importRelat('A-->B : flight\nB-->C : flight');
     const exported = exportRelat(data.nodes, data.edges, data.groups, { includeStyle: true });
     expect(exported).not.toMatch(/rel flight \[label="flight"\]/);
+  });
+
+  it('relID and label same: edge line has no [label="relID"]', () => {
+    const text = `Tokyo, NewYork, London
+Tokyo-->NewYork : flight
+NewYork-->London : flight
+London-->Tokyo : flight`;
+    const data = importRelat(text);
+    const exported = exportRelat(data.nodes, data.edges, data.groups, { includeLayout: true });
+    expect(exported).toContain('Tokyo-->NewYork : flight');
+    expect(exported).toContain('NewYork-->London : flight');
+    expect(exported).toContain('London-->Tokyo : flight');
+    expect(exported).not.toMatch(/\[label="flight"\]/);
+    expect(exported).not.toMatch(/rel flight \[label="flight"\]/);
+  });
+
+  it('per-edge labels: export uses as "label" only, no [label=...] on edge line', () => {
+    const text = `Tokyo-->NewYork : flight as "flight A"
+NewYork-->London : flight as "flight B"
+London-->Tokyo : flight as "flight C"
+
+layout {
+  node Tokyo {x=199 y=252.75}
+  node NewYork {x=557 y=252.75}
+  node London {x=199 y=718.25}
+}`;
+    const data = importRelat(text);
+    const exported = exportRelat(data.nodes, data.edges, data.groups, { includeLayout: true });
+    expect(exported).toContain('Tokyo-->NewYork : flight as "flight A"');
+    expect(exported).toContain('NewYork-->London : flight as "flight B"');
+    expect(exported).toContain('London-->Tokyo : flight as "flight C"');
+    expect(exported).not.toMatch(/\[label="flight [ABC]"\]/);
+  });
+
+  it('uniform rel label: import style { rel flight [label="Direct Flight"] } then export edges without as, label in style', () => {
+    const text = `Tokyo-->NewYork : flight
+NewYork-->London : flight
+London-->Tokyo : flight
+
+style {
+  rel flight [label="Direct Flight"]
+}
+
+layout {
+  node Tokyo {x=199 y=252.75}
+  node NewYork {x=557 y=252.75}
+  node London {x=199 y=718.25}
+}`;
+    const data = importRelat(text);
+    expect(data.edges.every((e) => e.style?.label === 'Direct Flight')).toBe(true);
+    const exported = exportRelat(data.nodes, data.edges, data.groups, { includeLayout: true });
+    expect(exported).toContain('Tokyo-->NewYork : flight');
+    expect(exported).toContain('NewYork-->London : flight');
+    expect(exported).toContain('London-->Tokyo : flight');
+    expect(exported).not.toMatch(/as "Direct Flight"/);
+    expect(exported).toMatch(/rel flight \[label="Direct Flight"\]/);
   });
 
   it('omit optional node lines: nodes with only width/height in layout are not output in main body', () => {

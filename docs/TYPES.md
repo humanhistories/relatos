@@ -14,7 +14,8 @@ Options for creating a viewer instance.
 interface RelatosViewerOptions {
   enabledViews?: ViewType[];              // Available view types ['graph', 'map2d', 'globe3d']
   initialView?: ViewType;                 // Initial view type
-  data?: { nodes: Node[]; edges: Edge[] }; // Initial data
+  initialRelat?: string;                    // Initial data as relat text
+  onWarnings?: (warnings: string[]) => void; // Parser warnings (e.g. when using initialRelat)
   tileServers?: (string | TileServerConfig)[]; // Shared tile servers for Map2D and Globe3D
   loaders?: {
     leaflet?: () => Promise<typeof import('leaflet')>;
@@ -31,18 +32,15 @@ interface RelatosViewerOptions {
 }
 ```
 
-### 2. RelatosViewer (v0.3.0)
+### 2. RelatosViewer
 
 Viewer instance API.
 
 ```typescript
 interface RelatosViewer {
-  setData(data: { nodes: Node[]; edges: Edge[]; groups?: Group[] }): void;
-  getData(): { nodes: Node[]; edges: Edge[]; groups: Group[] };
+  importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void }): void;
+  exportRelat(options?: { includeLayout?: boolean }): string;
   getShapeDataForOffice(): OfficeShapeExport;  // For xlsx/pptx shape export
-  exportToPlantUML(options?: PlantUMLExportOptions): string;
-  importFromPlantUML(plantUMLText: string): void;
-  setPlantUMLExportOptions(options: PlantUMLExportOptions): void;
   getViewAsSvg(): string | null;              // Graph only
   exportViewToImage(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null>;
   setView(viewType: ViewType): void;
@@ -193,10 +191,11 @@ interface OfficeShapeExport {
 }
 ```
 
-### PlantUML
+### relat (Relatos text format)
 
-- `exportToPlantUML(nodes, edges, groups?, options?)`: Export to PlantUML text (plain or deflate).
-- `importFromPlantUML(text)`: Import from PlantUML; layout restored from `@relatos:layout:node`, `@relatos:layout:group`, `@relatos:layout:edge` comments.
+- `importRelat(relatText, options?)`: Import from relat text (Relatos dedicated text language).
+- `exportRelat(nodes, edges, groups?, options?)`: Export to relat text (optional `includeLayout`, `includeStyle`).
+  - When importing: if the relat text includes a **layout** block, node positions are taken from it; otherwise they are auto-computed from latitude/longitude (or grid). The resulting layout can therefore differ between importing with layout and importing the same text without the layout block.
 
 ## Type Exports
 
@@ -211,7 +210,9 @@ import type {
   NodeShapeData,
   EdgeShapeData,
   GroupShapeData,
-  PlantUMLExportOptions,
+  RelatImportResult,
+  RelatExportOptions,
+  RelatImportOptions,
   NodeClickEvent,
   SavePayload,
   ViewType,
@@ -221,11 +222,10 @@ import type {
 } from 'relatos';
 ```
 
-## Implementation Status (v0.3.0)
+## Implementation Status
 
 - ✅ Graph View (view/edit, undo/redo, fit/center)
 - ✅ Map2D View (Leaflet)
 - ✅ Globe3D View (Cesium)
-- ✅ getData / getShapeDataForOffice / exportToPlantUML / importFromPlantUML
-- ✅ getViewAsSvg / exportViewToImage (PNG, WebP)
-- ✅ PlantUML layout export/import via @relatos:layout:* comments
+- ✅ importRelat / exportRelat (relat format)
+- ✅ getShapeDataForOffice / getViewAsSvg / exportViewToImage (PNG, WebP)

@@ -7,7 +7,7 @@ import type { ViewType, Node, Edge } from '../types';
 import type { Group } from '../types/data';
 import type { TableOptions } from '../types/options';
 import { injectSvgSprite } from '../assets/icons/icons-embedded';
-import { exportToPlantUML, copyToClipboard, type PlantUMLExportOptions } from '../utils/plantuml';
+import { copyToClipboard } from '../utils/clipboard';
 import { exportRelat } from '../utils/relat';
 
 /**
@@ -211,12 +211,7 @@ export class ViewContainer {
   private undoButton: HTMLButtonElement | null = null; // Undo button (Graph edit only)
   private redoButton: HTMLButtonElement | null = null; // Redo button (Graph edit only)
   private cancelEditButton: HTMLButtonElement | null = null; // Cancel edit button (Graph only)
-  private exportButton: HTMLButtonElement | null = null; // PlantUML export button (all views)
-  private plantUMLExportOptions: PlantUMLExportOptions = {
-    useShortIds: true,  // Default: use short IDs for smaller output
-    includeMetadata: true,  // Default: include metadata for full restore on import
-    outputFormat: 'plain',  // Default: plain text with short IDs
-  };
+  private exportButton: HTMLButtonElement | null = null; // relat export (copy to clipboard) button
   private tableContainer: HTMLElement | null = null;
   private nodesTableContainer: HTMLElement | null = null;
   private edgesTableContainer: HTMLElement | null = null;
@@ -263,7 +258,7 @@ export class ViewContainer {
     this.tabContainer.style.left = '0';
     this.tabContainer.style.right = '0';
     this.tabContainer.style.zIndex = '1000'; // Ensure buttons are above views
-    this.tabContainer.style.pointerEvents = 'none'; // Allow clicks to pass through to views
+    this.tabContainer.style.pointerEvents = 'auto'; // Toolbar must receive events (buttons need to be clickable)
 
     // Create view container (extends to full height including tab area)
     this.viewContainer = document.createElement('div');
@@ -536,10 +531,12 @@ export class ViewContainer {
         rowHtml = rowHtml.replace(/\{\{y\}\}/g, String(pos.y ?? ''));
       }
       
-      // coordinates field (Node only)
+      // coordinates field (Node only). {{lat}}/{{lon}} are relat keywords; {{latitude}}/{{longitude}} kept for backward compat.
       if ('coordinates' in item && item.coordinates) {
         rowHtml = rowHtml.replace(/\{\{coordinates\.0\}\}/g, String(item.coordinates[0] || ''));
         rowHtml = rowHtml.replace(/\{\{coordinates\.1\}\}/g, String(item.coordinates[1] || ''));
+        rowHtml = rowHtml.replace(/\{\{lat\}\}/g, String(item.coordinates[0] || ''));
+        rowHtml = rowHtml.replace(/\{\{lon\}\}/g, String(item.coordinates[1] || ''));
         rowHtml = rowHtml.replace(/\{\{latitude\}\}/g, String(item.coordinates[0] || ''));
         rowHtml = rowHtml.replace(/\{\{longitude\}\}/g, String(item.coordinates[1] || ''));
       }
@@ -751,7 +748,7 @@ export class ViewContainer {
     this.commonControlsContainer.style.display = 'flex';
     this.commonControlsContainer.style.gap = '4px';
     this.commonControlsContainer.style.marginLeft = 'auto';
-    this.commonControlsContainer.style.pointerEvents = 'none';
+    this.commonControlsContainer.style.pointerEvents = 'auto';
     
     // Create common control buttons in order:
     // For Graph: Cancel, Edit toggle, Always show edges, Fit/Center
@@ -1135,28 +1132,6 @@ export class ViewContainer {
         }, 3000);
       }
     }
-  }
-
-  /**
-   * Set PlantUML export options
-   */
-  setPlantUMLExportOptions(options: PlantUMLExportOptions): void {
-    this.plantUMLExportOptions = { ...this.plantUMLExportOptions, ...options };
-  }
-
-  /**
-   * Get PlantUML export options
-   */
-  getPlantUMLExportOptions(): PlantUMLExportOptions {
-    return { ...this.plantUMLExportOptions };
-  }
-
-  /**
-   * Get PlantUML export text
-   */
-  getPlantUMLExport(options?: PlantUMLExportOptions): string {
-    const exportOptions = options || this.plantUMLExportOptions;
-    return exportToPlantUML(this.nodes, this.edges, this.groups, exportOptions);
   }
 
   /**

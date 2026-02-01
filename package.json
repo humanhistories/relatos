@@ -50,6 +50,7 @@
   "homepage": "https://humanhistories.org/en/histoverse/#relatos",
   "dependencies": {
     "cesium": "^1.137.0",
+    "html2canvas": "^1.4.1",
     "leaflet": "^1.9.4",
     "pako": "^2.1.0"
   },

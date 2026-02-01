@@ -5,7 +5,7 @@
  * Uses library table display feature
  */
 
-import { createRelatosViewer } from '../../src/index';
+import { createRelatosViewer, exportRelat } from '../../src/index';
 
 // Sample data for 20 major international airports
 const airports = [
@@ -243,8 +243,6 @@ const graphNodes = airports.map(airport => ({
   info: {
     color: airport.color,
     iata: airport.iata,
-    latitude: airport.latitude.toFixed(4),
-    longitude: airport.longitude.toFixed(4),
   },
   style: {
     color: airport.color,
@@ -396,14 +394,11 @@ if (timeInput) {
   });
 }
 
-// Create viewer (using library table feature)
+// Create viewer and load data via relat (using library table feature)
 const viewerInstance = createRelatosViewer('#viewer-container', {
   enabledViews: ['graph', 'map2d', 'globe3d'],
   initialView: 'map2d',
-  data: {
-    nodes: graphNodes,
-    edges: graphEdges,
-  },
+  initialRelat: exportRelat(graphNodes, graphEdges, []),
   loaders: {
     leaflet: loadLeaflet,
     cesium: loadCesium,
@@ -495,8 +490,8 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
         <td>{{id}}</td>
         <td>{{label}}</td>
         <td>{{info.iata}}</td>
-        <td>{{info.latitude}}</td>
-        <td>{{info.longitude}}</td>
+        <td>{{lat}}</td>
+        <td>{{lon}}</td>
       `,
     },
     edges: {
@@ -524,42 +519,12 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
   },
 });
 
-// Export to PlantUML demonstration (for debugging/development)
-// Export button in toolbar copies: useShortIds: true, includeMetadata: false, outputFormat: 'plain'
-(window as any).exportPlantUML = () => {
-  // Default export (short IDs, no metadata - same as toolbar button)
-  const plantUML = viewerInstance.exportToPlantUML({
-    useShortIds: true,
-    includeMetadata: false,
-  });
-  console.log('=== PlantUML Export (short IDs, no metadata) ===');
-  console.log(plantUML);
-  return plantUML;
-};
-
-(window as any).exportPlantUMLDeflate = () => {
-  // Export as deflate-encoded string (for PlantUML server)
-  const encoded = viewerInstance.exportToPlantUML({
-    useShortIds: true,
-    includeMetadata: false,
-    outputFormat: 'deflate',
-  });
-  const url = `http://www.plantuml.com/plantuml/svg/${encoded}`;
-  console.log('=== PlantUML Deflate Encoded ===');
-  console.log('Encoded:', encoded);
-  console.log('URL:', url);
-  return { encoded, url };
-};
-
-(window as any).exportPlantUMLFull = () => {
-  // Export with full IDs and metadata (for import compatibility)
-  const plantUML = viewerInstance.exportToPlantUML({
-    useShortIds: false,
-    includeMetadata: true,
-  });
-  console.log('=== PlantUML Export (full IDs, with metadata) ===');
-  console.log(plantUML);
-  return plantUML;
+// Export relat for debugging (toolbar Export button copies to clipboard)
+(window as any).exportRelat = () => {
+  const relat = viewerInstance.exportRelat({ includeLayout: true });
+  console.log('=== relat export ===');
+  console.log(relat);
+  return relat;
 };
 
 // Fit view to show all nodes after auto-layout

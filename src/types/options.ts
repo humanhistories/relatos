@@ -278,13 +278,16 @@ export interface RelatosViewerOptions {
   initialView?: ViewType;
 
   /**
-   * Initial data
+   * Initial data as relat text (Relatos dedicated text format).
+   * If provided, the viewer is populated by importing this string at creation.
    */
-  data?: {
-    nodes: Node[];
-    edges: Edge[];
-    groups?: Group[];
-  };
+  initialRelat?: string;
+
+  /**
+   * Callback for parser warnings (e.g. when using initialRelat).
+   * Message may include " (line N, column M)" for position.
+   */
+  onWarnings?: (warnings: string[]) => void;
 
   /**
    * Shared time information (ISO 8601 format, e.g., "2025-06-21T12:00:00Z")

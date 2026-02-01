@@ -561,7 +561,7 @@ export const ICONS_SVG_SPRITE = `<!-- relatos/src/assets/icons/icons.svg -->
 
   <!-- =========================================
        Export (share/external link icon)
-       - For PlantUML export functionality
+       - For relat export (copy to clipboard)
        ========================================= -->
   <symbol id="icon-export" viewBox="0 0 24 24">
     <!-- Box -->

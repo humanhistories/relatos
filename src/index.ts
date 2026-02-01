@@ -16,7 +16,6 @@ import { GraphView } from './views/graph/view';
 import { Globe3DView } from './views/globe3d/view';
 import { Map2DView } from './views/map2d/view';
 import { injectSvgSprite } from './assets/icons/icons-embedded';
-import { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl, type PlantUMLExportOptions } from './utils/plantuml';
 import { importRelat, exportRelat } from './utils/relat';
 import { getShapeDataForOffice } from './utils/office-shapes';
 
@@ -27,10 +26,20 @@ import { getShapeDataForOffice } from './utils/office-shapes';
  * @param options Viewer options
  * @returns RelatosViewer instance
  */
+const DATA_OPTION_REMOVED_MSG =
+  'The "data" option has been removed. Use initialRelat (relat text from importRelat/exportRelat) instead.';
+
 export function createRelatosViewer(
   containerEl: HTMLElement | string,
   options: RelatosViewerOptions = {}
 ): RelatosViewer {
+  if (
+    (options as Record<string, unknown>).data !== undefined &&
+    (options as Record<string, unknown>).data !== null
+  ) {
+    throw new Error(DATA_OPTION_REMOVED_MSG);
+  }
+
   // Inject SVG sprite on initialization
   injectSvgSprite();
   
@@ -129,10 +138,6 @@ export function createRelatosViewer(
       viewContainer.updateGraphButtons();
     });
     graphView.setMode(graphMode);
-    if (options.data) {
-      const groups = 'groups' in options.data && Array.isArray(options.data.groups) ? options.data.groups : undefined;
-      graphView.setData(options.data.nodes, options.data.edges, groups);
-    }
     viewContainer.registerView('graph', graphView);
   }
 
@@ -161,9 +166,6 @@ export function createRelatosViewer(
       map2dView.setLightingChangeCallback((enabled: boolean) => {
         viewContainer.setLightingEnabled(enabled);
       });
-      if (options.data) {
-        map2dView.setData(options.data.nodes, options.data.edges);
-      }
       viewContainer.registerView('map2d', map2dView);
     }
   }
@@ -197,9 +199,6 @@ export function createRelatosViewer(
         globe3dView.setLightingChangeCallback((enabled: boolean) => {
           viewContainer.setLightingEnabled(enabled);
         });
-        if (options.data) {
-          globe3dView.setData(options.data.nodes, options.data.edges);
-        }
         viewContainer.registerView('globe3d', globe3dView);
       } catch (error) {
         // Failed to create Globe3D view
@@ -210,31 +209,21 @@ export function createRelatosViewer(
   // Set initial view
   viewContainer.setInitialView(initialView);
 
-  // Set initial data in ViewContainer (for table display)
-  if (options.data) {
-    const groups = 'groups' in options.data && Array.isArray(options.data.groups) ? options.data.groups : undefined;
-    viewContainer.setData(options.data.nodes, options.data.edges, groups);
+  // Set initial data from relat text if provided
+  if (options.initialRelat) {
+    const importOpts = options.onWarnings ? { onWarnings: options.onWarnings } : undefined;
+    const data = importRelat(options.initialRelat, importOpts);
+    const graphView = viewContainer.getView('graph') as GraphView | undefined;
+    if (graphView) graphView.setData(data.nodes, data.edges, data.groups);
+    const map2dView = viewContainer.getView('map2d') as Map2DView | undefined;
+    if (map2dView) map2dView.setData(data.nodes, data.edges);
+    const globe3dView = viewContainer.getView('globe3d') as Globe3DView | undefined;
+    if (globe3dView) globe3dView.setData(data.nodes, data.edges);
+    viewContainer.setData(data.nodes, data.edges, data.groups);
   }
 
   // Return RelatosViewer instance
   return {
-    setData(data: { nodes: Node[]; edges: Edge[]; groups?: Group[] }): void {
-      const graphView = viewContainer.getView('graph') as GraphView | undefined;
-      if (graphView) {
-        graphView.setData(data.nodes, data.edges, data.groups);
-      }
-      const map2dView = viewContainer.getView('map2d') as Map2DView | undefined;
-      if (map2dView) {
-        map2dView.setData(data.nodes, data.edges);
-      }
-      const globe3dView = viewContainer.getView('globe3d') as Globe3DView | undefined;
-      if (globe3dView) {
-        globe3dView.setData(data.nodes, data.edges);
-      }
-      // Also set data in ViewContainer (for table display)
-      viewContainer.setData(data.nodes, data.edges, data.groups);
-    },
-
     setView(viewType: ViewType): void {
       viewContainer.switchView(viewType);
     },
@@ -293,43 +282,8 @@ export function createRelatosViewer(
       viewContainer.setLightingEnabled(enabled);
     },
 
-    getData(): { nodes: Node[]; edges: Edge[]; groups: Group[] } {
-      return viewContainer.getData();
-    },
-
-    exportToPlantUML(options?: PlantUMLExportOptions): string {
-      const data = viewContainer.getData();
-      // Merge with default options (useShortIds: true by default)
-      const exportOptions: PlantUMLExportOptions = {
-        useShortIds: true,
-        includeMetadata: true,
-        outputFormat: 'plain',
-        ...options,
-      };
-      return exportToPlantUML(data.nodes, data.edges, data.groups, exportOptions);
-    },
-
-    importFromPlantUML(plantUMLText: string): void {
-      const data = importFromPlantUML(plantUMLText);
-      // Update all views with imported data
-      const graphView = viewContainer.getView('graph') as GraphView | undefined;
-      if (graphView) {
-        graphView.setData(data.nodes, data.edges, data.groups);
-      }
-      const map2dView = viewContainer.getView('map2d') as Map2DView | undefined;
-      if (map2dView) {
-        map2dView.setData(data.nodes, data.edges);
-      }
-      const globe3dView = viewContainer.getView('globe3d') as Globe3DView | undefined;
-      if (globe3dView) {
-        globe3dView.setData(data.nodes, data.edges);
-      }
-      // Also update ViewContainer data (for table display and export button)
-      viewContainer.setData(data.nodes, data.edges, data.groups);
-    },
-
-    importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void }): void {
-      const data = importRelat(relatText, options);
+    importRelat(relatText: string, opts?: { onWarnings?: (warnings: string[]) => void }): void {
+      const data = importRelat(relatText, opts);
       const graphView = viewContainer.getView('graph') as GraphView | undefined;
       if (graphView) {
         graphView.setData(data.nodes, data.edges, data.groups);
@@ -348,10 +302,6 @@ export function createRelatosViewer(
     exportRelat(options?: { includeLayout?: boolean }): string {
       const { nodes, edges, groups } = viewContainer.getData();
       return exportRelat(nodes, edges, groups, options);
-    },
-
-    setPlantUMLExportOptions(options: PlantUMLExportOptions): void {
-      viewContainer.setPlantUMLExportOptions(options);
     },
 
     getShapeDataForOffice() {
@@ -378,11 +328,8 @@ export function createRelatosViewer(
 // Export type definitions
 export type * from './types';
 
-// Export PlantUML utilities
-export { exportToPlantUML, importFromPlantUML, deflateAndEncode, decodeAndInflate, isDeflateEncoded, getPlantUMLServerUrl } from './utils/plantuml';
-export type { PlantUMLExportOptions } from './utils/plantuml';
 export { importRelat, exportRelat, irToRelatosData } from './utils/relat';
-export type { RelatImportResult, RelatExportOptions, RelatImportOptions } from './utils/relat';
+export type { RelatImportResult, RelatExportOptions } from './utils/relat';
 export { parseRelat } from './utils/relat-parser';
 export type { RelatIR } from './utils/relat-parser';
 export { getShapeDataForOffice } from './utils/office-shapes';

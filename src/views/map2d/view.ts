@@ -1975,6 +1975,41 @@ export class Map2DView implements View {
   }
 
   /**
+   * Get current view as SVG string. Map2D has no native SVG; returns null.
+   * Use exportViewToImage for PNG/WebP download of the Leaflet map.
+   */
+  getViewAsSvg(): string | null {
+    return null;
+  }
+
+  /**
+   * Export current Leaflet map as image blob (PNG or WebP).
+   * Captures the map container using html2canvas.
+   */
+  async exportViewToImage(format: 'png' | 'webp', options?: { quality?: number }): Promise<Blob | null> {
+    if (!this.container || !this.map) return null;
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(this.container, {
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+        scale: window.devicePixelRatio ?? 1,
+      });
+      const quality = options?.quality ?? 0.92;
+      return new Promise((resolve) => {
+        canvas.toBlob(
+          (b: Blob | null) => resolve(b ?? null),
+          format === 'png' ? 'image/png' : 'image/webp',
+          quality
+        );
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Destroy view
    */
   destroy(): void {

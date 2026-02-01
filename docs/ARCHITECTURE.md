@@ -38,8 +38,8 @@ relatos/
 │       ├── index.html
 │       └── main.ts                 # Airports example: complete features
 ├── test/
-│   ├── import/                     # PlantUML import test page
-│   └── export/                    # Data & view export API test page (v0.3.0)
+│   ├── import/                     # relat import test page
+│   └── export/                     # Data & view export API test page
 ├── dist/                           # Build output
 ├── package.json
 ├── tsconfig.json
@@ -189,14 +189,11 @@ const viewer = createRelatosViewer('#container', {
 });
 ```
 
-### Main Methods (v0.3.0)
+### Main Methods
 
-- `viewer.setData(data)`: Set or update data (nodes, edges, optional groups)
-- `viewer.getData()`: Get current nodes, edges, groups
+- `viewer.importRelat(relatText, options?)`: Load data from relat text (Relatos dedicated text format)
+- `viewer.exportRelat(options?)`: Export current data as relat text (optional `includeLayout: true`)
 - `viewer.getShapeDataForOffice()`: Get node/edge/group geometry for Excel/PowerPoint shapes (OfficeShapeExport)
-- `viewer.exportToPlantUML(options?)`: Export to PlantUML text (plain or deflate)
-- `viewer.importFromPlantUML(text)`: Import from PlantUML text (layout via @relatos:layout:* comments)
-- `viewer.setPlantUMLExportOptions(options)`: Set export button options
 - `viewer.getViewAsSvg()`: Get current view as SVG string (Graph only; null for Map2D/Globe3D)
 - `viewer.exportViewToImage(format, options?)`: Export view as PNG or WebP blob (Promise&lt;Blob|null&gt;)
 - `viewer.setView(viewType)`, `viewer.getView()`: Switch / get current view
@@ -472,16 +469,10 @@ viewer.setMode('edit');
 ### Dynamic Data Update
 
 ```typescript
-// Update data dynamically
-viewer.setData({
-  nodes: [
-    { id: 'n1', label: 'Node 1', coordinates: [35.6762, 139.6503] },
-    { id: 'n2', label: 'Node 2', coordinates: [40.7128, -74.0060] }
-  ],
-  edges: [
-    { id: 'e1', src: 'n1', dst: 'n2' }
-  ]
-});
+// Update data dynamically (via relat format)
+viewer.importRelat(`n1 [latitude=35.6762, longitude=139.6503]
+n2 [latitude=40.7128, longitude=-74.006]
+n1-->n2 : link`);
 
 // Select a node
 viewer.selectNode('n1');

@@ -67,6 +67,7 @@ export interface Node {
   coordinates?: [number, number]; // Geographic coordinates for Map2D/Globe3D [latitude, longitude]
   style?: NodeStyle; // Styling options
   meta?: Record<string, unknown>;
+  info?: Record<string, unknown>; // Extra key-value data (relat bracket info.*)
 }
 
 /**
@@ -93,6 +94,7 @@ export interface Edge {
   bends?: EdgeBend[]; // Empty array for straight line, elements for polyline
   style?: EdgeStyle; // Styling and relationship information
   meta?: Record<string, unknown>;
+  info?: Record<string, unknown>; // Extra key-value data (relat bracket info.*)
 }
 
 /**
@@ -112,6 +114,11 @@ export interface NodeClickEvent {
 export interface SavePayload {
   nodes: Node[];
   edges: Edge[];
+  /**
+   * Edited group list (layout information only).
+   * Only layout (position, size) is editable; nodeIds and parentId cannot be changed.
+   */
+  groups?: Group[];
 }
 
 /**
@@ -134,12 +141,14 @@ export interface RelatosViewerOptions {
   initialView?: ViewType;
 
   /**
-   * Initial data
+   * Initial data as relat text (Relatos dedicated text format)
    */
-  data?: {
-    nodes: Node[];
-    edges: Edge[];
-  };
+  initialRelat?: string;
+
+  /**
+   * Callback for parser warnings (e.g. when using initialRelat)
+   */
+  onWarnings?: (warnings: string[]) => void;
 
   /**
    * Shared time information (ISO 8601 format, e.g., "2025-06-21T12:00:00Z")
@@ -237,16 +246,6 @@ export interface RelatosViewerOptions {
  */
 export interface RelatosViewer {
   /**
-   * Set data
-   */
-  setData(data: { nodes: Node[]; edges: Edge[]; groups?: Group[] }): void;
-
-  /**
-   * Get current data (nodes, edges, groups)
-   */
-  getData(): { nodes: Node[]; edges: Edge[]; groups: Group[] };
-
-  /**
    * Get shape data for Office export (Excel/PowerPoint native shapes)
    */
   getShapeDataForOffice(): import('./types/office-shapes').OfficeShapeExport;
@@ -308,26 +307,6 @@ export interface RelatosViewer {
   setLighting(enabled: boolean): void;
 
   /**
-   * Export data to PlantUML format
-   * @param options Export options (optional)
-   * @returns PlantUML text string (or deflate-encoded string if outputFormat is 'deflate')
-   */
-  exportToPlantUML(options?: {
-    /** Use short IDs (A, B, ...) instead of full IDs. Default: true */
-    useShortIds?: boolean;
-    /** Include metadata comments for import. Default: true */
-    includeMetadata?: boolean;
-    /** Output format: 'plain' or 'deflate'. Default: 'plain' */
-    outputFormat?: 'plain' | 'deflate';
-  }): string;
-
-  /**
-   * Import data from PlantUML format
-   * @param plantUMLText PlantUML text string
-   */
-  importFromPlantUML(plantUMLText: string): void;
-
-  /**
    * Import data from relat format (Relatos dedicated text language)
    * @param relatText relat text string
    * @param options Optional. onWarnings: called when the parser produced warnings (syntax issues). Message may include " (line N, column M)".
@@ -340,17 +319,4 @@ export interface RelatosViewer {
    * @returns relat text string
    */
   exportRelat(options?: { includeLayout?: boolean }): string;
-
-  /**
-   * Set PlantUML export options for the export button
-   * @param options Export options
-   */
-  setPlantUMLExportOptions(options: {
-    /** Use short IDs (A, B, ...) instead of full IDs. Default: true */
-    useShortIds?: boolean;
-    /** Include metadata comments for import. Default: true */
-    includeMetadata?: boolean;
-    /** Output format: 'plain' or 'deflate'. Default: 'plain' */
-    outputFormat?: 'plain' | 'deflate';
-  }): void;
 }

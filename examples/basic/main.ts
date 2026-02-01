@@ -77,160 +77,24 @@ async function loadCesium(): Promise<any> {
   }
 }
 
-// Create viewer with sample data
-// Demonstrates all standard node and edge parameters (excluding info field)
+// Sample data in relat format (Relatos dedicated text language)
+// Format: nodeId as "label" [style]. Numeric IDs (1, 2, 3, 4) are supported.
+const SAMPLE_RELAT = `1 as "Tokyo" [lat=35.6812, lon=139.7671, color=#E3F2FD, border=#1976D2, width=120, height=60]
+2 as "New York" [lat=40.7128, lon=-74.006, color=#F3E5F5, border=#7B1FA2, width=120, height=60]
+3 as "London" [lat=51.5074, lon=-0.1278, color=#E8F5E9, border=#388E3C, width=120, height=60]
+4 as "Paris" [lat=48.8566, lon=2.3522, color=#FFF3E0, border=#F57C00, width=120, height=60]
+1-->2 : connection [color=#999, weight=8, label="Tokyo → New York"]
+2-->3 : connection [color=#666, weight=6, label="New York → London"]
+3-->4 : connection [color=#888, weight=4, label="London → Paris"]
+1-->4 : connection [color=#777, weight=5, label="Tokyo → Paris"]
+`;
+
+// Create viewer with sample data (relat format)
 // Map2D is also enabled (uses default NaturalEarthII tiles when no tileServers are specified)
 const viewer = createRelatosViewer('#viewer-container', {
   enabledViews: ['graph', 'map2d', 'globe3d'],
   initialView: 'graph',
-  data: {
-    nodes: [
-      { 
-        id: '1', 
-        label: 'Tokyo', 
-        type: 'city',
-        coordinates: [35.6812, 139.7671],
-        // Graph position (optional, auto-placed from coordinates if not specified)
-        // position: { x: 100, y: 100 },
-        style: {
-          color: '#E3F2FD',      // Background color
-          borderColor: '#1976D2', // Border color
-          width: 120,            // Node width
-          height: 60,            // Node height
-        },
-        meta: {
-          population: 13960000,
-          country: 'Japan',
-        },
-      },
-      { 
-        id: '2', 
-        label: 'New York', 
-        type: 'city',
-        coordinates: [40.7128, -74.0060],
-        style: {
-          color: '#F3E5F5',      // Background color
-          borderColor: '#7B1FA2', // Border color
-          width: 120,
-          height: 60,
-        },
-        meta: {
-          population: 8175000,
-          country: 'USA',
-        },
-      },
-      { 
-        id: '3', 
-        label: 'London',
-        type: 'city',
-        coordinates: [51.5074, -0.1278],
-        style: {
-          color: '#E8F5E9',      // Background color
-          borderColor: '#388E3C', // Border color
-          width: 120,
-          height: 60,
-        },
-        meta: {
-          population: 9002000,
-          country: 'UK',
-        },
-      },
-      {
-        id: '4',
-        label: 'Paris',
-        type: 'city',
-        coordinates: [48.8566, 2.3522],
-        style: {
-          color: '#FFF3E0',      // Background color
-          borderColor: '#F57C00', // Border color
-          width: 120,
-          height: 60,
-        },
-        meta: {
-          population: 2161000,
-          country: 'France',
-        },
-      }
-    ],
-    edges: [
-      { 
-        id: 'e1', 
-        src: '1', 
-        dst: '2', 
-        relType: 'connection',
-        // Relationship strength (weight: 1-10, affects thickness)
-        style: {
-          color: '#999',         // Edge color
-          weight: 8,             // Relationship strength (1-10)
-          label: 'Tokyo → New York',
-          srcLabel: 'From',
-          dstLabel: 'To',
-        },
-        // Anchor information (optional, editable in edit mode)
-        // anchors: {
-        //   src: { nodeId: '1', position: 0 },
-        //   dst: { nodeId: '2', position: Math.PI },
-        // },
-        // Bend point information (optional, can be added in edit mode)
-        // bends: [{ x: 100, y: 50 }],
-        meta: {
-          distance: 10850,
-          unit: 'km',
-        },
-      },
-      { 
-        id: 'e2', 
-        src: '2', 
-        dst: '3', 
-        relType: 'connection',
-        style: {
-          color: '#666',
-          weight: 6,             // Relationship strength (moderate)
-          label: 'New York → London',
-          srcLabel: 'From',
-          dstLabel: 'To',
-        },
-        meta: {
-          distance: 5570,
-          unit: 'km',
-        },
-      },
-      {
-        id: 'e3',
-        src: '3',
-        dst: '4',
-        relType: 'connection',
-        style: {
-          color: '#888',
-          weight: 4,             // Relationship strength (weak)
-          label: 'London → Paris',
-          srcLabel: 'From',
-          dstLabel: 'To',
-        },
-        meta: {
-          distance: 344,
-          unit: 'km',
-        },
-      },
-      {
-        id: 'e4',
-        src: '1',
-        dst: '4',
-        relType: 'connection',
-        style: {
-          color: '#777',
-          weight: 5,             // Relationship strength (moderate)
-          label: 'Tokyo → Paris',
-          srcLabel: 'From',
-          dstLabel: 'To',
-        },
-        meta: {
-          distance: 9718,
-          unit: 'km',
-        },
-      }
-    ]
-  },
+  initialRelat: SAMPLE_RELAT,
   loaders: {
     leaflet: loadLeaflet,
     cesium: loadCesium,

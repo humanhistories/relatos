@@ -23,11 +23,12 @@ export interface RelatExportOptions {
 }
 
 /** Format info object as relat bracket parts (info.key=value). */
-function infoToRelatParts(info?: Record<string, unknown>, prefix = 'info.'): string[] {
+function infoToRelatParts(info?: Record<string, unknown>, prefix = 'info.', excludeTopKeys?: Set<string>): string[] {
   if (!info || typeof info !== 'object') return [];
   const parts: string[] = [];
   for (const [k, v] of Object.entries(info)) {
     if (v === undefined) continue;
+    if (excludeTopKeys?.has(k)) continue;
     const key = prefix + k;
     if (v != null && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Date)) {
       parts.push(...infoToRelatParts(v as Record<string, unknown>, key + '.'));
@@ -38,8 +39,29 @@ function infoToRelatParts(info?: Record<string, unknown>, prefix = 'info.'): str
   return parts;
 }
 
-/** Export node style + coordinates + info. When excludeLayoutKeys is true, width/height are omitted (they go in layout block). */
-function styleToRelatNodeStyle(style?: NodeStyle, excludeLayoutKeys?: boolean, coordinates?: [number, number], info?: Record<string, unknown>): string {
+/** Omit node info keys that are redundant with top-level lat/lon/color. */
+function nodeInfoExcludeKeys(coordinates?: [number, number], styleColor?: string, info?: Record<string, unknown>): Set<string> | undefined {
+  if (!info || typeof info !== 'object') return undefined;
+  const exclude = new Set<string>();
+  if (coordinates && coordinates.length >= 2) {
+    exclude.add('lat');
+    exclude.add('lon');
+    exclude.add('latitude');
+    exclude.add('longitude');
+  }
+  if (styleColor != null && info['color'] === styleColor) {
+    exclude.add('color');
+  }
+  return exclude.size > 0 ? exclude : undefined;
+}
+
+/** Export node style + coordinates + info. When excludeLayoutKeys is true, width/height are omitted (they go in layout block). Omit info.lat/info.lon when coordinates exist; omit info.color when it equals style.color. */
+function styleToRelatNodeStyle(
+  style?: NodeStyle,
+  excludeLayoutKeys?: boolean,
+  coordinates?: [number, number],
+  info?: Record<string, unknown>
+): string {
   const parts: string[] = [];
   if (style) {
     if (style.color != null) parts.push(`color=${style.color}`);
@@ -50,9 +72,10 @@ function styleToRelatNodeStyle(style?: NodeStyle, excludeLayoutKeys?: boolean, c
     }
   }
   if (coordinates && coordinates.length >= 2) {
-    parts.push(`latitude=${coordinates[0]}`, `longitude=${coordinates[1]}`);
+    parts.push(`lat=${coordinates[0]}`, `lon=${coordinates[1]}`);
   }
-  parts.push(...infoToRelatParts(info));
+  const excludeKeys = nodeInfoExcludeKeys(coordinates, style?.color, info);
+  parts.push(...infoToRelatParts(info, 'info.', excludeKeys));
   return parts.length ? `[${parts.join(',')}]` : '';
 }
 
@@ -198,17 +221,17 @@ function buildInfoFromPrefix(flat: Record<string, unknown>, prefix: string): Rec
   return Object.keys(info).length ? info : undefined;
 }
 
-/** Split node bracket: latitude/longitude -> coordinates, info.* -> info, rest -> style. */
+/** Split node bracket: lat/lon (or latitude/longitude) -> coordinates, info.* -> info, rest -> style. */
 function splitNodeBracket(merged: Record<string, unknown>): { style: Record<string, unknown>; coordinates?: [number, number]; info?: Record<string, unknown> } {
   const style: Record<string, unknown> = {};
   let coordinates: [number, number] | undefined;
-  const lat = merged.latitude;
-  const lon = merged.longitude;
+  const lat = merged.lat ?? merged.latitude;
+  const lon = merged.lon ?? merged.longitude;
   if (typeof lat === 'number' && typeof lon === 'number') coordinates = [lat, lon];
   const info = buildInfoFromPrefix(merged, 'info.');
-  const styleKeys = ['color', 'border', 'width', 'height', 'latitude', 'longitude'];
+  const coordKeys = ['lat', 'lon', 'latitude', 'longitude'];
   for (const [k, v] of Object.entries(merged)) {
-    if (k === 'latitude' || k === 'longitude' || (typeof k === 'string' && k.startsWith('info.'))) continue;
+    if (coordKeys.includes(k) || (typeof k === 'string' && k.startsWith('info.'))) continue;
     style[k] = v;
   }
   return { style, coordinates, info };
@@ -304,7 +327,8 @@ export function exportRelat(
     const parts: string[] = [...directNodeIds];
     for (const c of childGroups) parts.push(formatGroupNested(c));
     const inner = parts.join(', ');
-    return inner ? `${g.id} { ${inner} }` : `${g.id} { }`;
+    const labelPart = g.label !== g.id ? `${g.id} as "${g.label.replace(/"/g, '\\"')}"` : g.id;
+    return inner ? `${labelPart} { ${inner} }` : `${labelPart} { }`;
   }
 
   const topLevelGroups = groups.filter(g => !g.parentId);
@@ -313,7 +337,7 @@ export function exportRelat(
     const directNodeIds = g.nodeIds.filter(id => nodeIds.has(id));
     const hasMembers = directNodeIds.length > 0 || childGroups.length > 0;
     if (!hasMembers) continue;
-    const labelPart = g.label !== g.id ? `"${g.label.replace(/"/g, '\\"')}" as ${g.id}` : g.id;
+    const labelPart = g.label !== g.id ? `${g.id} as "${g.label.replace(/"/g, '\\"')}"` : g.id;
     const stylePart = styleToRelatGroupStyle(g.style, g.info);
     const parts: string[] = [...directNodeIds];
     for (const c of childGroups) parts.push(formatGroupNested(c));
@@ -326,16 +350,37 @@ export function exportRelat(
     const hasNonLayoutStyle = styleWithoutLayout && Object.keys(styleWithoutLayout).some(k => styleWithoutLayout[k as keyof NodeStyle] != null);
     const needsExplicit = n.label !== n.id || hasNonLayoutStyle || (n.coordinates != null) || (n.info != null && Object.keys(n.info).length > 0);
     if (!needsExplicit) continue;
-    const labelPart = n.label !== n.id ? `"${n.label.replace(/"/g, '\\"')}" as ${n.id}` : n.id;
+    const labelPart = n.label !== n.id ? `${n.id} as "${n.label.replace(/"/g, '\\"')}"` : n.id;
     const stylePart = styleToRelatNodeStyle(n.style, true, n.coordinates, n.info);
     lines.push(`${labelPart}${stylePart}`);
   }
+  // relType ごとに「2本以上かつ全エッジが同じラベル」なら style にまとめる。1本のみは as "label" で個別に出す。
+  const uniformRelLabels = new Map<string, string>();
+  for (const relType of [...new Set(edges.map((e) => e.relType).filter(Boolean))] as string[]) {
+    if (relType === 'link') continue;
+    const withRel = edges.filter((e) => e.relType === relType);
+    if (withRel.length < 2) continue;
+    const labels = [...new Set(withRel.map((e) => e.style?.label ?? relType))];
+    if (labels.length === 1 && labels[0] !== relType) {
+      uniformRelLabels.set(relType, labels[0]);
+    }
+  }
+
   for (const e of edges) {
     let line = `${e.src}-->${e.dst}${e.relType && e.relType !== 'link' ? ` : ${e.relType}` : ''}`;
     const displayLabel = e.style?.label;
     const hasCustomLabel = displayLabel != null && displayLabel !== e.relType;
-    if (hasCustomLabel && !options?.includeStyle) line += ` as "${displayLabel.replace(/"/g, '\\"')}"`;
-    const edgeBracket = styleToRelatEdgeStyle(e.style, false, e.info);
+    const useUniformStyle = e.relType != null && uniformRelLabels.has(e.relType);
+
+    if (useUniformStyle) {
+      // 同一 relType で全同じラベル → エッジ行に as を書かず、後で style に出す
+    } else if (hasCustomLabel) {
+      line += ` as "${(displayLabel as string).replace(/"/g, '\\"')}"`;
+    }
+    // as "label" で出した場合、および relID とラベルが同一の場合は [label=...] を付けない
+    const labelSameAsRelId = displayLabel != null && displayLabel === e.relType;
+    const skipLabelInBracket = useUniformStyle || hasCustomLabel || labelSameAsRelId;
+    const edgeBracket = styleToRelatEdgeStyle(e.style, skipLabelInBracket, e.info);
     if (edgeBracket) line += ' ' + edgeBracket;
     lines.push(line);
   }
@@ -380,8 +425,8 @@ export function exportRelat(
     }
   }
 
+  const styleLines: string[] = [];
   if (options?.includeStyle) {
-    const styleLines: string[] = [];
     for (const n of nodes) {
       const s = styleToRelatNodeStyle(n.style, false, n.coordinates, n.info);
       if (s) styleLines.push(`node ${n.id} ${s}`);
@@ -394,25 +439,16 @@ export function exportRelat(
       const s = styleToRelatEdgeStyle(e.style, true, e.info);
       if (s) styleLines.push(`edge ${e.id} ${s}`);
     }
-    const relTypesSeen = new Set<string>();
-    for (const e of edges) {
-      if (e.relType && e.relType !== 'link' && !relTypesSeen.has(e.relType)) {
-        relTypesSeen.add(e.relType);
-        const label = e.style?.label;
-        if (label != null && label === e.relType) continue;
-        const parts: string[] = [];
-        if (e.style?.color != null) parts.push(`color=${e.style.color}`);
-        if (e.style?.weight != null) parts.push(`width=${e.style.weight}`);
-        if (label != null) parts.push(`label=${JSON.stringify(label)}`);
-        if (parts.length > 0) styleLines.push(`rel ${e.relType} [${parts.join(',')}]`);
-      }
-    }
-    if (styleLines.length > 0) {
-      lines.push('');
-      lines.push('style {');
-      lines.push(...styleLines.map(l => `  ${l}`));
-      lines.push('}');
-    }
+  }
+  // uniform な rel ラベルは style にまとめる（includeStyle の有無にかかわらず）
+  for (const [relType, label] of uniformRelLabels) {
+    styleLines.push(`rel ${relType} [label=${JSON.stringify(label)}]`);
+  }
+  if (styleLines.length > 0) {
+    lines.push('');
+    lines.push('style {');
+    lines.push(...styleLines.map((l) => `  ${l}`));
+    lines.push('}');
   }
 
   return lines.join('\n');

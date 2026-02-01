@@ -198,14 +198,23 @@ function tokenize(input: string): { tokens: Token[]; errors: string[] } {
       continue;
     }
 
+    // Integer-only numbers are emitted as Id so that numeric node/edge IDs (e.g. 1, 2, 3) work.
+    // Numbers with a decimal point are emitted as Number for style/layout values (e.g. 35.6812).
     if (/\d/.test(c) || (c === '.' && i + 1 < n && /\d/.test(input[i + 1]))) {
       const startNum = i;
       while (i < n && /\d/.test(input[i])) i++;
+      let hasDecimal = false;
       if (i < n && input[i] === '.' && i + 1 < n && /\d/.test(input[i + 1])) {
+        hasDecimal = true;
         i++;
         while (i < n && /\d/.test(input[i])) i++;
       }
-      tokens.push({ type: TokenType.Number, value: input.slice(startNum, i), offset: startNum });
+      const value = input.slice(startNum, i);
+      if (hasDecimal) {
+        tokens.push({ type: TokenType.Number, value, offset: startNum });
+      } else {
+        tokens.push({ type: TokenType.Id, value, offset: startNum });
+      }
       continue;
     }
 
@@ -306,7 +315,8 @@ export function parseRelat(text: string): RelatIR {
   function ensureNode(id: string, label?: string, style?: Record<string, unknown>, group?: string): void {
     const existing = nodes[id];
     if (existing) {
-      if (label !== undefined) existing.label = label;
+      // Do not overwrite label when this is a bare reference (label === id); preserve explicit label set earlier
+      if (label !== undefined && label !== id) existing.label = label;
       existing.style = mergeStyle(existing.style, style) ?? existing.style;
       if (group !== undefined) existing.group = group;
     } else {
@@ -317,7 +327,8 @@ export function parseRelat(text: string): RelatIR {
   function ensureGroup(id: string, label?: string, style?: Record<string, unknown>, members?: string[]): void {
     const existing = groups[id];
     if (existing) {
-      if (label !== undefined) existing.label = label;
+      // Do not overwrite label when this is a bare reference (label === id); preserve explicit label set earlier
+      if (label !== undefined && label !== id) existing.label = label;
       existing.style = mergeStyle(existing.style, style) ?? existing.style;
       if (members) existing.members = [...new Set([...existing.members, ...members])];
     } else {
@@ -684,32 +695,6 @@ export function parseRelat(text: string): RelatIR {
       return;
     }
 
-    if (at(TokenType.String)) {
-      const labelTok = tokens[pos.current];
-      const label = labelTok.value;
-      pos.current++;
-      if (!consume(TokenType.As)) {
-        warnings.push('Expected "as" after string');
-        return;
-      }
-      if (!at(TokenType.Id)) {
-        warnings.push('Expected group or node ID after "as"');
-        return;
-      }
-      const idTok = tokens[pos.current];
-      const id = idTok.value;
-      pos.current++;
-      const style = parseBracketStyle(tokens, pos) ?? undefined;
-      if (at(TokenType.Lbrace)) {
-        consume(TokenType.Lbrace);
-        const members = parseGroupBlockContent(id);
-        ensureGroup(id, label, style, members);
-      } else {
-        ensureNode(id, label, style);
-      }
-      return;
-    }
-
     if (at(TokenType.Id)) {
       const first = tokens[pos.current].value;
       const next = pos.current + 1 < len ? tokens[pos.current + 1].type : TokenType.Eof;
@@ -805,28 +790,37 @@ export function parseRelat(text: string): RelatIR {
         return;
       }
       pos.current++;
+      let nodeLabel: string | undefined = first;
+      if (at(TokenType.As)) {
+        pos.current++;
+        if (at(TokenType.String)) {
+          nodeLabel = tokens[pos.current].value;
+          pos.current++;
+        }
+      }
       const style = parseBracketStyle(tokens, pos) ?? undefined;
-      ensureNode(first, first, style);
+      ensureNode(first, nodeLabel ?? first, style);
       return;
     }
 
     if (at(TokenType.Node)) {
       pos.current++;
-      if (at(TokenType.String)) {
-        const label = tokens[pos.current].value;
-        pos.current++;
-        if (!consume(TokenType.As)) { warnings.push('Expected "as" after node label'); return; }
-        if (!at(TokenType.Id)) { warnings.push('Expected node ID'); return; }
-        const id = tokens[pos.current].value;
-        pos.current++;
-        const style = parseBracketStyle(tokens, pos) ?? undefined;
-        ensureNode(id, label, style);
-      } else if (at(TokenType.Id)) {
-        const id = tokens[pos.current].value;
-        pos.current++;
-        const style = parseBracketStyle(tokens, pos) ?? undefined;
-        ensureNode(id, id, style);
+      if (!at(TokenType.Id)) {
+        warnings.push('Expected node ID after node');
+        return;
       }
+      const id = tokens[pos.current].value;
+      pos.current++;
+      let nodeLabel: string | undefined = id;
+      if (at(TokenType.As)) {
+        pos.current++;
+        if (at(TokenType.String)) {
+          nodeLabel = tokens[pos.current].value;
+          pos.current++;
+        }
+      }
+      const style = parseBracketStyle(tokens, pos) ?? undefined;
+      ensureNode(id, nodeLabel ?? id, style);
       return;
     }
 

@@ -82,7 +82,6 @@ let viewer: RelatosViewer;
 viewer = createRelatosViewer('#viewer-container', {
   enabledViews: ['graph', 'map2d', 'globe3d'],
   initialView: 'graph',
-  data: { nodes: [], edges: [], groups: [] },
   loaders: { leaflet: loadLeaflet, cesium: loadCesium },
   graph: { mode: 'view', editable: true },
   tables: TABLE_OPTIONS,
@@ -91,6 +90,7 @@ viewer = createRelatosViewer('#viewer-container', {
 const textarea = document.getElementById('relat-text') as HTMLTextAreaElement;
 const statusEl = document.getElementById('status') as HTMLSpanElement;
 const btnApply = document.getElementById('btn-apply') as HTMLButtonElement;
+const outputEl = document.getElementById('export-output') as HTMLPreElement | null;
 
 if (textarea && !textarea.value.trim()) {
   textarea.value = DEFAULT_RELAT;
@@ -99,6 +99,21 @@ if (textarea && !textarea.value.trim()) {
 function setStatus(msg: string, type: 'success' | 'error' | '' = '') {
   statusEl.textContent = msg;
   statusEl.className = type ? `status ${type}` : 'status';
+}
+
+function showOutput(text: string, maxChars = 6000) {
+  if (outputEl) {
+    outputEl.textContent = text.length > maxChars ? text.slice(0, maxChars) + '\n... (truncated)' : text;
+    outputEl.style.display = 'block';
+  }
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 btnApply?.addEventListener('click', () => {
@@ -114,7 +129,57 @@ btnApply?.addEventListener('click', () => {
       },
     });
     setStatus('Relatos に反映しました。Graph / Map2D / Globe3D タブで表示を切り替えられます。', 'success');
+    setTimeout(() => viewer.resize(), 100);
   } catch (err) {
     setStatus(`読み込みエラー: ${err instanceof Error ? err.message : String(err)}`, 'error');
   }
+});
+
+document.getElementById('btn-shape-office')?.addEventListener('click', () => {
+  try {
+    const shape = viewer.getShapeDataForOffice();
+    showOutput(JSON.stringify(shape, null, 2));
+    setStatus('getShapeDataForOffice() – 出力欄を参照してください。', 'success');
+  } catch (e) {
+    setStatus(String(e), 'error');
+  }
+});
+
+document.getElementById('btn-relat')?.addEventListener('click', () => {
+  const relat = viewer.exportRelat({ includeLayout: true });
+  showOutput(relat);
+  setStatus('exportRelat(includeLayout: true)。', 'success');
+});
+
+document.getElementById('btn-svg')?.addEventListener('click', () => {
+  const svg = viewer.getViewAsSvg();
+  if (svg) {
+    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+    downloadBlob(blob, 'relatos-view.svg');
+    setStatus('SVG をダウンロードしました。', 'success');
+  } else {
+    setStatus('getViewAsSvg() が null を返しました。', 'error');
+  }
+});
+
+document.getElementById('btn-png')?.addEventListener('click', async () => {
+  setStatus('PNG をエクスポート中...', '');
+  const blob = await viewer.exportViewToImage('png');
+  if (!blob) {
+    setStatus('exportViewToImage(png) が null を返しました。', 'error');
+    return;
+  }
+  downloadBlob(blob, 'relatos-view.png');
+  setStatus('PNG をダウンロードしました。', 'success');
+});
+
+document.getElementById('btn-webp')?.addEventListener('click', async () => {
+  setStatus('WebP をエクスポート中...', '');
+  const blob = await viewer.exportViewToImage('webp', { quality: 0.9 });
+  if (!blob) {
+    setStatus('exportViewToImage(webp) が null を返しました。', 'error');
+    return;
+  }
+  downloadBlob(blob, 'relatos-view.webp');
+  setStatus('WebP をダウンロードしました。', 'success');
 });

@@ -9,9 +9,31 @@
  * - 203.0.113.0/24 (TEST-NET-3)
  */
 
-import { createRelatosViewer } from '../../src/index';
+import { createRelatosViewer, exportRelat, importRelat } from '../../src/index';
 import type { Node, Edge, Group } from '../../src/types/data';
 import type { SavePayload } from '../../src/types/events';
+
+/** Source of truth: relat text with all group/node/rel labels (id as "label" only; no layout). Nodes and edges first so labels are set before group parsing. */
+const INITIAL_RELAT_TEXT = `ip-192-0-2-1 as "192.0.2.1"[color=#E3F2FD,border=#1976D2,lat=37.7749,lon=-122.4194,info.ip="192.0.2.1",info.country="USA",info.region="California",info.city="San Francisco"]
+ip-192-0-2-2 as "192.0.2.2"[color=#E3F2FD,border=#1976D2,lat=34.0522,lon=-118.2437,info.ip="192.0.2.2",info.country="USA",info.region="California",info.city="Los Angeles"]
+ip-192-0-2-4 as "192.0.2.4"[color=#E3F2FD,border=#1976D2,lat=34.0736,lon=-118.4004,info.ip="192.0.2.4",info.country="USA",info.region="California",info.city="Los Angeles",info.district="Beverly Hills"]
+ip-192-0-2-3 as "192.0.2.3"[color=#E3F2FD,border=#1976D2,lat=25.7617,lon=-80.1918,info.ip="192.0.2.3",info.country="USA",info.region="Florida",info.city="Miami"]
+ip-198-51-100-1 as "198.51.100.1"[color=#FFF3E0,border=#F57C00,lat=35.658,lon=139.7016,info.ip="198.51.100.1",info.country="Japan",info.region="Tokyo",info.city="Shibuya"]
+ip-203-0-113-1 as "203.0.113.1"[color=#F3E5F5,border=#7B1FA2,lat=51.5074,lon=-0.1278,info.ip="203.0.113.1",info.country="UK",info.region="England",info.city="London"]
+net-192-0-2-0 as "192.0.2.0/24"[color=#E8F5E9,border=#4CAF50,info.network="192.0.2.0/24",info.type="TEST-NET-1",info.description="Documentation/Test Network"]
+net-198-51-100-0 as "198.51.100.0/24"[color=#E8F5E9,border=#4CAF50,info.network="198.51.100.0/24",info.type="TEST-NET-2",info.description="Documentation/Test Network"]
+net-203-0-113-0 as "203.0.113.0/24"[color=#E8F5E9,border=#4CAF50,info.network="203.0.113.0/24",info.type="TEST-NET-3",info.description="Documentation/Test Network"]
+ip-192-0-2-1-->net-192-0-2-0 : belongs_to [color=#1976D2,weight=2,info.fromLabel="192.0.2.1",info.toLabel="192.0.2.0/24",info.relationship="belongs to"]
+ip-192-0-2-2-->net-192-0-2-0 : belongs_to [color=#1976D2,weight=2,info.fromLabel="192.0.2.2",info.toLabel="192.0.2.0/24",info.relationship="belongs to"]
+ip-192-0-2-4-->net-192-0-2-0 : belongs_to [color=#1976D2,weight=2,info.fromLabel="192.0.2.4",info.toLabel="192.0.2.0/24",info.relationship="belongs to"]
+ip-192-0-2-3-->net-192-0-2-0 : belongs_to [color=#1976D2,weight=2,info.fromLabel="192.0.2.3",info.toLabel="192.0.2.0/24",info.relationship="belongs to"]
+ip-198-51-100-1-->net-198-51-100-0 : belongs_to [color=#F57C00,weight=2,info.fromLabel="198.51.100.1",info.toLabel="198.51.100.0/24",info.relationship="belongs to"]
+ip-203-0-113-1-->net-203-0-113-0 : belongs_to [color=#7B1FA2,weight=2,info.fromLabel="203.0.113.1",info.toLabel="203.0.113.0/24",info.relationship="belongs to"]
+net-192-0-2-0-->net-198-51-100-0 : connection [color=#4CAF50,weight=4,info.fromLabel="192.0.2.0/24",info.toLabel="198.51.100.0/24",info.relationship="connected"]
+net-192-0-2-0-->net-203-0-113-0 : connection [color=#4CAF50,weight=4,info.fromLabel="192.0.2.0/24",info.toLabel="203.0.113.0/24",info.relationship="connected"]
+group-usa as "USA" { group-california as "California" { group-sanfrancisco as "San Francisco" { ip-192-0-2-1 }, group-losangeles as "Los Angeles" { ip-192-0-2-2, group-beverlyhills as "Beverly Hills" { ip-192-0-2-4 } } }, group-florida as "Florida" { group-miami as "Miami" { ip-192-0-2-3 } } }
+group-japan as "Japan" { group-tokyo as "Tokyo" { group-shibuya as "Shibuya" { ip-198-51-100-1 } } }
+group-uk as "UK" { group-england as "England" { group-london as "London" { ip-203-0-113-1 } } }`;
 
 // Layout storage utilities
 // Key structure: <ページURLハッシュ>_<オブジェクトID>_<全オブジェクトIDのSUMハッシュ>
@@ -180,36 +202,6 @@ function clearLayoutFromStorage(nodes: Node[], edges: Edge[], groups: Group[]): 
 }
 
 /**
- * Get nodes without position information (for auto-layout)
- */
-function getNodesWithoutLayout(nodes: Node[]): Node[] {
-  return nodes.map(node => {
-    const { position, ...rest } = node as any;
-    return rest;
-  });
-}
-
-/**
- * Get groups without layout information (for auto-layout)
- */
-function getGroupsWithoutLayout(groups: Group[]): Group[] {
-  return groups.map(group => {
-    const { layout, ...rest } = group;
-    return rest;
-  });
-}
-
-/**
- * Get edges without anchor and bend information (for auto-layout)
- */
-function getEdgesWithoutLayout(edges: Edge[]): Edge[] {
-  return edges.map(edge => {
-    const { anchors, bends, ...rest } = edge;
-    return rest;
-  });
-}
-
-/**
  * Load layouts from LocalStorage and apply to objects
  */
 function loadLayouts(
@@ -323,450 +315,6 @@ function loadLayouts(
   }
 }
 
-// Sample network traffic data
-// IP addresses in different locations with traffic flows
-
-// Nodes: IP addresses
-const nodes = [
-  // USA > California > San Francisco
-  {
-    id: 'ip-192-0-2-1',
-    label: '192.0.2.1',
-    coordinates: [37.7749, -122.4194], // San Francisco
-    info: {
-      ip: '192.0.2.1',
-      country: 'USA',
-      region: 'California',
-      city: 'San Francisco',
-      latitude: '37.7749',
-      longitude: '-122.4194',
-    },
-    style: {
-      color: '#E3F2FD',
-      borderColor: '#1976D2',
-      width: 140,
-      height: 50,
-    },
-  },
-  // USA > California > Los Angeles
-  {
-    id: 'ip-192-0-2-2',
-    label: '192.0.2.2',
-    coordinates: [34.0522, -118.2437], // Los Angeles
-    info: {
-      ip: '192.0.2.2',
-      country: 'USA',
-      region: 'California',
-      city: 'Los Angeles',
-      latitude: '34.0522',
-      longitude: '-118.2437',
-    },
-    style: {
-      color: '#E3F2FD',
-      borderColor: '#1976D2',
-      width: 140,
-      height: 50,
-    },
-  },
-  // USA > California > Los Angeles > Beverly Hills
-  {
-    id: 'ip-192-0-2-4',
-    label: '192.0.2.4',
-    coordinates: [34.0736, -118.4004], // Beverly Hills
-    info: {
-      ip: '192.0.2.4',
-      country: 'USA',
-      region: 'California',
-      city: 'Los Angeles',
-      district: 'Beverly Hills',
-      latitude: '34.0736',
-      longitude: '-118.4004',
-    },
-    style: {
-      color: '#E3F2FD',
-      borderColor: '#1976D2',
-      width: 140,
-      height: 50,
-    },
-  },
-  // USA > Florida > Miami
-  {
-    id: 'ip-192-0-2-3',
-    label: '192.0.2.3',
-    coordinates: [25.7617, -80.1918], // Miami
-    info: {
-      ip: '192.0.2.3',
-      country: 'USA',
-      region: 'Florida',
-      city: 'Miami',
-      latitude: '25.7617',
-      longitude: '-80.1918',
-    },
-    style: {
-      color: '#E3F2FD',
-      borderColor: '#1976D2',
-      width: 140,
-      height: 50,
-    },
-  },
-  // Japan > Tokyo > Shibuya
-  {
-    id: 'ip-198-51-100-1',
-    label: '198.51.100.1',
-    coordinates: [35.6580, 139.7016], // Shibuya, Tokyo
-    info: {
-      ip: '198.51.100.1',
-      country: 'Japan',
-      region: 'Tokyo',
-      city: 'Shibuya',
-      latitude: '35.6580',
-      longitude: '139.7016',
-    },
-    style: {
-      color: '#FFF3E0',
-      borderColor: '#F57C00',
-      width: 140,
-      height: 50,
-    },
-  },
-  // UK > England > London
-  {
-    id: 'ip-203-0-113-1',
-    label: '203.0.113.1',
-    coordinates: [51.5074, -0.1278], // London
-    info: {
-      ip: '203.0.113.1',
-      country: 'UK',
-      region: 'England',
-      city: 'London',
-      latitude: '51.5074',
-      longitude: '-0.1278',
-    },
-    style: {
-      color: '#F3E5F5',
-      borderColor: '#7B1FA2',
-      width: 140,
-      height: 50,
-    },
-  },
-  // Network nodes (no group, no coordinates - will be placed in non-geo area)
-  {
-    id: 'net-192-0-2-0',
-    label: '192.0.2.0/24',
-    info: {
-      network: '192.0.2.0/24',
-      type: 'TEST-NET-1',
-      description: 'Documentation/Test Network',
-    },
-    style: {
-      color: '#E8F5E9',
-      borderColor: '#4CAF50',
-      width: 160,
-      height: 50,
-    },
-  },
-  {
-    id: 'net-198-51-100-0',
-    label: '198.51.100.0/24',
-    info: {
-      network: '198.51.100.0/24',
-      type: 'TEST-NET-2',
-      description: 'Documentation/Test Network',
-    },
-    style: {
-      color: '#E8F5E9',
-      borderColor: '#4CAF50',
-      width: 160,
-      height: 50,
-    },
-  },
-  {
-    id: 'net-203-0-113-0',
-    label: '203.0.113.0/24',
-    info: {
-      network: '203.0.113.0/24',
-      type: 'TEST-NET-3',
-      description: 'Documentation/Test Network',
-    },
-    style: {
-      color: '#E8F5E9',
-      borderColor: '#4CAF50',
-      width: 160,
-      height: 50,
-    },
-  },
-];
-
-// Edges: Network connections
-const edges = [
-  // IP addresses to their networks
-  {
-    id: 'edge-1',
-    src: 'ip-192-0-2-1',
-    dst: 'net-192-0-2-0',
-    relType: 'belongs_to',
-    info: {
-      fromLabel: '192.0.2.1',
-      toLabel: '192.0.2.0/24',
-      relationship: 'belongs to',
-    },
-    style: {
-      color: '#1976D2',
-      weight: 2,
-    },
-  },
-  {
-    id: 'edge-2',
-    src: 'ip-192-0-2-2',
-    dst: 'net-192-0-2-0',
-    relType: 'belongs_to',
-    info: {
-      fromLabel: '192.0.2.2',
-      toLabel: '192.0.2.0/24',
-      relationship: 'belongs to',
-    },
-    style: {
-      color: '#1976D2',
-      weight: 2,
-    },
-  },
-  {
-    id: 'edge-3',
-    src: 'ip-192-0-2-4',
-    dst: 'net-192-0-2-0',
-    relType: 'belongs_to',
-    info: {
-      fromLabel: '192.0.2.4',
-      toLabel: '192.0.2.0/24',
-      relationship: 'belongs to',
-    },
-    style: {
-      color: '#1976D2',
-      weight: 2,
-    },
-  },
-  {
-    id: 'edge-4',
-    src: 'ip-192-0-2-3',
-    dst: 'net-192-0-2-0',
-    relType: 'belongs_to',
-    info: {
-      fromLabel: '192.0.2.3',
-      toLabel: '192.0.2.0/24',
-      relationship: 'belongs to',
-    },
-    style: {
-      color: '#1976D2',
-      weight: 2,
-    },
-  },
-  {
-    id: 'edge-5',
-    src: 'ip-198-51-100-1',
-    dst: 'net-198-51-100-0',
-    relType: 'belongs_to',
-    info: {
-      fromLabel: '198.51.100.1',
-      toLabel: '198.51.100.0/24',
-      relationship: 'belongs to',
-    },
-    style: {
-      color: '#F57C00',
-      weight: 2,
-    },
-  },
-  {
-    id: 'edge-6',
-    src: 'ip-203-0-113-1',
-    dst: 'net-203-0-113-0',
-    relType: 'belongs_to',
-    info: {
-      fromLabel: '203.0.113.1',
-      toLabel: '203.0.113.0/24',
-      relationship: 'belongs to',
-    },
-    style: {
-      color: '#7B1FA2',
-      weight: 2,
-    },
-  },
-  // Network to network connections
-  {
-    id: 'edge-7',
-    src: 'net-192-0-2-0',
-    dst: 'net-198-51-100-0',
-    relType: 'connection',
-    info: {
-      fromLabel: '192.0.2.0/24',
-      toLabel: '198.51.100.0/24',
-      relationship: 'connected',
-    },
-    style: {
-      color: '#4CAF50',
-      weight: 4,
-    },
-  },
-  {
-    id: 'edge-8',
-    src: 'net-192-0-2-0',
-    dst: 'net-203-0-113-0',
-    relType: 'connection',
-    info: {
-      fromLabel: '192.0.2.0/24',
-      toLabel: '203.0.113.0/24',
-      relationship: 'connected',
-    },
-    style: {
-      color: '#4CAF50',
-      weight: 4,
-    },
-  },
-];
-
-// Groups: Multi-level hierarchy (Country > Region > City > District)
-// Group structure:
-// - Country (Lv1)
-//   - Region (Lv2)
-//     - City (Lv3)
-//       - District (Lv4) - e.g., Beverly Hills
-//         - IP nodes
-
-const groups = [
-  // USA > California > San Francisco
-  // Parent groups only contain child groups, not descendant nodes
-  {
-    id: 'group-usa',
-    label: 'USA',
-    nodeIds: [], // Parent group: no direct nodes, only child groups
-    meta: {
-      level: 1,
-      type: 'country',
-    },
-  },
-  {
-    id: 'group-california',
-    label: 'California',
-    nodeIds: [], // Parent group: no direct nodes, only child groups
-    parentId: 'group-usa',
-    meta: {
-      level: 2,
-      type: 'region',
-    },
-  },
-  {
-    id: 'group-sanfrancisco',
-    label: 'San Francisco',
-    nodeIds: ['ip-192-0-2-1'],
-    parentId: 'group-california',
-    meta: {
-      level: 3,
-      type: 'city',
-    },
-  },
-  {
-    id: 'group-losangeles',
-    label: 'Los Angeles',
-    nodeIds: ['ip-192-0-2-2'], // Direct node only (Beverly Hills is in child group)
-    parentId: 'group-california',
-    meta: {
-      level: 3,
-      type: 'city',
-    },
-  },
-  // USA > California > Los Angeles > Beverly Hills (4-level hierarchy)
-  {
-    id: 'group-beverlyhills',
-    label: 'Beverly Hills',
-    nodeIds: ['ip-192-0-2-4'],
-    parentId: 'group-losangeles',
-    meta: {
-      level: 4,
-      type: 'district',
-    },
-  },
-  // USA > Florida > Miami
-  {
-    id: 'group-florida',
-    label: 'Florida',
-    nodeIds: [], // Parent group: no direct nodes, only child groups
-    parentId: 'group-usa',
-    meta: {
-      level: 2,
-      type: 'region',
-    },
-  },
-  {
-    id: 'group-miami',
-    label: 'Miami',
-    nodeIds: ['ip-192-0-2-3'],
-    parentId: 'group-florida',
-    meta: {
-      level: 3,
-      type: 'city',
-    },
-  },
-  // Japan > Tokyo > Shibuya
-  {
-    id: 'group-japan',
-    label: 'Japan',
-    nodeIds: [], // Parent group: no direct nodes, only child groups
-    meta: {
-      level: 1,
-      type: 'country',
-    },
-  },
-  {
-    id: 'group-tokyo',
-    label: 'Tokyo',
-    nodeIds: [], // Parent group: no direct nodes, only child groups
-    parentId: 'group-japan',
-    meta: {
-      level: 2,
-      type: 'region',
-    },
-  },
-  {
-    id: 'group-shibuya',
-    label: 'Shibuya',
-    nodeIds: ['ip-198-51-100-1'],
-    parentId: 'group-tokyo',
-    meta: {
-      level: 3,
-      type: 'city',
-    },
-  },
-  // UK > England > London
-  {
-    id: 'group-uk',
-    label: 'UK',
-    nodeIds: [], // Parent group: no direct nodes, only child groups
-    meta: {
-      level: 1,
-      type: 'country',
-    },
-  },
-  {
-    id: 'group-england',
-    label: 'England',
-    nodeIds: [], // Parent group: no direct nodes, only child groups
-    parentId: 'group-uk',
-    meta: {
-      level: 2,
-      type: 'region',
-    },
-  },
-  {
-    id: 'group-london',
-    label: 'London',
-    nodeIds: ['ip-203-0-113-1'],
-    parentId: 'group-england',
-    meta: {
-      level: 3,
-      type: 'city',
-    },
-  },
-];
-
 // Leaflet loader function
 async function loadLeaflet(): Promise<any> {
   try {
@@ -840,9 +388,13 @@ async function loadCesium(): Promise<any> {
   }
 }
 
-// Load saved layouts before creating viewer
-const { nodes: nodesWithLayout, edges: edgesWithLayout, groups: groupsWithLayout } = 
-  loadLayouts(nodes, edges, groups);
+// Parse base relat and apply saved layouts (if any)
+const baseData = importRelat(INITIAL_RELAT_TEXT);
+const { nodes: nodesWithLayout, edges: edgesWithLayout, groups: groupsWithLayout } =
+  loadLayouts(baseData.nodes, baseData.edges, baseData.groups);
+
+/** Relat string to pass to viewer: base + layout when present */
+const initialRelatForViewer = exportRelat(nodesWithLayout, edgesWithLayout, groupsWithLayout, { includeLayout: true });
 
 /**
  * Extract layout information from data for display
@@ -890,25 +442,29 @@ function updateLayoutDisplay(elementId: string, data: object): void {
   }
 }
 
-// Display initial layout info
-const initialLayoutInfo = extractLayoutInfo({
-  nodes: nodesWithLayout,
-  edges: edgesWithLayout,
-  groups: groupsWithLayout,
-});
+/**
+ * Update initial relat text display (source const, no layout)
+ */
+function updateInitialRelatDisplay(relatText: string): void {
+  const element = document.getElementById('initial-layout-json');
+  if (element) {
+    if (!relatText || relatText.trim() === '') {
+      element.innerHTML = '<span class="empty-state">No relat text</span>';
+    } else {
+      element.textContent = relatText;
+    }
+  }
+}
+
 setTimeout(() => {
-  updateLayoutDisplay('initial-layout-json', initialLayoutInfo);
+  updateInitialRelatDisplay(INITIAL_RELAT_TEXT);
 }, 0);
 
-// Create viewer
+// Create viewer (data from INITIAL_RELAT_TEXT + saved layout when present)
 const viewerInstance = createRelatosViewer('#viewer-container', {
   enabledViews: ['graph', 'map2d', 'globe3d'],
   initialView: 'graph',
-  data: {
-    nodes: nodesWithLayout,
-    edges: edgesWithLayout,
-    groups: groupsWithLayout,
-  },
+  initialRelat: initialRelatForViewer,
   loaders: {
     leaflet: loadLeaflet,
     cesium: loadCesium,
@@ -972,8 +528,8 @@ const viewerInstance = createRelatosViewer('#viewer-container', {
       `,
       format: `
         <td>{{label}}</td>
-        <td>{{meta.level}}</td>
-        <td>{{meta.type}}</td>
+        <td>{{info.level}}</td>
+        <td>{{info.type}}</td>
         <td>{{nodeCount}}</td>
         <td>{{parentId}}</td>
       `,
@@ -1022,28 +578,16 @@ if (resetButton) {
       return;
     }
 
-    // Clear layout from LocalStorage
-    clearLayoutFromStorage(nodes, edges, groups);
+    // Clear layout from LocalStorage (use base data from INITIAL_RELAT_TEXT)
+    const resetBaseData = importRelat(INITIAL_RELAT_TEXT);
+    clearLayoutFromStorage(resetBaseData.nodes, resetBaseData.edges, resetBaseData.groups);
 
-    // Set data without layout information to trigger auto-layout
-    const resetNodes = getNodesWithoutLayout(nodes);
-    const resetEdges = getEdgesWithoutLayout(edges);
-    const resetGroups = getGroupsWithoutLayout(groups);
-    
-    viewerInstance.setData({
-      nodes: resetNodes,
-      edges: resetEdges,
-      groups: resetGroups,
-    });
+    // Set base relat (no layout) to trigger auto-layout
+    viewerInstance.importRelat(INITIAL_RELAT_TEXT);
 
-    // Update initial layout display (now empty)
-    const resetLayoutInfo = extractLayoutInfo({
-      nodes: resetNodes,
-      edges: resetEdges,
-      groups: resetGroups,
-    });
-    updateLayoutDisplay('initial-layout-json', resetLayoutInfo);
-    
+    // Initial relat display is unchanged (always shows INITIAL_RELAT_TEXT)
+    updateInitialRelatDisplay(INITIAL_RELAT_TEXT);
+
     // Clear saved layout display
     const savedElement = document.getElementById('saved-layout-json');
     if (savedElement) {

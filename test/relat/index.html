@@ -70,6 +70,39 @@
     .status { font-size: 12px; color: #666; margin-top: 4px; }
     .status.error { color: #c62828; }
     .status.success { color: #2e7d32; }
+    .export-section {
+      padding: 12px 20px;
+      background-color: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+    .export-section h3 { font-size: 14px; color: #333; margin-bottom: 8px; }
+    .export-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .export-grid button {
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      background-color: #f9f9f9;
+    }
+    .export-grid button:hover { background-color: #e8e8e8; }
+    .export-grid button.primary { background-color: #2196f3; border-color: #1976d2; color: #fff; }
+    #export-output {
+      display: none;
+      margin-top: 8px;
+      padding: 8px;
+      font-size: 11px;
+      max-height: 200px;
+      overflow: auto;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      background: #fafafa;
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    }
     #viewer-container {
       flex: 1;
       min-height: 200px;
@@ -105,6 +138,17 @@
         <span id="status" class="status"></span>
       </div>
       <button type="button" id="btn-apply">Relatos に表示</button>
+    </section>
+    <section class="export-section">
+      <h3>View export</h3>
+      <div class="export-grid">
+        <button type="button" id="btn-shape-office">getShapeDataForOffice()</button>
+        <button type="button" id="btn-relat">exportRelat()</button>
+        <button type="button" id="btn-svg" class="primary">getViewAsSvg()</button>
+        <button type="button" id="btn-png" class="primary">PNG</button>
+        <button type="button" id="btn-webp" class="primary">WebP</button>
+      </div>
+      <pre id="export-output"></pre>
     </section>
     <div id="viewer-container"></div>
     <div id="tables-container"></div>

@@ -29,8 +29,11 @@ accessible, and reusable.
 - **Language-Neutral UI**  
   Icon-based controls designed for global use without localization dependencies.
 
-- **Export APIs (v0.3.0)**  
-  `getData()`, `getShapeDataForOffice()` (for xlsx/pptx shapes), `exportToPlantUML()` / `importFromPlantUML()` (with layout in `@relatos:layout:*` comments), `getViewAsSvg()`, `exportViewToImage('png'|'webp')`.
+- **relat format**  
+  Data is loaded and saved via the relat text format (Relatos dedicated text language). Use `initialRelat` at creation or `importRelat()` / `exportRelat()` to load and export data.
+
+- **Export APIs**  
+  `getShapeDataForOffice()` (for xlsx/pptx shapes), `getViewAsSvg()`, `exportViewToImage('png'|'webp')`.
 
 
 ## Installation
@@ -76,20 +79,16 @@ The build outputs the following files in dist/:
   const viewer = Relatos.createRelatosViewer('#container', {
     enabledViews: ['graph', 'map2d', 'globe3d'],
     initialView: 'map2d',
-    data: {
-      nodes: [
-        { id: '1', label: 'Node 1', coordinates: [35.6812, 139.7671] },
-        { id: '2', label: 'Node 2', coordinates: [40.7128, -74.0060] }
-      ],
-      edges: [
-        { id: 'e1', src: '1', dst: '2', label: 'Connection' }
-      ]
-    },
+    initialRelat: `Tokyo, NewYork, London
+Tokyo-->NewYork : flight
+NewYork-->London : flight`,
     loaders: {
       leaflet: async () => (await import('leaflet')).default,
       cesium: async () => (await import('cesium')).Cesium
     }
   });
+  // Load more data later: viewer.importRelat(relatText)
+  // Export: const relatText = viewer.exportRelat({ includeLayout: true });
 </script>
 ```
 
@@ -99,9 +98,9 @@ The build outputs the following files in dist/:
 import { createRelatosViewer } from './relatos.es.js';
 
 const viewer = createRelatosViewer('#container', {
-  enabledViews: ['graph'],
-  data: { nodes: [], edges: [] }
+  enabledViews: ['graph']
 });
+// Load data: viewer.importRelat(relatText)
 ```
 
 ## Tile Server Configuration
@@ -228,10 +227,10 @@ window.CESIUM_BASE_URL = '/node_modules/cesium/Build/Cesium/';
 - **examples/basic/** — Minimal setup
 - **examples/airports/** — Full features (tables, time, tile servers)
 
-## Test Pages (v0.3.0)
+## Test Pages
 
-- **test/import/** — PlantUML import (plain or deflate)
-- **test/export/** — Data & view export: getData, getShapeDataForOffice, exportToPlantUML, getViewAsSvg, exportViewToImage (PNG/WebP)
+- **test/import/** — relat import (paste relat text and import)
+- **test/export/** — Data & view export: exportRelat, getShapeDataForOffice, getViewAsSvg, exportViewToImage (PNG/WebP)
 
 Run dev server and open `/test/export/` or `/test/import/` to verify export/import APIs.
 
