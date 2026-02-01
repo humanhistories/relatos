@@ -1756,12 +1756,9 @@ export class ViewContainer {
     if (!this.alwaysShowEdgesButton) {
       return;
     }
-    
-    // Hide button if no edges exist
     this.alwaysShowEdgesButton.style.display = this.hasEdges ? 'flex' : 'none';
-    
-    // Update button order when visibility changes
     this.reorderButtons();
+    this.updateAlwaysShowEdgesButton();
   }
 
   /**

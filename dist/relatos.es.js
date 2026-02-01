@@ -2361,7 +2361,7 @@ class Wt {
    * Update always show edges button visibility based on edges existence
    */
   updateAlwaysShowEdgesButtonVisibility() {
-    this.alwaysShowEdgesButton && (this.alwaysShowEdgesButton.style.display = this.hasEdges ? "flex" : "none", this.reorderButtons());
+    this.alwaysShowEdgesButton && (this.alwaysShowEdgesButton.style.display = this.hasEdges ? "flex" : "none", this.reorderButtons(), this.updateAlwaysShowEdgesButton());
   }
   /**
    * Update always show edges button appearance
