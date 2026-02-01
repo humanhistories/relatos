@@ -315,9 +315,9 @@ export interface RelatosViewer {
   /**
    * Import data from relat format (Relatos dedicated text language)
    * @param relatText relat text string
-   * @param options Optional. onWarnings: called when the parser produced warnings (syntax issues). Message may include " (line N, column M)".
+   * @param options Optional. onWarnings: called when the parser produced warnings (syntax issues). Message may include " (line N, column M)". layoutPayload: when provided (e.g. from onSave), layout from it is applied to the imported data.
    */
-  importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void }): void;
+  importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void; layoutPayload?: SavePayload }): void;
 
   /**
    * Export data to relat format

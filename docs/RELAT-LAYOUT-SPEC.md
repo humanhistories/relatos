@@ -81,6 +81,7 @@ edge e_NewYork_London { src_side=top, src_t=0.5, dst_side=bottom, dst_t=0.5 } be
 - parseRelat reads the layout block and stores it in the IR layout structure.
 - irToRelatosData applies IR layout to nodes (position), groups (layout), and edges (bends, anchors).
 - Nodes/groups/edges not mentioned in layout remain without layout (e.g. auto-layout).
+- Layout can also be supplied via `importRelat(relatText, { layoutPayload })` with a SavePayload (e.g. from the onSave callback). When provided, layoutPayload takes precedence over the layout block in the relat text.
 
 ## 8. Example with Layout
 

@@ -52,4 +52,4 @@ When anchors or bends are changed, only the edge’s appearance is updated. Node
 
 ## 7. Save
 
-Layout changes made in edit mode are persisted by saving. The client obtains the updated relat text via exportRelat(includeLayout: true) and should pass that (or equivalent) to the onSave callback.
+Layout changes made in edit mode are persisted by saving. The client obtains the updated relat text via exportRelat(includeLayout: true) and should pass that (or equivalent) to the onSave callback. When loading, the client can pass the saved payload to `importRelat(relatText, { layoutPayload })` to restore the layout.

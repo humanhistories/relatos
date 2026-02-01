@@ -204,7 +204,7 @@ const viewer = createRelatosViewer('#container', {
 
 ### Main Methods
 
-- `viewer.importRelat(relatText, options?)`: Load data from relat text (Relatos dedicated text format)
+- `viewer.importRelat(relatText, options?)`: Load data from relat text (Relatos dedicated text format). Options may include `layoutPayload` (e.g. from onSave) to apply saved layout.
 - `viewer.exportRelat(options?)`: Export current data as relat text (optional `includeLayout: true`)
 - `viewer.getShapeDataForOffice()`: Get node/edge/group geometry for Excel/PowerPoint shapes (OfficeShapeExport)
 - `viewer.getViewAsSvg()`: Get current view as SVG string (Graph only; null for Map2D/Globe3D)

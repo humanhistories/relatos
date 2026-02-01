@@ -347,5 +347,5 @@ When importing invalid text, the parser recovers where possible and returns warn
 
 - Cap parse iterations to avoid infinite loops; on exceed, emit a warning and return partial results.
 - Include location (e.g. line/column or offset) in important warnings, e.g. "Missing closing } for group (line 3, column 5)".
-- Allow clients to pass onWarnings in importRelat(relatText, options). When onWarnings(warnings) is called, show messages (with location) in the UI.
+- Allow clients to pass onWarnings in importRelat(relatText, options). When onWarnings(warnings) is called, show messages (with location) in the UI. Options may also include layoutPayload (e.g. from onSave) to apply layout to the imported data.
 - Avoid throwing for non-fatal parse errors; return warnings and partial data. The client may show warnings and still apply the recovered data.

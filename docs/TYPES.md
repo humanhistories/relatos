@@ -39,7 +39,7 @@ Viewer instance API.
 
 ```typescript
 interface RelatosViewer {
-  importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void }): void;
+  importRelat(relatText: string, options?: { onWarnings?: (warnings: string[]) => void; layoutPayload?: SavePayload }): void;
   exportRelat(options?: { includeLayout?: boolean; includeStyle?: boolean }): string;
   getShapeDataForOffice(): OfficeShapeExport;  // For xlsx/pptx shape export
   getViewAsSvg(): string | null;              // Graph only
@@ -194,9 +194,9 @@ interface OfficeShapeExport {
 
 ### relat (Relatos text format)
 
-- `importRelat(relatText, options?)`: Import from relat text (Relatos dedicated text language).
+- `importRelat(relatText, options?)`: Import from relat text (Relatos dedicated text language). Options may include `layoutPayload` (e.g. from onSave); when provided, that layout is applied and takes precedence over the layout block in the relat text.
 - `exportRelat(nodes, edges, groups?, options?)`: Export to relat text (optional `includeLayout`, `includeStyle`).
-  - When importing: if the relat text includes a **layout** block, node positions are taken from it; otherwise they are auto-computed from latitude/longitude (or grid). The resulting layout can therefore differ between importing with layout and importing the same text without the layout block.
+  - When importing: if the relat text includes a **layout** block (or `options.layoutPayload` is passed), node positions are taken from it; otherwise they are auto-computed from latitude/longitude (or grid). The resulting layout can therefore differ between importing with layout and importing the same text without the layout block.
 
 ## Type Exports
 
